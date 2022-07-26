@@ -2,7 +2,43 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://azin-cn.github.io/contact.html</loc>
+    
+    <lastmod>2022-07-26</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://azin-cn.github.io/resume.html</loc>
+    
+    <lastmod>2022-07-26</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://azin-cn.github.io/2022/07/26/Hexo-Theme-Chic%E6%B7%BB%E5%8A%A0iconfont%E5%A4%B1%E8%B4%A5%E7%9A%84%E4%B8%B4%E6%97%B6%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/</loc>
+    
+    <lastmod>2022-07-26</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://azin-cn.github.io/category/index.html</loc>
+    
+    <lastmod>2022-07-26</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://azin-cn.github.io/about/index.html</loc>
     
     <lastmod>2022-07-26</lastmod>
     
@@ -36,6 +72,27 @@
     <priority>1.0</priority>
   </url>
 
+  
+  <url>
+    <loc>https://azin-cn.github.io/tags/Chic/</loc>
+    <lastmod>2022-07-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://azin-cn.github.io/tags/Hexo/</loc>
+    <lastmod>2022-07-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://azin-cn.github.io/tags/iconfont/</loc>
+    <lastmod>2022-07-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
   
 
   
