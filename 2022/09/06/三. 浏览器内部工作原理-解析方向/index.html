@@ -212,7 +212,7 @@
 
                     
                         <span class="post-time">
-                        Date: <a href="#">九月 6, 2022&nbsp;&nbsp;13:13:00</a>
+                        Date: <a href="#">九月 6, 2022&nbsp;&nbsp;16:51:33</a>
                         </span>
                     
                     
@@ -330,7 +330,7 @@
 <figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">ruleset</span><br><span class="line">: selector [ <span class="string">&#x27;,&#x27;</span> S* selector ]*</span><br><span class="line"><span class="string">&#x27;&#123;&#x27;</span> S* declaration [ <span class="string">&#x27;;&#x27;</span> S* declaration ]* <span class="string">&#x27;&#125;&#x27;</span> S*</span><br><span class="line">;</span><br><span class="line">selector</span><br><span class="line">: simple_selector [ combinator selector | S+ [ combinator selector ] ]</span><br><span class="line">;</span><br><span class="line"><span class="keyword">class</span></span><br><span class="line">: <span class="string">&#x27;.&#x27;</span> <span class="variable constant_">IDENT</span></span><br><span class="line">;</span><br><span class="line">element_name</span><br><span class="line">: <span class="variable constant_">IDENT</span> | <span class="string">&#x27;*&#x27;</span></span><br><span class="line">;</span><br></pre></td></tr></table></figure>
 
 <p>一个规则集合具有一个或是可选个数的多个选择器，这些选择器以逗号和空格（S表示空格）进行分隔。每个规则集合包含大括号及大括号中的一条或多条以分号隔开的声明。声明和选择器在后面进行定义。</p>
-<h4 id="Webkit-CSS解析器（Webkit-CSS-parser）"><a href="#Webkit-CSS解析器（Webkit-CSS-parser）" class="headerlink" title="Webkit CSS解析器（Webkit CSS parser）"></a>Webkit CSS解析器（Webkit CSS parser）</h4><p>Webkit使用Flex和Bison解析生成器从CSS语法文件中自动生成解析器。回忆一下解析器的介绍，Bison创建一个自底向上的解析器，Firefox使用自顶向下解析器。它们都是将每个css文件解析为样式表对象，每个对象包含css规则，css规则对象包含选择器和声明对象，以及其他一些符合css语法的对象。</p>
+<h4 id="1-2-1-Webkit-CSS解析器（Webkit-CSS-parser）"><a href="#1-2-1-Webkit-CSS解析器（Webkit-CSS-parser）" class="headerlink" title="1.2.1 Webkit CSS解析器（Webkit CSS parser）"></a>1.2.1 Webkit CSS解析器（Webkit CSS parser）</h4><p>Webkit使用Flex和Bison解析生成器从CSS语法文件中自动生成解析器。回忆一下解析器的介绍，Bison创建一个自底向上的解析器，Firefox使用自顶向下解析器。它们都是将每个css文件解析为样式表对象，每个对象包含css规则，css规则对象包含选择器和声明对象，以及其他一些符合css语法的对象。</p>
 <blockquote>
 <p>用于创建语法分析器的Flex及创建解析器的Bison。Flex的输入是一个包含了符号定义的正则表达式，Bison的输入是用BNF格式表示的语法规则。</p>
 </blockquote>
@@ -547,11 +547,11 @@
                     
                         <a href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/"># 浏览器</a>
                     
-                        <a href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8%E5%8E%9F%E7%90%86/"># 浏览器原理</a>
+                        <a href="/tags/Web%E6%B5%8F%E8%A7%88%E5%99%A8/"># Web浏览器</a>
                     
-                        <a href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8%E8%A7%A3%E6%9E%90/"># 浏览器解析</a>
+                        <a href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8%E5%86%85%E9%83%A8%E5%B7%A5%E4%BD%9C/"># 浏览器内部工作</a>
                     
-                        <a href="/tags/%E8%BE%93%E5%85%A5URL%E5%88%B0%E9%A1%B5%E9%9D%A2%E5%91%88%E7%8E%B0/"># 输入URL到页面呈现</a>
+                        <a href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8%E5%86%85%E9%83%A8%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86-%E8%A7%A3%E6%9E%90%E6%96%B9%E5%90%91/"># 浏览器内部工作原理-解析方向</a>
                     
                         
                 </span>
@@ -564,8 +564,10 @@
         </section>
         <section class="post-nav">
             
+                <a class="prev" rel="prev" href="/2022/09/06/%E5%9B%9B.%20%E6%B5%8F%E8%A7%88%E5%99%A8%E5%86%85%E9%83%A8%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86-%E5%86%85%E5%AD%98%E6%96%B9%E5%90%91/">四. 浏览器内部工作原理-内存方向</a>
             
-            <a class="next" rel="next" href="/2022/09/06/%E4%B8%80.%20%E8%BE%93%E5%85%A5URL%E5%88%B0%E5%91%88%E7%8E%B0%E9%A1%B5%E9%9D%A2/">一. 输入URL到呈现页面</a>
+            
+            <a class="next" rel="next" href="/2022/09/06/%E4%BA%8C.%20Web%E6%80%A7%E8%83%BD%E4%B8%8E%E5%AE%89%E5%85%A8/">二. Web性能与安全</a>
             
         </section>
 
