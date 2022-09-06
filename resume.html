@@ -141,7 +141,7 @@
 <li>姓名：魏明锋</li>
 <li>性别：男</li>
 <li>生日：2001-06-18</li>
-<li>邮箱：<a href="mailto:&#108;&#117;&#99;&#x6b;&#x79;&#x77;&#x6f;&#x72;&#100;&#115;&#64;&#102;&#x6f;&#120;&#109;&#x61;&#105;&#108;&#x2e;&#x63;&#111;&#x6d;">&#108;&#117;&#99;&#x6b;&#x79;&#x77;&#x6f;&#x72;&#100;&#115;&#64;&#102;&#x6f;&#120;&#109;&#x61;&#105;&#108;&#x2e;&#x63;&#111;&#x6d;</a></li>
+<li>邮箱：<a href="mailto:&#108;&#117;&#x63;&#x6b;&#121;&#x77;&#x6f;&#x72;&#x64;&#x73;&#64;&#102;&#111;&#x78;&#x6d;&#x61;&#105;&#x6c;&#x2e;&#99;&#x6f;&#109;">&#108;&#117;&#x63;&#x6b;&#121;&#x77;&#x6f;&#x72;&#x64;&#x73;&#64;&#102;&#111;&#x78;&#x6d;&#x61;&#105;&#x6c;&#x2e;&#99;&#x6f;&#109;</a></li>
 </ul>
 <h2 id="项目"><a href="#项目" class="headerlink" title="项目"></a>项目</h2><ul>
 <li><a target="_blank" rel="noopener" href="https://github.com/azin-cn/vue-source-note">azin-cn&#x2F;vue-source-note: the note of vue，源码笔记 (github.com)</a></li>
@@ -152,7 +152,20 @@
 <li>……</li>
 </ul>
 <p>有些未组织好结构，当完成后就尘封在文件夹中，如果有时间会重新整理结构，包括项目的踩坑、常用的配置等。除Notes类型外的项目没有上线运营过，一些项目相似度也很高，所以总结归纳一些不同点即可。</p>
-<h3 id="IMuisc"><a href="#IMuisc" class="headerlink" title="IMuisc"></a>IMuisc</h3><h3 id="wet-translate"><a href="#wet-translate" class="headerlink" title="wet-translate"></a>wet-translate</h3><h2 id="技术"><a href="#技术" class="headerlink" title="技术"></a>技术</h2><ul>
+<h3 id="IMusic"><a href="#IMusic" class="headerlink" title="IMusic"></a>IMusic</h3><p>介绍：使用 Vue2 构建H5音乐播放器，使用 Vue3+Composition API 重构，使用 React 构建 PC Web 音乐播放器，共三个版本</p>
+<p>成果：完整实现H5音乐App，Vue2版本手写 CSS 提升体验，通过 <strong>STAR法则</strong> 分析项目、组件，<strong>拼音字母导航</strong>，通过 Vuex 联动播放时长等数据，使用节流、事件代理对状态更新频率进行限制，通过自定义指令 v-loading 优化用户体验，<strong>部署上线</strong></p>
+<p>职责：负责页面搭建，组件的设计封装，性能优化等前端工作<br>技术：Vue，React，Redux，hook，swiper，Git，自定义指令，Webpack，Ant-Design等</p>
+<p>难点：歌词滚动与进度条<strong>拖拽</strong>实现，分析并定义组件数据关系，<strong>自定义指令</strong>，控制<strong>并发</strong>加载图片</p>
+<h3 id="TalkToTime"><a href="#TalkToTime" class="headerlink" title="TalkToTime"></a>TalkToTime</h3><p>介绍：背景主题为”小程序助力乡村振兴”，通过合作分析，小组成员设定项目为以 “乡村风景分享，乡村建设建议” 为基础的社区交流平台，并使用 Uniapp 重构</p>
+<p>成果：完整实现 TalkToTime 原生小程序，包括用户自定义<strong>头像裁剪</strong>，当前区域分享者的<strong>头衔设置</strong>等功能，通过<strong>分包</strong>、构建多个 page 降低用户的加载时间，创新性的使用<strong>无感登录</strong>，仅需打开小程序便可关联用户，优化体验</p>
+<p>职责：根据UI构建页面，构想<strong>交互动画</strong>优化用户体验，性能优化如图片懒加载，Git版本管理等</p>
+<p>技术：原生小程序，分包，Git，Webpack，Vite，<strong>requestAnimationFrame</strong>等<br>难点：<strong>组件设计</strong>，页面交互，性能优化，<strong>setData时机</strong>，分析定义组件数据，长列表加载等</p>
+<h3 id="iGreen"><a href="#iGreen" class="headerlink" title="iGreen"></a>iGreen</h3><p>介绍：为了提升回收站回收资源效率、结合当前文明生态的目的，设计了 iGreen 小程序。iGreen 具有无感登录、用户、员工、管理员、超级管理等角色功能，通过分包优化用户体验</p>
+<p>成果：iGreen 小程序为<strong>简约风格</strong>，但用户需要的功能并不减少，员工的<strong>工作台</strong>功能强大，管理员管理界面较为全面。同时 iGreen 还具有 PC 后台管理页面，目前正以<strong>真实场景测试</strong></p>
+<p>职责：负责小程序前端开发，与后台<strong>同步开发</strong>，封装定义组件，封装工具类</p>
+<p>技术：uniapp，小程序，vue3，vuex</p>
+<p>难点：<strong>项目设计</strong>，组件设计，数据流向和UI交互，业务流程设计</p>
+<h2 id="技术"><a href="#技术" class="headerlink" title="技术"></a>技术</h2><ul>
 <li><p>深入理解JavaScript、ES6+、原型，熟悉CSS，了解浏览器原理</p>
 </li>
 <li><p>熟练Vue、React，能快速切换不同技术栈</p>
@@ -167,7 +180,12 @@
 <h2 id="技能证书"><a href="#技能证书" class="headerlink" title="技能证书"></a>技能证书</h2><ul>
 <li>CET-4，华为HCIA认证，蓝桥杯Java省赛一等奖，大唐杯省赛二等奖，华为ICT大赛省赛三等奖，计算机三级 (网络) 等</li>
 </ul>
-<h2 id="自我评价"><a href="#自我评价" class="headerlink" title="自我评价"></a>自我评价</h2><p>较强的沟通协调能力，熟练Nodejs、uniapp、小程序；熟练Ant-Design、Vant等组件库，希望可以获得一份合适的web工作。</p>
+<h2 id="个人简介"><a href="#个人简介" class="headerlink" title="个人简介"></a>个人简介</h2><ul>
+<li>热爱技术提升、探究实现原理、分析原因，实现 Mini-Vue、Redux</li>
+<li>热爱了解开源技术发展，跟踪 Git Issue 分析新技术产生原因和背景，努力参与社区讨论</li>
+<li>较强沟通协调能力、与同学共同参与微信小程序大赛、探究背景和项目设计</li>
+<li>较强的分析能力，系统分析项目结构、使用 STAR法则 分析项目、封装组件</li>
+</ul>
 
         </section>
     </article>
