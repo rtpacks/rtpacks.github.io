@@ -137,27 +137,6 @@
 
   
   <url>
-    <loc>https://azin-cn.github.io/tags/Chic/</loc>
-    <lastmod>2022-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://azin-cn.github.io/tags/Hexo/</loc>
-    <lastmod>2022-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://azin-cn.github.io/tags/iconfont/</loc>
-    <lastmod>2022-09-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://azin-cn.github.io/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/</loc>
     <lastmod>2022-09-08</lastmod>
     <changefreq>weekly</changefreq>
@@ -180,6 +159,27 @@
   
   <url>
     <loc>https://azin-cn.github.io/tags/%E6%B5%8F%E8%A7%88%E5%99%A8%E5%86%85%E9%83%A8%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86-%E8%A7%A3%E6%9E%90%E6%96%B9%E5%90%91/</loc>
+    <lastmod>2022-09-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://azin-cn.github.io/tags/Chic/</loc>
+    <lastmod>2022-09-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://azin-cn.github.io/tags/Hexo/</loc>
+    <lastmod>2022-09-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://azin-cn.github.io/tags/iconfont/</loc>
     <lastmod>2022-09-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>

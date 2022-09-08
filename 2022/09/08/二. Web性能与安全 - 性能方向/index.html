@@ -442,6 +442,8 @@
 <p>需要分清楚<strong>请求头</strong>中的 no-cache 和<strong>响应头</strong>中的 no-cache，两者的作用是不相同的。</p>
 <p><strong>请求头</strong>的 no-cache 表示浏览器不想读缓存，并不是说没有缓存。一般在浏览器按 Ctrl+F5 强制刷新时，请求头里就有这个no-cache，也就是跳过强缓存和协商缓存阶段，直接请求服务器。（如果直接按F5的话，请求头是 max-age&#x3D;0，只跳过强缓存，但进行协商缓存）。</p>
 <p><strong>响应头</strong>的 no-cache 表示跳过强缓存检查（会进入强缓存阶段，但不检查时间，使强缓存失效并接入协商缓存，max-age&#x3D;0 检查时间，使强缓存失效，再进入协商缓存）</p>
+<h2 id="个人总结"><a href="#个人总结" class="headerlink" title="个人总结"></a>个人总结</h2><p>缓存能够有效的减少网络请求数量或降低网络传送的数据量，主要用于页面的性能优化、降低数据流量成本等。</p>
+<p>认识学习缓存需要从缓存的位置、缓存的策略和实际场景应用缓存策略三个方面入手。了解缓存位置可以知晓浏览器将缓存放在哪，各种不同的缓存位置有什么优势；了解基础缓存策略（强缓存、协商缓存可以看成是本地判断和远程判断）可以知晓缓存优先级需要控制在哪，是强缓存还是协商缓存。基础缓存策略配合缓存位置，就可以组合出针对不同场景地各种复杂的缓存方式。</p>
 <h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ul>
 <li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/54cc04190252">深入理解浏览器的缓存机制 - 简书 (jianshu.com)</a></li>
 <li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903747357769742?utm_source=gold_browser_extension">一文读懂前端缓存 - 掘金 (juejin.cn)</a></li>
