@@ -4,6 +4,35 @@
   
     
     <entry>
+      <title>3. 无重复字符的最长子串 | 字符串搜索 | Map | 哈希</title>
+      <link href="/2023/02/19/3-%E6%97%A0%E9%87%8D%E5%A4%8D%E5%AD%97%E7%AC%A6%E7%9A%84%E6%9C%80%E9%95%BF%E5%AD%90%E4%B8%B2-%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%90%9C%E7%B4%A2-Map-%E5%93%88%E5%B8%8C/"/>
+      <url>/2023/02/19/3-%E6%97%A0%E9%87%8D%E5%A4%8D%E5%AD%97%E7%AC%A6%E7%9A%84%E6%9C%80%E9%95%BF%E5%AD%90%E4%B8%B2-%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%90%9C%E7%B4%A2-Map-%E5%93%88%E5%B8%8C/</url>
+      
+        <content type="html"><![CDATA[<h3 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h3><p><a href="https://leetcode.cn/problems/longest-substring-without-repeating-characters/description/">3. 无重复字符的最长子串</a></p><h3 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h3><ol><li>暴力循环<br> 定义两个 <code>for</code>，第一个 <code>for</code> 顺序遍历，第二个 <code>for</code> 每次从头开始顺序检查，这样即可拿到最长长度，时间复杂度为 <code>O(n^2)</code>。</li><li>map 结构<br> 定义一个 <code>while</code>，利用一个 <code>map</code> 记录遍历到的字符，利用内部 <code>while</code> 进行检查是否有重复字符</li></ol><h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">lengthOfLongestSubstring</span>(<span class="params">s: <span class="built_in">string</span></span>): <span class="built_in">number</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> l = <span class="number">0</span>, r = <span class="number">0</span>, res = <span class="number">0</span>, len = s.<span class="property">length</span>;</span><br><span class="line">    <span class="keyword">let</span> map = <span class="keyword">new</span> <span class="title class_">Map</span>&lt;<span class="built_in">string</span>, <span class="built_in">number</span>&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (r &lt; len) &#123;</span><br><span class="line">        <span class="keyword">let</span> char = s[r++], count = (map.<span class="title function_">get</span>(char) || <span class="number">0</span>) + <span class="number">1</span>;</span><br><span class="line">        map.<span class="title function_">set</span>(char, count);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (map.<span class="title function_">get</span>(char) &gt; <span class="number">1</span>) &#123;</span><br><span class="line">            <span class="keyword">const</span> left = s[l++]</span><br><span class="line">            map.<span class="title function_">set</span>(left, map.<span class="title function_">get</span>(left) - <span class="number">1</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        res = <span class="title class_">Math</span>.<span class="title function_">max</span>(res, r - l); <span class="comment">// 此时的r属于后一位，不需要+1</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line"></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure><h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><ul><li><a href="https://blog.csdn.net/qq_45759413/article/details/129108885">3. 无重复字符的最长子串 | 字符串搜索 | Map | 哈希_一抹阳光&amp;的博客-CSDN博客</a></li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> 算法刷题记录 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 算法 </tag>
+            
+            <tag> leetcode </tag>
+            
+            <tag> 力扣 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>2. 两数相加 | 链表 | 链表长度 | 等价链表长度</title>
       <link href="/2023/02/13/2-%E4%B8%A4%E6%95%B0%E7%9B%B8%E5%8A%A0-%E9%93%BE%E8%A1%A8-%E9%93%BE%E8%A1%A8%E9%95%BF%E5%BA%A6-%E7%AD%89%E4%BB%B7%E9%93%BE%E8%A1%A8%E9%95%BF%E5%BA%A6/"/>
       <url>/2023/02/13/2-%E4%B8%A4%E6%95%B0%E7%9B%B8%E5%8A%A0-%E9%93%BE%E8%A1%A8-%E9%93%BE%E8%A1%A8%E9%95%BF%E5%BA%A6-%E7%AD%89%E4%BB%B7%E9%93%BE%E8%A1%A8%E9%95%BF%E5%BA%A6/</url>
