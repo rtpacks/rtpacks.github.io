@@ -4,6 +4,33 @@
   
     
     <entry>
+      <title>TypeError: opts.node.rangeBy is not a function</title>
+      <link href="/2023/02/27/TypeError-opts-node-rangeBy-is-not-a-function/"/>
+      <url>/2023/02/27/TypeError-opts-node-rangeBy-is-not-a-function/</url>
+      
+        <content type="html"><![CDATA[<p>今天遇到 <code>TypeError: opts.node.rangeBy is not a function</code> 的问题，网上寻找一番后发现这个解决方案，但是并不适合，因为我的版本已经高于问题版本。</p><h4 id="postcss-版本过高"><a href="#postcss-版本过高" class="headerlink" title="postcss 版本过高"></a>postcss 版本过高</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Fix &quot;TypeError: opts.node.rangeBy is not a function&quot; with PostCSS 8.4.4</span><br></pre></td></tr></table></figure><ul><li><a href="https://github.com/stylelint/stylelint/issues/5766">Fix “TypeError: opts.node.rangeBy is not a function” with PostCSS 8.4.4 · Issue #5766 · stylelint&#x2F;stylelint (github.com)</a></li></ul><p>根据这个插件往回找，尝试了将空的 <code>&lt;style lang=&quot;less&quot;&gt;</code> 删除，问题解决，这或许是边界判断问题。</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;script setup lang=&quot;ts&quot;&gt;&lt;/script&gt;</span><br><span class="line"></span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;Share&lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">// del</span><br><span class="line">&lt;style lang=&quot;less&quot;&gt;&lt;/style&gt;</span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+      <categories>
+          
+          <category> Stylelint </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> postcss </tag>
+            
+            <tag> stylelint </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>3. 无重复字符的最长子串 | 字符串搜索 | Map | 哈希</title>
       <link href="/2023/02/19/3-%E6%97%A0%E9%87%8D%E5%A4%8D%E5%AD%97%E7%AC%A6%E7%9A%84%E6%9C%80%E9%95%BF%E5%AD%90%E4%B8%B2-%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%90%9C%E7%B4%A2-Map-%E5%93%88%E5%B8%8C/"/>
       <url>/2023/02/19/3-%E6%97%A0%E9%87%8D%E5%A4%8D%E5%AD%97%E7%AC%A6%E7%9A%84%E6%9C%80%E9%95%BF%E5%AD%90%E4%B8%B2-%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%90%9C%E7%B4%A2-Map-%E5%93%88%E5%B8%8C/</url>

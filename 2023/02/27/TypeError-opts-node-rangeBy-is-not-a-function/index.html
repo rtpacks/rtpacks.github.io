@@ -17,7 +17,7 @@
     <meta name="keywords" content="blog luckydog Az">
 
 
-<title>3. 无重复字符的最长子串 | 字符串搜索 | Map | 哈希 | Az&#39;s Blog</title>
+<title>TypeError: opts.node.rangeBy is not a function | Az&#39;s Blog</title>
 
 
 
@@ -203,7 +203,7 @@
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title">3. 无重复字符的最长子串 | 字符串搜索 | Map | 哈希</h1>
+            <h1 class="post-title">TypeError: opts.node.rangeBy is not a function</h1>
             
                 <div class="post-meta">
                     
@@ -212,14 +212,14 @@
 
                     
                         <span class="post-time">
-                        Date: <a href="#">2023.02.19&nbsp;&nbsp;11:36:48</a>
+                        Date: <a href="#">2023.02.27&nbsp;&nbsp;23:42:25</a>
                         </span>
                     
                     
                         <span class="post-category">
                     Category:
                             
-                                <a href="/categories/%E7%AE%97%E6%B3%95%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95/">算法刷题记录</a>
+                                <a href="/categories/Stylelint/">Stylelint</a>
                             
                         </span>
                     
@@ -228,19 +228,15 @@
         </header>
 
         <div class="post-content">
-            <h3 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h3><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/longest-substring-without-repeating-characters/description/">3. 无重复字符的最长子串
-</a></p>
-<h3 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h3><ol>
-<li>暴力循环<br> 定义两个 <code>for</code>，第一个 <code>for</code> 顺序遍历，第二个 <code>for</code> 每次从头开始顺序检查，这样即可拿到最长长度，时间复杂度为 <code>O(n^2)</code>。</li>
-<li>map 结构<br> 定义一个 <code>while</code>，利用一个 <code>map</code> 记录遍历到的字符，利用内部 <code>while</code> 进行检查是否有重复字符</li>
-</ol>
-<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">lengthOfLongestSubstring</span>(<span class="params">s: <span class="built_in">string</span></span>): <span class="built_in">number</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> l = <span class="number">0</span>, r = <span class="number">0</span>, res = <span class="number">0</span>, len = s.<span class="property">length</span>;</span><br><span class="line">    <span class="keyword">let</span> map = <span class="keyword">new</span> <span class="title class_">Map</span>&lt;<span class="built_in">string</span>, <span class="built_in">number</span>&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (r &lt; len) &#123;</span><br><span class="line">        <span class="keyword">let</span> char = s[r++], count = (map.<span class="title function_">get</span>(char) || <span class="number">0</span>) + <span class="number">1</span>;</span><br><span class="line">        map.<span class="title function_">set</span>(char, count);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (map.<span class="title function_">get</span>(char) &gt; <span class="number">1</span>) &#123;</span><br><span class="line">            <span class="keyword">const</span> left = s[l++]</span><br><span class="line">            map.<span class="title function_">set</span>(left, map.<span class="title function_">get</span>(left) - <span class="number">1</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        res = <span class="title class_">Math</span>.<span class="title function_">max</span>(res, r - l); <span class="comment">// 此时的r属于后一位，不需要+1</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line"></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+            <p>今天遇到 <code>TypeError: opts.node.rangeBy is not a function</code> 的问题，网上寻找一番后发现这个解决方案，但是并不适合，因为我的版本已经高于问题版本。</p>
+<h4 id="postcss-版本过高"><a href="#postcss-版本过高" class="headerlink" title="postcss 版本过高"></a>postcss 版本过高</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Fix &quot;TypeError: opts.node.rangeBy is not a function&quot; with PostCSS 8.4.4</span><br></pre></td></tr></table></figure>
 
-
-
-<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><ul>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_45759413/article/details/129108885">3. 无重复字符的最长子串 | 字符串搜索 | Map | 哈希_一抹阳光&amp;的博客-CSDN博客</a></li>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/stylelint/stylelint/issues/5766">Fix “TypeError: opts.node.rangeBy is not a function” with PostCSS 8.4.4 · Issue #5766 · stylelint&#x2F;stylelint (github.com)</a></li>
 </ul>
+<p>根据这个插件往回找，尝试了将空的 <code>&lt;style lang=&quot;less&quot;&gt;</code> 删除，问题解决，这或许是边界判断问题。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;script setup lang=&quot;ts&quot;&gt;&lt;/script&gt;</span><br><span class="line"></span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;Share&lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">// del</span><br><span class="line">&lt;style lang=&quot;less&quot;&gt;&lt;/style&gt;</span><br></pre></td></tr></table></figure>
+
 
         </div>
 
@@ -264,11 +260,9 @@
                 <span class="tag">
                     
                     
-                        <a href="/tags/%E7%AE%97%E6%B3%95/"># 算法</a>
+                        <a href="/tags/postcss/"># postcss</a>
                     
-                        <a href="/tags/leetcode/"># leetcode</a>
-                    
-                        <a href="/tags/%E5%8A%9B%E6%89%A3/"># 力扣</a>
+                        <a href="/tags/stylelint/"># stylelint</a>
                     
                         
                 </span>
@@ -281,10 +275,8 @@
         </section>
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="/2023/02/27/TypeError-opts-node-rangeBy-is-not-a-function/">TypeError: opts.node.rangeBy is not a function</a>
             
-            
-            <a class="next" rel="next" href="/2023/02/13/2-%E4%B8%A4%E6%95%B0%E7%9B%B8%E5%8A%A0-%E9%93%BE%E8%A1%A8-%E9%93%BE%E8%A1%A8%E9%95%BF%E5%BA%A6-%E7%AD%89%E4%BB%B7%E9%93%BE%E8%A1%A8%E9%95%BF%E5%BA%A6/">2. 两数相加 | 链表 | 链表长度 | 等价链表长度</a>
+            <a class="next" rel="next" href="/2023/02/19/3-%E6%97%A0%E9%87%8D%E5%A4%8D%E5%AD%97%E7%AC%A6%E7%9A%84%E6%9C%80%E9%95%BF%E5%AD%90%E4%B8%B2-%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%90%9C%E7%B4%A2-Map-%E5%93%88%E5%B8%8C/">3. 无重复字符的最长子串 | 字符串搜索 | Map | 哈希</a>
             
         </section>
 
