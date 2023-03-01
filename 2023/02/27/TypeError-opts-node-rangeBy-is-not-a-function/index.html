@@ -234,13 +234,19 @@
 <ul>
 <li><a target="_blank" rel="noopener" href="https://github.com/stylelint/stylelint/issues/5766">Fix “TypeError: opts.node.rangeBy is not a function” with PostCSS 8.4.4 · Issue #5766 · stylelint&#x2F;stylelint (github.com)</a></li>
 </ul>
-<p>根据这个插件往回找，尝试了将空的 <code>&lt;style lang=&quot;less&quot;&gt;</code> 删除，问题解决，这或许是边界判断问题。</p>
+<h4 id="删除空的style"><a href="#删除空的style" class="headerlink" title="删除空的style"></a>删除空的style</h4><p>根据这个插件往回找，尝试了将空的 <code>&lt;style lang=&quot;less&quot;&gt;</code> 删除，问题解决，这或许是边界判断问题。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;script setup lang=&quot;ts&quot;&gt;&lt;/script&gt;</span><br><span class="line"></span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;Share&lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">// delete</span><br><span class="line">&lt;style lang=&quot;less&quot;&gt;&lt;/style&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="设置stylelint-–custom-syntax-postcss"><a href="#设置stylelint-–custom-syntax-postcss" class="headerlink" title="设置stylelint –custom-syntax postcss"></a>设置stylelint –custom-syntax postcss</h4><p>在使用stylelint时可以选择单独设置less，scss，也可以选择直接用postcss</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;*.&#123;scss,sass&#125;&quot;</span><span class="string">&quot;stylelint --fix --custom-syntax postcss-scss&quot;</span><span class="punctuation">,</span></span><br><span class="line"><span class="string">&quot;*.less&quot;</span><span class="string">&quot;stylelint --fix --custom-syntax postcss-less&quot;</span><span class="punctuation">,</span></span><br><span class="line"></span><br><span class="line">或者</span><br><span class="line"></span><br><span class="line"><span class="string">&quot;*.&#123;scss,sass,less,css&#125;&quot;</span><span class="string">&quot;stylelint --fix --custom-syntax postcss&quot;</span><span class="punctuation">,</span></span><br></pre></td></tr></table></figure>
 
 
 
 <h4 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h4><ul>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_45759413/article/details/129261144">解决 TypeError: opts.node.rangeBy is not a function_一抹阳光&amp;-CSDN博客</a></li>
+<li><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_45759413/article/details/129261144">Fix TypeError: opts.node.rangeBy is not a function_一抹阳光&amp;-CSDN博客</a></p>
+</li>
+<li><p><a href="https://azin-cn.github.io/2023/02/27/TypeError-opts-node-rangeBy-is-not-a-function/">TypeError: opts.node.rangeBy is not a function | Az’s Blog (azin-cn.github.io)</a></p>
+</li>
 </ul>
 
         </div>
