@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Az">
+
+
+    <meta name="subtitle" content="Welcome!">
+
+
+
+    <meta name="keywords" content="blog luckydog Az">
+
+
+<title>前端：记录一次monorepo的改造过程 | Az&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+<link rel="stylesheet" href="/fonts/custom/iconfont.css">
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">I&#39;m Az</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">I&#39;m Az</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">前端：记录一次monorepo的改造过程</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Az</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">2023.04.30&nbsp;&nbsp;14:59:13</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/monorepo/">monorepo</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="itravel-web"><a href="#itravel-web" class="headerlink" title="itravel-web"></a>itravel-web</h2><p>使用 monorepo 管理项目</p>
+<ul>
+<li>admin</li>
+<li>web</li>
+</ul>
+<h3 id="amin"><a href="#amin" class="headerlink" title="amin"></a>amin</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pnpm admin:dev</span><br><span class="line"></span><br><span class="line">pnpm admin:build</span><br></pre></td></tr></table></figure>
+
+<h3 id="web"><a href="#web" class="headerlink" title="web"></a>web</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">pnpm web:dev</span><br><span class="line"></span><br><span class="line">pnpm web:build</span><br><span class="line"></span><br><span class="line">pnpm web:build:dev</span><br></pre></td></tr></table></figure>
+
+<h2 id="pnpm-monorepo-改造原有项目记录"><a href="#pnpm-monorepo-改造原有项目记录" class="headerlink" title="pnpm monorepo 改造原有项目记录"></a>pnpm monorepo 改造原有项目记录</h2><p>解决方案</p>
+<ol>
+<li>建立 monorepo 项目文件夹</li>
+<li>pnpm init 初始化项目</li>
+<li>建立 packages 文件夹</li>
+<li>建立 pnpm-workspace.yaml 文件，写入以下内容</li>
+</ol>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">packages:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">&#x27;packages/**&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>建立 .npmrc 文件，写入以下内容</li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">shamefully-hoist=<span class="literal">true</span></span><br><span class="line">strict-peer-dependencies=<span class="literal">false</span></span><br><span class="line">ignore-workspace-root-check=<span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<ol start="6">
+<li><p>将原有项目复制到 packages，删除原有项目的以下内容<br>a. .git<br>b. .husky<br>c. commitlint.config.js<br>d. .gitignore</p>
+</li>
+<li><p>更改原有项目的 package.json，这一部分的功能是将原有的 git 提交策略删除，最后通过配置 monorepo 仓库的提交策略检查代码规范<br>a. 重命名项目名称 @itravel&#x2F;web<br>b. 删除 prepare script<br>c. 删除 lint-staged script<br>d. 删除 lint-staged 字段属性<br>e. 删除依赖 <code>@commitlint/cli</code>, <code>@commitlint/config-conventional</code>, <code>husky</code>, <code>lint-staged</code></p>
+</li>
+<li><p>git init monorepo 项目，将原有项目的 .gitignore 文件复制到根目录下</p>
+</li>
+<li><p>(可选择)增加 git 提交策略，commitlint 和 lint-staged<br>a. 在 monorepo 项目路径下安装 commitlint 和 lint-staged，-w 表示将依赖写入到根目录的 package.json 中</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pnpm add -D -w @commitlint/cli @commitlint/config-conventional husky lint-staged</span><br></pre></td></tr></table></figure>
+
+<p>b. 初始化 husky，出现 .husky 文件夹</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npx husky install</span><br></pre></td></tr></table></figure>
+
+<p>c. 更新 monorepo 项目的 package.json</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;scripts&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;prepare&quot;</span><span class="punctuation">:</span> <span class="string">&quot;husky insall&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>d. 将 commitlint 集成到 husky，这一部分是检查 commit 规范。配置 commitlint，根目录创建 commitlint-config.ts，写入以下内容</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = &#123;</span><br><span class="line">  <span class="attr">extends</span>: [<span class="string">&#x27;@commitlint/config-conventional&#x27;</span>],</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>e. husky 回调 commitlint</p>
+<p>shell 形式创建</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npx husky add .husky/commit-msg &quot;npx --no-install commitlint -e $HUSKY_GIT_PARAMS&quot;</span><br></pre></td></tr></table></figure>
+
+<p>手动在 .husky 文件夹创建 <code>commit-msg</code>，写入以下内容</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/sh</span></span><br><span class="line">. &quot;$(dirname &quot;$0&quot;)/_/husky.sh&quot;</span><br><span class="line">npx --no-install commitlint -e $HUSKY_GIT_PARAMS</span><br></pre></td></tr></table></figure>
+
+<p>f. 将 lint-staged 集成到 husky，这一部分是检查 git staged 缓存区代码的规范，配置 lint-staged，更新根目录的 package.json ，可根据自己的需求，增加写入以下内容</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;scripts&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;lint-staged&quot;</span><span class="punctuation">:</span> <span class="string">&quot;npx lint-staged&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;lint-staged&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;*.&#123;js,ts,jsx,tsx&#125;&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="string">&quot;prettier --write&quot;</span><span class="punctuation">,</span> <span class="string">&quot;eslint --fix&quot;</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;*.vue&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="string">&quot;stylelint --fix&quot;</span><span class="punctuation">,</span> <span class="string">&quot;prettier --write&quot;</span><span class="punctuation">,</span> <span class="string">&quot;eslint --fix&quot;</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;*.&#123;scss,sass,less,css&#125;&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">      <span class="string">&quot;stylelint --fix --custom-syntax postcss&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="string">&quot;prettier --write&quot;</span></span><br><span class="line">    <span class="punctuation">]</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>g. husky 回调 lint-staged<br>shell 形式创建</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npx husky add .husky/pre-commit &quot;npm run lint-staged&quot;</span><br></pre></td></tr></table></figure>
+
+<p>手动形式创建，在.husky 文件夹中创建 pre-commit，写入以下内容</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/sh</span></span><br><span class="line">. &quot;$(dirname &quot;$0&quot;)/_/husky.sh&quot;</span><br><span class="line">npm run lint-staged</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>更新根目录 package.json，加入快捷启动命令，便能在根目录下直接启动某一个项目，–filter | -F 表示对某一个项目生效</p>
+</li>
+</ol>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;scripts&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;admin:dev&quot;</span><span class="punctuation">:</span> <span class="string">&quot;pnpm --filter @itravel/admin dev&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;admin:build&quot;</span><span class="punctuation">:</span> <span class="string">&quot;pnpm --filter @itravel/admin build&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;admin:build:dev&quot;</span><span class="punctuation">:</span> <span class="string">&quot;pnpm --filter @itravel/admin build:dev&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;web:dev&quot;</span><span class="punctuation">:</span> <span class="string">&quot;pnpm --filter @itravel/web dev&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;web:build&quot;</span><span class="punctuation">:</span> <span class="string">&quot;pnpm --filter @itravel/web build&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;web:build:dev&quot;</span><span class="punctuation">:</span> <span class="string">&quot;pnpm --filter @itravel/web build:dev&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>现在一个带有 git 检测的 monorepo 项目就搭建完成了，更多的需求定义可以查看以下文章</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/7227352009800138789">https://juejin.cn/post/7227352009800138789</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/7071992448511279141">https://juejin.cn/post/7071992448511279141</a></li>
+<li><a target="_blank" rel="noopener" href="https://lyh543.github.io/posts/2022-04-18-migrate-npm-multirepo-to-pnpm-monorepo.html">https://lyh543.github.io/posts/2022-04-18-migrate-npm-multirepo-to-pnpm-monorepo.html</a></li>
+</ul>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Az</span>
+                    </p>
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/monorepo/"># monorepo</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2023/04/21/git-pull-git-push-%E6%AF%8F%E6%AC%A1%E9%9C%80%E8%A6%81%E8%B4%A6%E5%8F%B7%E5%AF%86%E7%A0%81%E7%9A%84%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95/">git pull/git push 每次需要账号密码的解决办法</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+  <div class="copyright">
+    <span>© Az | Powered by Hexo & Chic</span>
+  </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
