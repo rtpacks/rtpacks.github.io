@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>前端：记录一次 Vite 引入 Vant 的过程，生产环境不渲染 Vant 组件</title>
+      <link href="/2023/05/05/%E5%89%8D%E7%AB%AF%EF%BC%9A%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1Vite-%E5%BC%95%E5%85%A5-Vant%E7%9A%84%E8%BF%87%E7%A8%8B/"/>
+      <url>/2023/05/05/%E5%89%8D%E7%AB%AF%EF%BC%9A%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1Vite-%E5%BC%95%E5%85%A5-Vant%E7%9A%84%E8%BF%87%E7%A8%8B/</url>
+      
+        <content type="html"><![CDATA[<h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>经过前一个步骤引入 Vant 后（<a href="https://azin-cn.github.io/2023/05/03/Bugfix-unplugin-vue-component-%E6%89%BE%E4%B8%8D%E5%88%B0-Vant-%E7%BB%84%E4%BB%B6%E7%9A%84%E9%97%AE%E9%A2%98/">Vant 组件的问题 | Az’s Blog (azin-cn.github.io)</a>），在开发环境下使用是正常的，但是当我在 <code>production</code> 环境打包时，又出现了一个新的问题，<code>vue</code> 并没有渲染 <code>vant</code> 组件标签，而是以 <code>van-tabs</code> 的形式出现。</p><h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><p>经过一番排查了对比 <code>Arco Design</code> 的引入方式发现，在 <code>Arco Design</code> 是将所有的组件导出为一个 <code>Vue</code> 插件，最后 <code>app.use(ArcoVue)</code> 实现全局注册组件，通过自定义 <code>unplugin-vue-component</code> <code>Resolver</code>的形式按需引入组件。而在 <code>Vant</code> 的官方文档中，我并未找到有关于系统的配置，文档只是简写了 <code>app.use(Vant)</code> 或使用 <code>unplugin-vue-component</code> 的 <code>VantResolver()</code> 的形式 。</p><ul><li><a href="https://vant-contrib.gitee.io/vant/#/zh-CN/quickstart">快速上手 - Vant 4 (gitee.io)</a></li></ul><p>最终不得已，我按照 <code>Arco Design</code> 的形式在 <code>main.ts</code> 中引入 <code>Vant</code>，我不知道我的做法正不正确，但是这着实解决了我目前的问题。希望有同学可以回答。</p><figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// main.ts</span></span><br><span class="line"><span class="keyword">import</span> <span class="title class_">Vant</span> <span class="keyword">from</span> <span class="string">&quot;vant&quot;</span>;</span><br><span class="line"></span><br><span class="line">app.<span class="title function_">use</span>(<span class="title class_">Vant</span>);</span><br></pre></td></tr></table></figure><p>在 <code>vite.config.ts</code> 中</p><figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="title class_">Components</span> <span class="keyword">from</span> <span class="string">&quot;unplugin-vue-components/vite&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">VantResolver</span> &#125; <span class="keyword">from</span> <span class="string">&quot;unplugin-vue-components/resolvers&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="title function_">defineConfig</span>(&#123;</span><br><span class="line">  <span class="attr">plugins</span>: [</span><br><span class="line">    <span class="title function_">vue</span>(),</span><br><span class="line">    <span class="title function_">vueJsx</span>(),</span><br><span class="line">    <span class="title function_">svgLoader</span>(&#123; <span class="attr">svgoConfig</span>: &#123;&#125; &#125;),</span><br><span class="line">    <span class="title function_">configArcoStyleImportPlugin</span>(),</span><br><span class="line">    <span class="title class_">Components</span>(&#123;</span><br><span class="line">      <span class="attr">resolvers</span>: [<span class="title class_">VantResolver</span>()],</span><br><span class="line">    &#125;),</span><br><span class="line">  ],</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure><h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><ul><li><a href="https://juejin.cn/post/7229660119658709049/">前端：记录一次 Vite 引入 Vant 的过程，生产环境不渲染 Vant 组件 - 掘金 (juejin.cn)</a></li><li><a href="https://blog.csdn.net/qq_45759413/article/details/130515966">前端：记录一次 Vite 引入 Vant 的过程，生产环境不渲染 Vant 组件_一抹阳光&amp;的博客-CSDN博客</a></li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> vite </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> vite, vant </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Bugfix: unplugin-vue-component 找不到 Vant 组件的问题</title>
       <link href="/2023/05/03/Bugfix-unplugin-vue-component-%E6%89%BE%E4%B8%8D%E5%88%B0-Vant-%E7%BB%84%E4%BB%B6%E7%9A%84%E9%97%AE%E9%A2%98/"/>
       <url>/2023/05/03/Bugfix-unplugin-vue-component-%E6%89%BE%E4%B8%8D%E5%88%B0-Vant-%E7%BB%84%E4%BB%B6%E7%9A%84%E9%97%AE%E9%A2%98/</url>
