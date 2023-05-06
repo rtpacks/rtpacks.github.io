@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>V2ray: 记录一次公司VPN和V2rayN结合使用的过程</title>
+      <link href="/2023/05/06/V2ray-%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E5%85%AC%E5%8F%B8VPN%E5%92%8CV2rayN%E7%BB%93%E5%90%88%E4%BD%BF%E7%94%A8%E7%9A%84%E8%BF%87%E7%A8%8B/"/>
+      <url>/2023/05/06/V2ray-%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E5%85%AC%E5%8F%B8VPN%E5%92%8CV2rayN%E7%BB%93%E5%90%88%E4%BD%BF%E7%94%A8%E7%9A%84%E8%BF%87%E7%A8%8B/</url>
+      
+        <content type="html"><![CDATA[<h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>作为 Google, ChatGPT 的重度用户，拥有访问条件是一定的，如果加上再加一层代理，这个时候应该怎么做呢？</p><p>在公司使用的 VPN 中，设定了访问 <code>10.231.*</code> 的 IP 和 <code>example.com</code> 的公司域名，为了避免公司VPN无法访问，需要给 V2ray 加上规则。</p><p>个人选用的是绕过大陆，配置直连和端口以及公司的域名</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">outboundTag: direct</span><br><span class="line">port: 0-65535</span><br><span class="line">protocol: http tls</span><br><span class="line">inboundTag: socks http socks2 http2</span><br><span class="line"></span><br><span class="line">domain:cn.bing.com,</span><br><span class="line">domain:r.bing.com,</span><br><span class="line">domain:th.bing.com,</span><br><span class="line">regexp:.*example\.(com|net)$</span><br><span class="line">regixp:10.231.*</span><br></pre></td></tr></table></figure><h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><p>如上</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> vpn </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> v2ray, 两个vpn结合使用 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>前端：记录一次 Vite 引入 Vant 的过程，生产环境不渲染 Vant 组件</title>
       <link href="/2023/05/05/%E5%89%8D%E7%AB%AF%EF%BC%9A%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1Vite-%E5%BC%95%E5%85%A5-Vant%E7%9A%84%E8%BF%87%E7%A8%8B/"/>
       <url>/2023/05/05/%E5%89%8D%E7%AB%AF%EF%BC%9A%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1Vite-%E5%BC%95%E5%85%A5-Vant%E7%9A%84%E8%BF%87%E7%A8%8B/</url>
