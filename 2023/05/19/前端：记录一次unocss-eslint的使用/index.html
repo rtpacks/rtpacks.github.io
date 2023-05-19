@@ -17,7 +17,7 @@
     <meta name="keywords" content="blog luckydog Az">
 
 
-<title>V2ray: 记录一次公司VPN和V2rayN结合使用的过程 | Az&#39;s Blog</title>
+<title>前端：记录一次unocss+eslint的使用 | Az&#39;s Blog</title>
 
 
 
@@ -203,7 +203,7 @@
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title">V2ray: 记录一次公司VPN和V2rayN结合使用的过程</h1>
+            <h1 class="post-title">前端：记录一次unocss+eslint的使用</h1>
             
                 <div class="post-meta">
                     
@@ -212,14 +212,14 @@
 
                     
                         <span class="post-time">
-                        Date: <a href="#">2023.05.06&nbsp;&nbsp;15:52:15</a>
+                        Date: <a href="#">2023.05.19&nbsp;&nbsp;13:05:10</a>
                         </span>
                     
                     
                         <span class="post-category">
                     Category:
                             
-                                <a href="/categories/vpn/">vpn</a>
+                                <a href="/categories/%E5%89%8D%E7%AB%AF/">前端</a>
                             
                         </span>
                     
@@ -228,12 +228,28 @@
         </header>
 
         <div class="post-content">
-            <h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>作为 Google, ChatGPT 的重度用户，拥有访问条件是一定的，如果加上再加一层代理，这个时候应该怎么做呢？</p>
-<p>在公司使用的 VPN 中，设定了访问 <code>10.231.*</code> 的 IP 和 <code>example.com</code> 的公司域名，为了避免公司VPN无法访问，需要给 V2ray 加上规则。</p>
-<p>个人选用的是绕过大陆，配置直连和端口以及公司的域名</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">outboundTag: direct</span><br><span class="line">port: 0-65535</span><br><span class="line">protocol: http tls</span><br><span class="line">inboundTag: socks http socks2 http2</span><br><span class="line"></span><br><span class="line">domain:cn.bing.com,</span><br><span class="line">domain:r.bing.com,</span><br><span class="line">domain:th.bing.com,</span><br><span class="line">regexp:.*example\.(com|net)$</span><br><span class="line">regixp:10.231.*</span><br></pre></td></tr></table></figure>
+            <h3 id="遇到的坑和解决方案"><a href="#遇到的坑和解决方案" class="headerlink" title="遇到的坑和解决方案"></a>遇到的坑和解决方案</h3><p>问题</p>
+<ul>
+<li><code>import &#39;virtual:uno.css&#39;;</code> unresolved 报错</li>
+<li><code>import/unresolved error</code></li>
+</ul>
+<p>解决方案</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// .eslintrc.js</span></span><br><span class="line"><span class="attr">rules</span>: &#123;</span><br><span class="line">  <span class="string">&#x27;import/no-unresolved&#x27;</span>: [</span><br><span class="line">    <span class="number">2</span>,</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="attr">ignore</span>: [<span class="string">&#x27;^virtual:&#x27;</span>],</span><br><span class="line">    &#125;,</span><br><span class="line">  ],</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><p>如上</p>
+<p>或者</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// eslint-disable-next-line import/no-unresolved</span></span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;virtual:uno.css&quot;</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="过程"><a href="#过程" class="headerlink" title="过程"></a>过程</h3><p>在原子化 css (<code>Atomic CSS</code>) 的技术选型中，首先考虑的一定是<code>tailwindcss</code>，但截至本文编写日期 (<code>2023-05-19</code>) <code>tailwindcss</code> 还未提供属性写法。</p>
+<p>个人觉得 <code>windicss</code> 的属性写法是最为优雅的，所以准备将项目的 <code>tailwindcss</code> 转到 <code>windicss</code>，但发现 <code>windicss</code> 的更新维护越来越少，所以再经过一番调查后，发现了 <code>unocss</code>。<code>unocss</code> 是由 <code>antfu</code> 发起的一项原子化 css 的项目，可以说是 <code>tailwindcss</code> 等其他原子化 css 的超集，详细请看官网 <a target="_blank" rel="noopener" href="https://unocss.dev/">UnoCSS</a></p>
+<p>集成出现的 bug 在上面已经说过，我根据官网配置的 <code>@unocss/eslint-config</code> 完成配置，但是还是出现了 <strong><code>import &#39;virtual:uno.css&#39;;</code> unresolved 报错</strong> 问题，经过上面解决后成功集成。</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/425814828">重新构想原子化 CSS - 知乎 (zhihu.com)</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/unocss/unocss/discussions/2448">import ‘virtual:uno.css’] syntax got unresolved problem? · unocss&#x2F;unocss · Discussion #2448 (github.com)</a></li>
+</ul>
+<h3 id="更多"><a href="#更多" class="headerlink" title="更多"></a>更多</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_45759413/article/details/130764781">前端：记录一次 unocss + eslint 的使用_一抹阳光&amp;的博客-CSDN博客</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/7234718074983743546">前端：记录一次 unocss + eslint 的使用 - 掘金 (juejin.cn)</a></li>
+</ul>
 
         </div>
 
@@ -257,7 +273,9 @@
                 <span class="tag">
                     
                     
-                        <a href="/tags/v2ray-%E4%B8%A4%E4%B8%AAvpn%E7%BB%93%E5%90%88%E4%BD%BF%E7%94%A8/"># v2ray, 两个vpn结合使用</a>
+                        <a href="/tags/unocss/"># unocss</a>
+                    
+                        <a href="/tags/eslint/"># eslint</a>
                     
                         
                 </span>
@@ -270,10 +288,8 @@
         </section>
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="/2023/05/19/%E5%89%8D%E7%AB%AF%EF%BC%9A%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1unocss-eslint%E7%9A%84%E4%BD%BF%E7%94%A8/">前端：记录一次unocss+eslint的使用</a>
             
-            
-            <a class="next" rel="next" href="/2023/05/05/%E5%89%8D%E7%AB%AF%EF%BC%9A%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1Vite-%E5%BC%95%E5%85%A5-Vant%E7%9A%84%E8%BF%87%E7%A8%8B/">前端：记录一次 Vite 引入 Vant 的过程，生产环境不渲染 Vant 组件</a>
+            <a class="next" rel="next" href="/2023/05/06/V2ray-%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E5%85%AC%E5%8F%B8VPN%E5%92%8CV2rayN%E7%BB%93%E5%90%88%E4%BD%BF%E7%94%A8%E7%9A%84%E8%BF%87%E7%A8%8B/">V2ray: 记录一次公司VPN和V2rayN结合使用的过程</a>
             
         </section>
 
