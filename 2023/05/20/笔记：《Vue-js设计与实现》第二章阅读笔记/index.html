@@ -241,7 +241,16 @@
 
 <p>顶级调用是可能发生副作用的，因为执行了 foo 函数。函数内调用也是可能发生副作用的，但是发生的前提是上层条件允许或父函数执行了，否则由于 <code>dead code</code> 的存在，这些代码都会被移除。</p>
 <p>所以只需要控制顶级调用，就能控制大部分无副作用的函数。</p>
-<h3 id="构建不同产物"><a href="#构建不同产物" class="headerlink" title="构建不同产物"></a>构建不同产物</h3>
+<h3 id="构建不同产物"><a href="#构建不同产物" class="headerlink" title="构建不同产物"></a>构建不同产物</h3><ul>
+<li>IIFE </li>
+<li>esm<ul>
+<li>直接在浏览器中运行 esm-browser</li>
+<li>在打包工具中构建 esm-bundler</li>
+</ul>
+</li>
+<li>cjs</li>
+</ul>
+
         </div>
 
         
