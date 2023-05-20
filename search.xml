@@ -4,13 +4,25 @@
   
     
     <entry>
-      <title>笔记: 《Vue.js设计与实现》第二章阅读笔记</title>
-      <link href="/2023/05/20/%E7%AC%94%E8%AE%B0-%E3%80%8AVue-js%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E3%80%8B%E7%AC%AC%E4%BA%8C%E7%AB%A0%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/"/>
-      <url>/2023/05/20/%E7%AC%94%E8%AE%B0-%E3%80%8AVue-js%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E3%80%8B%E7%AC%AC%E4%BA%8C%E7%AB%A0%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/</url>
+      <title>笔记：《Vue.js设计与实现》第二章阅读笔记</title>
+      <link href="/2023/05/20/%E7%AC%94%E8%AE%B0%EF%BC%9A%E3%80%8AVue-js%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E3%80%8B%E7%AC%AC%E4%BA%8C%E7%AB%A0%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/"/>
+      <url>/2023/05/20/%E7%AC%94%E8%AE%B0%EF%BC%9A%E3%80%8AVue-js%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E3%80%8B%E7%AC%AC%E4%BA%8C%E7%AB%A0%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/</url>
       
-        <content type="html"><![CDATA[]]></content>
+        <content type="html"><![CDATA[<h3 id="Tree-Shaking"><a href="#Tree-Shaking" class="headerlink" title="Tree-Shaking"></a>Tree-Shaking</h3><p>在前端的发展历史中，Tree-Shaking 是由 Rollup.js 普及的，Tree-Shaking 的作用是去除运行时未使用或永远不会执行的代码以减少最终构建产物的体积。</p><p>Tree-Shaking 依赖于 ESModule 的静态结构，它的工作流程逻辑概括：未使用的代码不会加入到构建产物中，例如变量、函数。这些未使用的代码有一个名字 <code>dead code</code>，指未使用或者已使用但由于上层条件导致永远不会运行的代码。</p><p>除了 <code>dead code</code>，有一些代码执行了，但对外部没有任何影响也可以进行 Tree-Shaking，比如</p><figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">foo</span>(<span class="params">obj</span>) &#123;</span><br><span class="line">  obj &amp;&amp; obj.<span class="property">foo</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// main.ts</span></span><br><span class="line"><span class="title function_">foo</span>();</span><br></pre></td></tr></table></figure><p>在这种情况下，由于 JavaScript 是一门动态语言，分析一个函数是否有<strong>副作用</strong>很有难度，比如 obj.foo，看似没有函数执行，但是如果 obj.foo 属性通过 Object.defineProperty 加入了 get 操作捕获或通过 Proxy 代理，就可能在这个捕获操作中发生了副作用，所以 foo 函数会加入到构建产物。</p><p>所以 Rollup.js 等打包工具提供了一个方式，使用 <code>/*#__PURE__*/</code> 明确这个函数是一个不会发生任何副作用的纯函数。</p><p>tips: 在开发的过程中，如果能以纯函数的形式实现，则以纯函数的形式实现。</p><p>一般说来，<code>/*#__PURE__*/</code> 只用在顶级调用中，可以看到如下代码</p><figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// foo.ts</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">function</span> <span class="title function_">foo</span>(<span class="params">obj</span>) &#123;</span><br><span class="line">  obj &amp;&amp; obj.<span class="property">foo</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// main.ts</span></span><br><span class="line"><span class="keyword">import</span> foo <span class="keyword">from</span> <span class="string">&quot;foo.ts&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="title function_">foo</span>(); <span class="comment">// 顶级调用</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">bar</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="title function_">foo</span>(); <span class="comment">// 函数内调用</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>顶级调用是可能发生副作用的，因为执行了 foo 函数。函数内调用也是可能发生副作用的，但是发生的前提是上层条件允许或父函数执行了，否则由于 <code>dead code</code> 的存在，这些代码都会被移除。</p><p>所以只需要控制顶级调用，就能控制大部分无副作用的函数。</p><h3 id="构建不同产物"><a href="#构建不同产物" class="headerlink" title="构建不同产物"></a>构建不同产物</h3>]]></content>
       
       
+      <categories>
+          
+          <category> 《Vue.js设计与实现》 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 笔记 </tag>
+            
+        </tags>
       
     </entry>
     

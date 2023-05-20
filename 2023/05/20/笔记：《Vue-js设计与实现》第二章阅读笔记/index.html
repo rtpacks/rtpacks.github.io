@@ -17,7 +17,7 @@
     <meta name="keywords" content="blog luckydog Az">
 
 
-<title>前端：记录一次unocss+eslint的使用 | Az&#39;s Blog</title>
+<title>笔记：《Vue.js设计与实现》第二章阅读笔记 | Az&#39;s Blog</title>
 
 
 
@@ -203,7 +203,7 @@
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title">前端：记录一次unocss+eslint的使用</h1>
+            <h1 class="post-title">笔记：《Vue.js设计与实现》第二章阅读笔记</h1>
             
                 <div class="post-meta">
                     
@@ -212,14 +212,14 @@
 
                     
                         <span class="post-time">
-                        Date: <a href="#">2023.05.19&nbsp;&nbsp;13:05:10</a>
+                        Date: <a href="#">2023.05.20&nbsp;&nbsp;00:19:36</a>
                         </span>
                     
                     
                         <span class="post-category">
                     Category:
                             
-                                <a href="/categories/%E5%89%8D%E7%AB%AF/">前端</a>
+                                <a href="/categories/%E3%80%8AVue-js%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E3%80%8B/">《Vue.js设计与实现》</a>
                             
                         </span>
                     
@@ -228,29 +228,20 @@
         </header>
 
         <div class="post-content">
-            <h3 id="遇到的坑和解决方案"><a href="#遇到的坑和解决方案" class="headerlink" title="遇到的坑和解决方案"></a>遇到的坑和解决方案</h3><p>问题</p>
-<ul>
-<li><code>import &#39;virtual:uno.css&#39;;</code> unresolved 报错</li>
-<li><code>import/unresolved error</code></li>
-</ul>
-<p>解决方案</p>
-<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// .eslintrc.js</span></span><br><span class="line"><span class="attr">rules</span>: &#123;</span><br><span class="line">  <span class="string">&#x27;import/no-unresolved&#x27;</span>: [</span><br><span class="line">    <span class="number">2</span>,</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="attr">ignore</span>: [<span class="string">&#x27;^virtual:&#x27;</span>],</span><br><span class="line">    &#125;,</span><br><span class="line">  ],</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+            <h3 id="Tree-Shaking"><a href="#Tree-Shaking" class="headerlink" title="Tree-Shaking"></a>Tree-Shaking</h3><p>在前端的发展历史中，Tree-Shaking 是由 Rollup.js 普及的，Tree-Shaking 的作用是去除运行时未使用或永远不会执行的代码以减少最终构建产物的体积。</p>
+<p>Tree-Shaking 依赖于 ESModule 的静态结构，它的工作流程逻辑概括：未使用的代码不会加入到构建产物中，例如变量、函数。这些未使用的代码有一个名字 <code>dead code</code>，指未使用或者已使用但由于上层条件导致永远不会运行的代码。</p>
+<p>除了 <code>dead code</code>，有一些代码执行了，但对外部没有任何影响也可以进行 Tree-Shaking，比如</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">foo</span>(<span class="params">obj</span>) &#123;</span><br><span class="line">  obj &amp;&amp; obj.<span class="property">foo</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// main.ts</span></span><br><span class="line"><span class="title function_">foo</span>();</span><br></pre></td></tr></table></figure>
 
-<p>或者</p>
-<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// eslint-disable-next-line import/no-unresolved</span></span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;virtual:uno.css&quot;</span>;</span><br></pre></td></tr></table></figure>
+<p>在这种情况下，由于 JavaScript 是一门动态语言，分析一个函数是否有<strong>副作用</strong>很有难度，比如 obj.foo，看似没有函数执行，但是如果 obj.foo 属性通过 Object.defineProperty 加入了 get 操作捕获或通过 Proxy 代理，就可能在这个捕获操作中发生了副作用，所以 foo 函数会加入到构建产物。</p>
+<p>所以 Rollup.js 等打包工具提供了一个方式，使用 <code>/*#__PURE__*/</code> 明确这个函数是一个不会发生任何副作用的纯函数。</p>
+<p>tips: 在开发的过程中，如果能以纯函数的形式实现，则以纯函数的形式实现。</p>
+<p>一般说来，<code>/*#__PURE__*/</code> 只用在顶级调用中，可以看到如下代码</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// foo.ts</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">function</span> <span class="title function_">foo</span>(<span class="params">obj</span>) &#123;</span><br><span class="line">  obj &amp;&amp; obj.<span class="property">foo</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// main.ts</span></span><br><span class="line"><span class="keyword">import</span> foo <span class="keyword">from</span> <span class="string">&quot;foo.ts&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="title function_">foo</span>(); <span class="comment">// 顶级调用</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">bar</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="title function_">foo</span>(); <span class="comment">// 函数内调用</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="过程"><a href="#过程" class="headerlink" title="过程"></a>过程</h3><p>在原子化 css (<code>Atomic CSS</code>) 的技术选型中，首先考虑的一定是<code>tailwindcss</code>，但截至本文编写日期 (<code>2023-05-19</code>) <code>tailwindcss</code> 还未提供属性写法。</p>
-<p>个人觉得 <code>windicss</code> 的属性写法是最为优雅的，所以准备将项目的 <code>tailwindcss</code> 转到 <code>windicss</code>，但发现 <code>windicss</code> 的更新维护越来越少，所以再经过一番调查后，发现了 <code>unocss</code>。<code>unocss</code> 是由 <code>antfu</code> 发起的一项原子化 css 的项目，可以说是 <code>tailwindcss</code> 等其他原子化 css 的超集，详细请看官网 <a target="_blank" rel="noopener" href="https://unocss.dev/">UnoCSS</a></p>
-<p>集成出现的 bug 在上面已经说过，我根据官网配置的 <code>@unocss/eslint-config</code> 完成配置，但是还是出现了 <strong><code>import &#39;virtual:uno.css&#39;;</code> unresolved 报错</strong> 问题，经过上面解决后成功集成。</p>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/425814828">重新构想原子化 CSS - 知乎 (zhihu.com)</a></li>
-<li><a target="_blank" rel="noopener" href="https://github.com/unocss/unocss/discussions/2448">import ‘virtual:uno.css’] syntax got unresolved problem? · unocss&#x2F;unocss · Discussion #2448 (github.com)</a></li>
-</ul>
-<h3 id="更多"><a href="#更多" class="headerlink" title="更多"></a>更多</h3><ul>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_45759413/article/details/130764781">前端：记录一次 unocss + eslint 的使用_一抹阳光&amp;的博客-CSDN 博客</a></li>
-<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/7234718074983743546">前端：记录一次 unocss + eslint 的使用 - 掘金 (juejin.cn)</a></li>
-</ul>
-
+<p>顶级调用是可能发生副作用的，因为执行了 foo 函数。函数内调用也是可能发生副作用的，但是发生的前提是上层条件允许或父函数执行了，否则由于 <code>dead code</code> 的存在，这些代码都会被移除。</p>
+<p>所以只需要控制顶级调用，就能控制大部分无副作用的函数。</p>
+<h3 id="构建不同产物"><a href="#构建不同产物" class="headerlink" title="构建不同产物"></a>构建不同产物</h3>
         </div>
 
         
@@ -273,9 +264,7 @@
                 <span class="tag">
                     
                     
-                        <a href="/tags/unocss/"># unocss</a>
-                    
-                        <a href="/tags/eslint/"># eslint</a>
+                        <a href="/tags/%E7%AC%94%E8%AE%B0/"># 笔记</a>
                     
                         
                 </span>
@@ -288,10 +277,8 @@
         </section>
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="/2023/05/20/%E7%AC%94%E8%AE%B0%EF%BC%9A%E3%80%8AVue-js%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E3%80%8B%E7%AC%AC%E4%BA%8C%E7%AB%A0%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/">笔记：《Vue.js设计与实现》第二章阅读笔记</a>
             
-            
-            <a class="next" rel="next" href="/2023/05/06/V2ray-%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1%E5%85%AC%E5%8F%B8VPN%E5%92%8CV2rayN%E7%BB%93%E5%90%88%E4%BD%BF%E7%94%A8%E7%9A%84%E8%BF%87%E7%A8%8B/">V2ray: 记录一次公司VPN和V2rayN结合使用的过程</a>
+            <a class="next" rel="next" href="/2023/05/19/%E5%89%8D%E7%AB%AF%EF%BC%9A%E8%AE%B0%E5%BD%95%E4%B8%80%E6%AC%A1unocss-eslint%E7%9A%84%E4%BD%BF%E7%94%A8/">前端：记录一次unocss+eslint的使用</a>
             
         </section>
 
