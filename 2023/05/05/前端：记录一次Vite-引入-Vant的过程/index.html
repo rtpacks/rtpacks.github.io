@@ -228,7 +228,7 @@
         </header>
 
         <div class="post-content">
-            <h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>经过前一个步骤引入 Vant 后（<a href="https://azin-cn.github.io/2023/05/03/Bugfix-unplugin-vue-component-%E6%89%BE%E4%B8%8D%E5%88%B0-Vant-%E7%BB%84%E4%BB%B6%E7%9A%84%E9%97%AE%E9%A2%98/">Vant 组件的问题 | Az’s Blog (azin-cn.github.io)</a>），在开发环境下使用是正常的，但是当我在 <code>production</code> 环境打包时，又出现了一个新的问题，<code>vue</code> 并没有渲染 <code>vant</code> 组件标签，而是以 <code>van-tabs</code> 的形式出现。</p>
+            <h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>经过前一个步骤引入 Vant 后（<a target="_blank" rel="noopener" href="https://azin-cn.github.io/2023/05/03/Bugfix-unplugin-vue-component-%E6%89%BE%E4%B8%8D%E5%88%B0-Vant-%E7%BB%84%E4%BB%B6%E7%9A%84%E9%97%AE%E9%A2%98/">Vant 组件的问题 | Az’s Blog (azin-cn.github.io)</a>），在开发环境下使用是正常的，但是当我在 <code>production</code> 环境打包时，又出现了一个新的问题，<code>vue</code> 并没有渲染 <code>vant</code> 组件标签，而是以 <code>van-tabs</code> 的形式出现。</p>
 <h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><p>经过一番排查了对比 <code>Arco Design</code> 的引入方式发现，在 <code>Arco Design</code> 是将所有的组件导出为一个 <code>Vue</code> 插件，最后 <code>app.use(ArcoVue)</code> 实现全局注册组件，通过自定义 <code>unplugin-vue-component</code> <code>Resolver</code>的形式按需引入组件。而在 <code>Vant</code> 的官方文档中，我并未找到有关于系统的配置，文档只是简写了 <code>app.use(Vant)</code> 或使用 <code>unplugin-vue-component</code> 的 <code>VantResolver()</code> 的形式 。</p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://vant-contrib.gitee.io/vant/#/zh-CN/quickstart">快速上手 - Vant 4 (gitee.io)</a></li>
