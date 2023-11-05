@@ -4,31 +4,6 @@
   
     
     <entry>
-      <title>Rust: unit 02-数值类型</title>
-      <link href="/2023/11/06/Rust-unit-02-%E6%95%B0%E5%80%BC%E7%B1%BB%E5%9E%8B/"/>
-      <url>/2023/11/06/Rust-unit-02-%E6%95%B0%E5%80%BC%E7%B1%BB%E5%9E%8B/</url>
-      
-        <content type="html"><![CDATA[<h2 id="基础数据类型"><a href="#基础数据类型" class="headerlink" title="基础数据类型"></a>基础数据类型</h2><h3 id="1-数值类型"><a href="#1-数值类型" class="headerlink" title="1. 数值类型"></a>1. 数值类型</h3><p><a href="https://course.rs/basic/base-type/numbers.html">https://course.rs/basic/base-type/numbers.html</a></p><p>整形类型，默认为 i32，即有符号 32 位。i 有符号，u 无符号，(i|u)size 视架构定。实现 std::cmp::Eq 特征，即完全比较。</p><p>i8, u8, i16, u16, i32, u32, i64, u64, i128, u128, isize, usize</p><p>浮点类型，默认为 f64，即双精度，实现的是 std::cmp::PartialEq 特征，即部分比较。</p><h3 id="2-浮点数陷阱"><a href="#2-浮点数陷阱" class="headerlink" title="2. 浮点数陷阱"></a>2. 浮点数陷阱</h3><p>0.1 + 0.2 !&#x3D; 0.3 在低精度条件下成立，高精度条件下不成立！这是由于二进制无法精确表达 0.2</p><p>f32 条件下 0.1 + 0.2: 3e99999a，0.3: 3e99999a</p><p>f64 条件下 0.1 + 0.2: 3fd3333333333334，0.3: 3fd3333333333333</p><h3 id="3-NaN"><a href="#3-NaN" class="headerlink" title="3. NaN"></a>3. NaN</h3><p>数学上未定义的数值类型，例如对负数取平方根 -42.1.sqrt()，所有跟 NaN 交互的操作，都会返回一个 NaN，而且 NaN 不能用来比较。</p><p>NaN !&#x3D; Nan，不能直接比较，而需要使用 number.is_nan()方法确定。</p><p>let x &#x3D; (-42.0_f32).sqrt(); assert_eq!(x, x);</p><p>相同类型的数字才能进行运算！才能赋值！</p><p>let v: u16 &#x3D; 38_u8 as u16;</p><h3 id="4-Range-序列"><a href="#4-Range-序列" class="headerlink" title="4. Range 序列"></a>4. Range 序列</h3><p>快速生成指定范围的类数值类型，如 1..&#x3D;5，’a’..&#x3D;’z’，序列只允许用于数字或字符类型。</p>]]></content>
-      
-      
-      <categories>
-          
-          <category> Rust </category>
-          
-      </categories>
-      
-      
-        <tags>
-            
-            <tag> Rust </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
       <title>理财：《指数基金投资指南》- 第三章笔记</title>
       <link href="/2023/10/13/%E7%90%86%E8%B4%A2%EF%BC%9A%E3%80%8A%E6%8C%87%E6%95%B0%E5%9F%BA%E9%87%91%E6%8A%95%E8%B5%84%E6%8C%87%E5%8D%97%E3%80%8B-%E7%AC%AC%E4%B8%89%E7%AB%A0%E7%AC%94%E8%AE%B0/"/>
       <url>/2023/10/13/%E7%90%86%E8%B4%A2%EF%BC%9A%E3%80%8A%E6%8C%87%E6%95%B0%E5%9F%BA%E9%87%91%E6%8A%95%E8%B5%84%E6%8C%87%E5%8D%97%E3%80%8B-%E7%AC%AC%E4%B8%89%E7%AB%A0%E7%AC%94%E8%AE%B0/</url>
@@ -148,6 +123,31 @@
             <tag> 前端 </tag>
             
             <tag> 约定与规范 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Rust: unit 02-数值类型</title>
+      <link href="/2023/06/06/Rust-unit-02-%E6%95%B0%E5%80%BC%E7%B1%BB%E5%9E%8B/"/>
+      <url>/2023/06/06/Rust-unit-02-%E6%95%B0%E5%80%BC%E7%B1%BB%E5%9E%8B/</url>
+      
+        <content type="html"><![CDATA[<h2 id="基础数据类型"><a href="#基础数据类型" class="headerlink" title="基础数据类型"></a>基础数据类型</h2><h3 id="1-数值类型"><a href="#1-数值类型" class="headerlink" title="1. 数值类型"></a>1. 数值类型</h3><p><a href="https://course.rs/basic/base-type/numbers.html">https://course.rs/basic/base-type/numbers.html</a></p><p>整形类型，默认为 i32，即有符号 32 位。i 有符号，u 无符号，(i|u)size 视架构定。实现 std::cmp::Eq 特征，即完全比较。</p><p>i8, u8, i16, u16, i32, u32, i64, u64, i128, u128, isize, usize</p><p>浮点类型，默认为 f64，即双精度，实现的是 std::cmp::PartialEq 特征，即部分比较。</p><h3 id="2-浮点数陷阱"><a href="#2-浮点数陷阱" class="headerlink" title="2. 浮点数陷阱"></a>2. 浮点数陷阱</h3><p>0.1 + 0.2 !&#x3D; 0.3 在低精度条件下成立，高精度条件下不成立！这是由于二进制无法精确表达 0.2</p><p>f32 条件下 0.1 + 0.2: 3e99999a，0.3: 3e99999a</p><p>f64 条件下 0.1 + 0.2: 3fd3333333333334，0.3: 3fd3333333333333</p><h3 id="3-NaN"><a href="#3-NaN" class="headerlink" title="3. NaN"></a>3. NaN</h3><p>数学上未定义的数值类型，例如对负数取平方根 -42.1.sqrt()，所有跟 NaN 交互的操作，都会返回一个 NaN，而且 NaN 不能用来比较。</p><p>NaN !&#x3D; Nan，不能直接比较，而需要使用 number.is_nan()方法确定。</p><p>let x &#x3D; (-42.0_f32).sqrt(); assert_eq!(x, x);</p><p>相同类型的数字才能进行运算！才能赋值！</p><p>let v: u16 &#x3D; 38_u8 as u16;</p><h3 id="4-Range-序列"><a href="#4-Range-序列" class="headerlink" title="4. Range 序列"></a>4. Range 序列</h3><p>快速生成指定范围的类数值类型，如 1..&#x3D;5，’a’..&#x3D;’z’，序列只允许用于数字或字符类型。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> Rust </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Rust </tag>
             
         </tags>
       
