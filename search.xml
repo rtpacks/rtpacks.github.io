@@ -4,6 +4,33 @@
   
     
     <entry>
+      <title>前端：window.history修改URL后，跳转再回退不是最后一次的URL</title>
+      <link href="/2023/11/18/%E5%89%8D%E7%AB%AF%EF%BC%9Awindow-history%E4%BF%AE%E6%94%B9URL%E5%90%8E%EF%BC%8C%E8%B7%B3%E8%BD%AC%E5%86%8D%E5%9B%9E%E9%80%80%E4%B8%8D%E6%98%AF%E6%9C%80%E5%90%8E%E4%B8%80%E6%AC%A1%E7%9A%84URL/"/>
+      <url>/2023/11/18/%E5%89%8D%E7%AB%AF%EF%BC%9Awindow-history%E4%BF%AE%E6%94%B9URL%E5%90%8E%EF%BC%8C%E8%B7%B3%E8%BD%AC%E5%86%8D%E5%9B%9E%E9%80%80%E4%B8%8D%E6%98%AF%E6%9C%80%E5%90%8E%E4%B8%80%E6%AC%A1%E7%9A%84URL/</url>
+      
+        <content type="html"><![CDATA[<p>vue2 (<code>vue-router3</code>) 没有去 debug 源码，但是在公司的另外一个项目通过 history (window.history.replaceState) 去修改URL，vue-router3 是实时更新内部的 <code>currentRoute</code>，所以在修改参数后，去跳转再回退，是最后一次的URL。</p><p>今天 debug <code>vue-router4</code> 发现，它的逻辑是记录当前页面最后一次通过 <code>popstate</code> 事件变化的 URL，也就是只处理 <code>popstate</code> 事件发生时的状态，通过 window.history 的 pushState 和 replaceState 去修改 URL 不会触发 popstate 事件，所以 vue-router4 没有感知是这个原因。</p><p>目前来看解决办法：</p><ol><li>给当前的路由加上 state，在通过 window.history.replaceState 修改参数后，给当前的路由对象加上 state，返回再把 state 取出来然后回显状态。</li><li>不通过 window.history.replaceState 无刷新修改参数，而是通过 vue-router 修改参数，达到更新路由的目的。</li><li>既然 vue-router4 通过 popstate 事件处理逻辑，那手动触发 <code>popstate</code> 事件就可以了，在通过 window.history 修改参数后，手动 <code>dispatch popstate</code> 事件 <code>window.dispatchEvent(new PopStateEvent(&quot;popstate&quot;))</code> 达到触发 router 的目的，这个和第二种类似。目前副作用未知，我用的这种方式。</li><li>手动 hack vue router，让它实时更新，这个我没做尝试。</li></ol><p>参考：</p><ol><li><p><a href="https://github.com/vuejs/router/issues/366">https://github.com/vuejs/router/issues/366</a></p></li><li><p><a href="https://github.com/vuejs/router/issues/2035">https://github.com/vuejs/router/issues/2035</a></p></li><li><p><a href="https://github.com/vuejs/router/issues/1270">https://github.com/vuejs/router/issues/1270</a></p></li><li><p><a href="https://github.com/single-spa/single-spa/pull/291">https://github.com/single-spa/single-spa/pull/291</a></p></li></ol>]]></content>
+      
+      
+      <categories>
+          
+          <category> vue-router </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> vue-router </tag>
+            
+            <tag> history </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>理财：《指数基金投资指南》- 第三章笔记</title>
       <link href="/2023/10/13/%E7%90%86%E8%B4%A2%EF%BC%9A%E3%80%8A%E6%8C%87%E6%95%B0%E5%9F%BA%E9%87%91%E6%8A%95%E8%B5%84%E6%8C%87%E5%8D%97%E3%80%8B-%E7%AC%AC%E4%B8%89%E7%AB%A0%E7%AC%94%E8%AE%B0/"/>
       <url>/2023/10/13/%E7%90%86%E8%B4%A2%EF%BC%9A%E3%80%8A%E6%8C%87%E6%95%B0%E5%9F%BA%E9%87%91%E6%8A%95%E8%B5%84%E6%8C%87%E5%8D%97%E3%80%8B-%E7%AC%AC%E4%B8%89%E7%AB%A0%E7%AC%94%E8%AE%B0/</url>
