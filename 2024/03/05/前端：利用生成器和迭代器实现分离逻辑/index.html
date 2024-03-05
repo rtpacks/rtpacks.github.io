@@ -17,7 +17,7 @@
     <meta name="keywords" content="blog luckydog Az">
 
 
-<title>前端：window.history修改URL后，跳转再回退不是最后一次的URL | Az&#39;s Blog</title>
+<title>前端：利用生成器和迭代器实现分离逻辑 | Az&#39;s Blog</title>
 
 
 
@@ -138,7 +138,7 @@
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title">前端：window.history修改URL后，跳转再回退不是最后一次的URL</h1>
+            <h1 class="post-title">前端：利用生成器和迭代器实现分离逻辑</h1>
             
                 <div class="post-meta">
                     
@@ -147,14 +147,14 @@
 
                     
                         <span class="post-time">
-                        Date: <a href="#">2023.11.18&nbsp;&nbsp;18:15:43</a>
+                        Date: <a href="#">2024.03.05&nbsp;&nbsp;23:31:12</a>
                         </span>
                     
                     
                         <span class="post-category">
                     Category:
                             
-                                <a href="/categories/vue-router/">vue-router</a>
+                                <a href="/categories/%E5%89%8D%E7%AB%AF/">前端</a>
                             
                         </span>
                     
@@ -163,27 +163,7 @@
         </header>
 
         <div class="post-content">
-            <p>vue2 (<code>vue-router3</code>) 没有去 debug 源码，但是在公司的另外一个项目通过 history (window.history.replaceState) 去修改URL，vue-router3 是实时更新内部的 <code>currentRoute</code>，所以在修改参数后，去跳转再回退，是最后一次的URL。</p>
-<p>今天 debug <code>vue-router4</code> 发现，它的逻辑是记录当前页面最后一次通过 <code>popstate</code> 事件变化的 URL，也就是只处理 <code>popstate</code> 事件发生时的状态，通过 window.history 的 pushState 和 replaceState 去修改 URL 不会触发 popstate 事件，所以 vue-router4 没有感知是这个原因。</p>
-<p>目前来看解决办法：</p>
-<ol>
-<li>给当前的路由加上 state，在通过 window.history.replaceState 修改参数后，给当前的路由对象加上 state，返回再把 state 取出来然后回显状态。</li>
-<li>不通过 window.history.replaceState 无刷新修改参数，而是通过 vue-router 修改参数，达到更新路由的目的。</li>
-<li>既然 vue-router4 通过 popstate 事件处理逻辑，那手动触发 <code>popstate</code> 事件就可以了，在通过 window.history 修改参数后，手动 <code>dispatch popstate</code> 事件 <code>window.dispatchEvent(new PopStateEvent(&quot;popstate&quot;))</code> 达到触发 router 的目的，这个和第二种类似。目前副作用未知，我用的这种方式。</li>
-<li>手动 hack vue router，让它实时更新，这个我没做尝试。</li>
-</ol>
-<p>参考：</p>
-<ol>
-<li><p><a target="_blank" rel="noopener" href="https://github.com/vuejs/router/issues/366">https://github.com/vuejs/router/issues/366</a></p>
-</li>
-<li><p><a target="_blank" rel="noopener" href="https://github.com/vuejs/router/issues/2035">https://github.com/vuejs/router/issues/2035</a></p>
-</li>
-<li><p><a target="_blank" rel="noopener" href="https://github.com/vuejs/router/issues/1270">https://github.com/vuejs/router/issues/1270</a></p>
-</li>
-<li><p><a target="_blank" rel="noopener" href="https://github.com/single-spa/single-spa/pull/291">https://github.com/single-spa/single-spa/pull/291</a></p>
-</li>
-</ol>
-
+            
         </div>
 
         
@@ -205,12 +185,6 @@
                 <span>Tag(s):</span>
                 <span class="tag">
                     
-                    
-                        <a href="/tags/vue-router/"># vue-router</a>
-                    
-                        <a href="/tags/history/"># history</a>
-                    
-                        
                 </span>
             </div>
             <div>
@@ -221,10 +195,8 @@
         </section>
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="/2024/03/05/%E5%89%8D%E7%AB%AF%EF%BC%9A%E5%88%A9%E7%94%A8%E7%94%9F%E6%88%90%E5%99%A8%E5%92%8C%E8%BF%AD%E4%BB%A3%E5%99%A8%E5%AE%9E%E7%8E%B0%E5%88%86%E7%A6%BB%E9%80%BB%E8%BE%91/">前端：利用生成器和迭代器实现分离逻辑</a>
             
-            
-            <a class="next" rel="next" href="/2023/10/13/%E7%90%86%E8%B4%A2%EF%BC%9A%E3%80%8A%E6%8C%87%E6%95%B0%E5%9F%BA%E9%87%91%E6%8A%95%E8%B5%84%E6%8C%87%E5%8D%97%E3%80%8B-%E7%AC%AC%E4%B8%89%E7%AB%A0%E7%AC%94%E8%AE%B0/">理财：《指数基金投资指南》- 第三章笔记</a>
+            <a class="next" rel="next" href="/2023/11/18/%E5%89%8D%E7%AB%AF%EF%BC%9Awindow-history%E4%BF%AE%E6%94%B9URL%E5%90%8E%EF%BC%8C%E8%B7%B3%E8%BD%AC%E5%86%8D%E5%9B%9E%E9%80%80%E4%B8%8D%E6%98%AF%E6%9C%80%E5%90%8E%E4%B8%80%E6%AC%A1%E7%9A%84URL/">前端：window.history修改URL后，跳转再回退不是最后一次的URL</a>
             
         </section>
 
