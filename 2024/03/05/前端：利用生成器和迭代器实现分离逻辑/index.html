@@ -134,6 +134,71 @@
                 <div class="container">
     
     
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
 
     
     <article class="post-wrap">
@@ -163,7 +228,24 @@
         </header>
 
         <div class="post-content">
-            
+            <hr>
+<p>工作半年了常没时间、没动力学习新东西，每天就在忙着写业务逻辑，非常的枯燥。即使考虑到可以用新东西来实现某个需求，但为了保证业务的快速迭代，只能选择更稳妥的方式。</p>
+<h3 id="生成器和迭代器"><a href="#生成器和迭代器" class="headerlink" title="生成器和迭代器"></a>生成器和迭代器</h3><p>今天完善一个需求，统一检索中，检索的各个实体tab依次弹出，实现类似RXJS弹珠图的效果。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">TabIterabor</span> &#123;</span><br><span class="line">    <span class="title function_">constructor</span>(<span class="params"></span></span><br><span class="line"><span class="params">        <span class="keyword">private</span> models: <span class="built_in">string</span>[],</span></span><br><span class="line"><span class="params">        <span class="keyword">private</span> query: <span class="built_in">string</span>,</span></span><br><span class="line"><span class="params">        <span class="keyword">private</span> index = <span class="number">0</span></span></span><br><span class="line"><span class="params">    </span>) &#123;&#125;</span><br><span class="line">    <span class="comment">// asyncIterator 标识是一个异步迭代器，next函数返回一个Promise对象</span></span><br><span class="line">    [<span class="title class_">Symbol</span>.<span class="property">asyncIterator</span>]() &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">    		<span class="attr">next</span>: <span class="keyword">async</span> ()=&gt; &#123;</span><br><span class="line">                <span class="keyword">return</span> &#123; <span class="attr">value</span>: <span class="literal">null</span>, <span class="attr">done</span>: <span class="literal">true</span> &#125;</span><br><span class="line">            &#125;        </span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="权限和菜单交互的设计"><a href="#权限和菜单交互的设计" class="headerlink" title="权限和菜单交互的设计"></a>权限和菜单交互的设计</h3><ul>
+<li><p>隐藏菜单</p>
+<ul>
+<li>控制子菜单提升效果</li>
+<li>空权限时不允许登录</li>
+</ul>
+</li>
+<li><p>不隐藏菜单，将指定的路由页面设置成404或者403页面</p>
+</li>
+</ul>
+
         </div>
 
         
@@ -185,6 +267,12 @@
                 <span>Tag(s):</span>
                 <span class="tag">
                     
+                    
+                        <a href="/tags/%E5%89%8D%E7%AB%AF/"># 前端</a>
+                    
+                        <a href="/tags/JavaScript/"># JavaScript</a>
+                    
+                        
                 </span>
             </div>
             <div>

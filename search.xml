@@ -8,7 +8,7 @@
       <link href="/2024/03/05/%E5%89%8D%E7%AB%AF%EF%BC%9A%E5%88%A9%E7%94%A8%E7%94%9F%E6%88%90%E5%99%A8%E5%92%8C%E8%BF%AD%E4%BB%A3%E5%99%A8%E5%AE%9E%E7%8E%B0%E5%88%86%E7%A6%BB%E9%80%BB%E8%BE%91/"/>
       <url>/2024/03/05/%E5%89%8D%E7%AB%AF%EF%BC%9A%E5%88%A9%E7%94%A8%E7%94%9F%E6%88%90%E5%99%A8%E5%92%8C%E8%BF%AD%E4%BB%A3%E5%99%A8%E5%AE%9E%E7%8E%B0%E5%88%86%E7%A6%BB%E9%80%BB%E8%BE%91/</url>
       
-        <content type="html"><![CDATA[]]></content>
+        <content type="html"><![CDATA[<hr><p>工作半年了常没时间、没动力学习新东西，每天就在忙着写业务逻辑，非常的枯燥。即使考虑到可以用新东西来实现某个需求，但为了保证业务的快速迭代，只能选择更稳妥的方式。</p><h3 id="生成器和迭代器"><a href="#生成器和迭代器" class="headerlink" title="生成器和迭代器"></a>生成器和迭代器</h3><p>今天完善一个需求，统一检索中，检索的各个实体tab依次弹出，实现类似RXJS弹珠图的效果。</p><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">TabIterabor</span> &#123;</span><br><span class="line">    <span class="title function_">constructor</span>(<span class="params"></span></span><br><span class="line"><span class="params">        <span class="keyword">private</span> models: <span class="built_in">string</span>[],</span></span><br><span class="line"><span class="params">        <span class="keyword">private</span> query: <span class="built_in">string</span>,</span></span><br><span class="line"><span class="params">        <span class="keyword">private</span> index = <span class="number">0</span></span></span><br><span class="line"><span class="params">    </span>) &#123;&#125;</span><br><span class="line">    <span class="comment">// asyncIterator 标识是一个异步迭代器，next函数返回一个Promise对象</span></span><br><span class="line">    [<span class="title class_">Symbol</span>.<span class="property">asyncIterator</span>]() &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">    <span class="attr">next</span>: <span class="keyword">async</span> ()=&gt; &#123;</span><br><span class="line">                <span class="keyword">return</span> &#123; <span class="attr">value</span>: <span class="literal">null</span>, <span class="attr">done</span>: <span class="literal">true</span> &#125;</span><br><span class="line">            &#125;        </span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><h3 id="权限和菜单交互的设计"><a href="#权限和菜单交互的设计" class="headerlink" title="权限和菜单交互的设计"></a>权限和菜单交互的设计</h3><ul><li><p>隐藏菜单</p><ul><li>控制子菜单提升效果</li><li>空权限时不允许登录</li></ul></li><li><p>不隐藏菜单，将指定的路由页面设置成404或者403页面</p></li></ul>]]></content>
       
       
       <categories>
@@ -17,6 +17,14 @@
           
       </categories>
       
+      
+        <tags>
+            
+            <tag> 前端 </tag>
+            
+            <tag> JavaScript </tag>
+            
+        </tags>
       
     </entry>
     
