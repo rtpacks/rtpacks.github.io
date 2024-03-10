@@ -251,6 +251,14 @@
 <h3 id="状态理解"><a href="#状态理解" class="headerlink" title="状态理解"></a>状态理解</h3><p>员工希望的是自己的工作能够被看见</p>
 <p>比如测试提出的bug+需要修改的不合理的现象（需求）证明自己的工作量，但这对于研发是隐形的工作量。所以测试在提出未经过需求文档确定的需求时，研发不太愿意修改，目的就是这些是隐形的工作量，如果不把这些工作说出来</p>
 <p>简单来说，我们都希望自己的工作能够被看见和理解。</p>
+<h3 id="统一检索多个状态"><a href="#统一检索多个状态" class="headerlink" title="统一检索多个状态"></a>统一检索多个状态</h3><p>tabs加载中，不允许输入新的query，也不允许发起新的query</p>
+<p>tabs加载完成，第一个count非0的tab内容列表加载中，此时请求新query，加载新的tabs，此时上一次tabs中第一个count非0的tab请求完成，而当前tabs的第一个非0tab还没有发出请求（requestCount没有变化），所以会导致列表内容变化，展示不合理。</p>
+<p>这个现象的主要问题在新tabs的第一个count非0的tab还没有发出请求，导致requestCount没有变化，所以达不到丢弃旧数据的效果。</p>
+<p>解决方案：</p>
+<p>不能简单的判断extTabLoading处于loading就丢弃数据，因为存在第一个Tab发出的请求快于extTabs的请求。</p>
+<p>通过判断extTabs的请求次数来决定是否赋值。</p>
+<p>因为此时count非0的tab已经发出请求，此时再发新extTabs的请求，然后再发count非0的tab请求，count非0的tab请求可能快于extTabs，所以不能简单将extLoading时的列表内容丢弃，可能丢弃的就是需要请求的内容。并且在新的tab发出请求后，旧tab发出的请求一定会被丢弃（requestCount）。</p>
+<p>最终明确需要解决的问题时不同的extTabs请求，决定是否赋值数据。</p>
 
         </div>
 
