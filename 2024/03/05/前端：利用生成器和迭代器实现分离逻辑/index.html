@@ -252,9 +252,6 @@
 
 <h3 id="路由别名"><a href="#路由别名" class="headerlink" title="路由别名"></a>路由别名</h3><p>在权限菜单的控制中，会存在前后登录的用户权限不一样导致可见的菜单不一样的问题。怎么动态的控制用户跳转的主页呢？</p>
 <p>因为在404页面和登录成功后跳转都是 <code>/</code>，那就想到让 <code>/</code>跳转到 <code>/home</code>，在清洗权限路由（菜单）时，给找到的第一个有权限的路由标识路由别名，至此所有跳转到主页面 <code>/</code> 的都会跳转到 <code>/home</code>，而 <code>/home</code> 属于动态设置的路由别名，就可以动态的控制主页面了。</p>
-<h3 id="状态理解"><a href="#状态理解" class="headerlink" title="状态理解"></a>状态理解</h3><p>员工希望的是自己的工作能够被看见</p>
-<p>比如测试提出的bug+需要修改的不合理的现象（需求）证明自己的工作量，但这对于研发是隐形的工作量。所以测试在提出未经过需求文档确定的需求时，研发不太愿意修改，目的就是这些是隐形的工作量，如果不把这些工作说出来</p>
-<p>简单来说，我们都希望自己的工作能够被看见和理解。</p>
 <h3 id="统一检索多个状态"><a href="#统一检索多个状态" class="headerlink" title="统一检索多个状态"></a>统一检索多个状态</h3><p>tabs加载中，不允许输入新的query，也不允许发起新的query</p>
 <p>tabs加载完成，第一个count非0的tab内容列表加载中，此时请求新query，加载新的tabs，此时上一次tabs中第一个count非0的tab请求完成，而当前tabs的第一个非0tab还没有发出请求（requestCount没有变化），所以会导致列表内容变化，展示不合理。</p>
 <p>这个现象的主要问题在新tabs的第一个count非0的tab还没有发出请求，导致requestCount没有变化，所以达不到丢弃旧数据的效果。</p>
@@ -300,6 +297,8 @@
             </div>
         </section>
         <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2024/03/13/%E7%BC%96%E7%A8%8B%EF%BC%9A%E6%80%9D%E8%80%83%E7%BC%96%E7%A0%81%E7%9A%84%E6%96%B9%E5%BC%8F/">编程：思考编码的方式</a>
             
             
             <a class="next" rel="next" href="/2023/11/18/%E5%89%8D%E7%AB%AF%EF%BC%9Awindow-history%E4%BF%AE%E6%94%B9URL%E5%90%8E%EF%BC%8C%E8%B7%B3%E8%BD%AC%E5%86%8D%E5%9B%9E%E9%80%80%E4%B8%8D%E6%98%AF%E6%9C%80%E5%90%8E%E4%B8%80%E6%AC%A1%E7%9A%84URL/">前端：window.history修改URL后，跳转再回退不是最后一次的URL</a>
