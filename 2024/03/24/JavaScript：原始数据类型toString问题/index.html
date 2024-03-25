@@ -17,7 +17,7 @@
     <meta name="keywords" content="blog luckydog Az">
 
 
-<title>成长：要把自己的努力摆到台面上，让领导看见 | Az&#39;s Blog</title>
+<title>JavaScript：原始数据类型toString问题 | Az&#39;s Blog</title>
 
 
 
@@ -203,7 +203,7 @@
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title">成长：要把自己的努力摆到台面上，让领导看见</h1>
+            <h1 class="post-title">JavaScript：原始数据类型toString问题</h1>
             
                 <div class="post-meta">
                     
@@ -212,14 +212,14 @@
 
                     
                         <span class="post-time">
-                        Date: <a href="#">2024.03.13&nbsp;&nbsp;19:20:47</a>
+                        Date: <a href="#">2024.03.24&nbsp;&nbsp;18:04:33</a>
                         </span>
                     
                     
                         <span class="post-category">
                     Category:
                             
-                                <a href="/categories/%E5%B7%A5%E4%BD%9C/">工作</a>
+                                <a href="/categories/JavaScript/">JavaScript</a>
                             
                         </span>
                     
@@ -228,21 +228,29 @@
         </header>
 
         <div class="post-content">
-            <blockquote>
-<p>要把自己的努力摆到台面上，让领导看见</p>
-</blockquote>
-<h3 id="状态理解"><a href="#状态理解" class="headerlink" title="状态理解"></a>状态理解</h3><p>在工作中，很多的烦恼都是来自自己的工作没有被领导或其他同事看见，或者说没有被他们认同。</p>
-<p>很多时候，老板就是通过认可或者不认可我们的某部分想法，让我们保持在争相给老板表现努力的状态，如没事就加班，重复造轮子，高管互斗等。</p>
-<p>常见的场景：</p>
-<ul>
-<li>这我感觉没啥难的呀，这也难？这不挺简单的吗？</li>
-<li>大部分 <code>ToB</code> 的前端像个流水线一样，完全能在不理解业务的情况下开发需求，因为前端工作是直接面向用户的，只需要关注怎么呈现给用户就可以。在这个业务场景中前端是被当作资源池的，他们提出的建议不会被考虑，因而也不会考虑怎么去深入理解业务，做出更好的产品细节。</li>
-<li>测试专挑小细节，一些需求文档以外的细节也被测试当作bug提出，测试想通过这一部分体现自己工作努力。</li>
-</ul>
-<p>这几天回顾自己经历的事情：</p>
-<p>测试提出的 “bug+需要修改的不合理的现象（需求）”，希望以此证明自己的工作量，但这部分需求对于研发是隐形的工作。所以测试在提出未经过需求文档确定的需求时，研发不愿意修改。</p>
-<p>因为这些没有经过领导的评审，是隐形的工作量。在有限的开发时间内，可能会被领导指责为什么开发速度这么慢，为什么一个需求就会有这么多的bug。</p>
-<p>要把自己的努力摆到台面上，我们都希望自己的工作能被看见和理解。</p>
+            <h3 id="toString-NaN"><a href="#toString-NaN" class="headerlink" title="toString"></a>toString</h3><p>今天遇到一个有趣的事情，当以 <code>1.toString</code> 的方式调用 <code>toString</code> 方法时，会遇到一个语法错误：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Uncaught SyntaxError: Invalid or unexpected token</span><br></pre></td></tr></table></figure>
+
+<p>这是因为 JavaScript 解析器会将数字后面的点视为小数点的一部分，而不是属性访问符。因此，它尝试将 <code>1.</code> 解析为一个浮点数，接着遇到了 <code>toString</code>，这并不符合语法规则，从而导致错误。</p>
+<p>为了正确地调用数字字面量的方法，可以使用以下几种方式：</p>
+<ol>
+<li><p>使用两个点 <code>..</code>，第一个点被视为小数点，第二个点被解析为属性访问符。这样，解析器能够正确地识别出你是想访问数字的方法。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1.</span>.<span class="title function_">toString</span>(); <span class="comment">// 正确</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>将数字放在括号中，这样JavaScript解析器会将其视为一个表达式，从而可以直接访问其方法。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(<span class="number">1</span>).<span class="title function_">toString</span>(); <span class="comment">// 正确</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用数字对象的构造函数 <code>Number</code>。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Number</span>(<span class="number">1</span>).<span class="title function_">toString</span>(); <span class="comment">// 正确</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用 <code>[]</code></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>[<span class="string">&#x27;toString&#x27;</span>]() <span class="comment">// 正确</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>以上方法都可以避免初始的语法错误，能够正确地调用数字的 <code>toString</code> 方法。</p>
+<h3 id="装箱（Boxing）"><a href="#装箱（Boxing）" class="headerlink" title="装箱（Boxing）"></a>装箱（Boxing）</h3><p>为什么看似原始数据类型，也能够调用方法呢？</p>
+<p>在 JavaScript 中，原始数据类型（如数字、字符串、布尔值）虽然不是对象，但它们在访问方法或属性时会被临时包装成相应的<strong>对象类型</strong>，这个过程称为装箱（Boxing）。这就是为什么可以在原始数据类型上调用 <code>.toString</code> 方法或其他方法的原因。</p>
+<p>当执行 <code>1[&#39;toString&#39;]</code> 时，JavaScript 引擎会临时将数字 <code>1</code> 转换为 <code>Number</code> 对象，然后在这个临时创建的 <code>Number</code> 对象上调用 <code>toString</code> 方法。完成调用后，这个临时对象就会被丢弃。这个过程是自动发生的，对开发者来说是透明的。</p>
+<p>这种行为不仅适用于数字，还适用于其他原始数据类型。例如，字符串会被临时转换为 <code>String</code> 对象，布尔值会被转换为 <code>Boolean</code> 对象，从而允许在这些原始数据类型上访问方法和属性。</p>
 
         </div>
 
@@ -266,7 +274,7 @@
                 <span class="tag">
                     
                     
-                        <a href="/tags/%E5%B7%A5%E4%BD%9C/"># 工作</a>
+                        <a href="/tags/JavaScript/"># JavaScript</a>
                     
                         
                 </span>
@@ -279,10 +287,8 @@
         </section>
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="/2024/03/24/JavaScript%EF%BC%9A%E5%8E%9F%E5%A7%8B%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8BtoString%E9%97%AE%E9%A2%98/">JavaScript：原始数据类型toString问题</a>
             
-            
-            <a class="next" rel="next" href="/2024/03/13/%E7%BC%96%E7%A8%8B%EF%BC%9A%E6%80%9D%E8%80%83%E7%BC%96%E7%A0%81%E7%9A%84%E6%96%B9%E5%BC%8F/">编程：思考编码的方式</a>
+            <a class="next" rel="next" href="/2024/03/13/%E6%88%90%E9%95%BF%EF%BC%9A%E8%A6%81%E6%8A%8A%E8%87%AA%E5%B7%B1%E7%9A%84%E5%8A%AA%E5%8A%9B%E6%91%86%E5%88%B0%E5%8F%B0%E9%9D%A2%E4%B8%8A%EF%BC%8C%E8%AE%A9%E9%A2%86%E5%AF%BC%E7%9C%8B%E8%A7%81/">成长：要把自己的努力摆到台面上，让领导看见</a>
             
         </section>
 
