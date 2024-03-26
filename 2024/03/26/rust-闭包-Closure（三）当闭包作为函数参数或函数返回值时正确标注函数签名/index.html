@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Az">
+
+
+    <meta name="subtitle" content="Welcome!">
+
+
+
+    <meta name="keywords" content="blog luckydog Az">
+
+
+<title>rust: 闭包 Closure（三）当闭包作为函数参数或函数返回值时正确标注函数签名 | Az&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+<link rel="stylesheet" href="/fonts/custom/iconfont.css">
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">I&#39;m Az</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">I&#39;m Az</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">rust: 闭包 Closure（三）当闭包作为函数参数或函数返回值时正确标注函数签名</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Az</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">2024.03.26&nbsp;&nbsp;23:20:39</a>
+                        </span>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="闭包-Closure（三）当闭包作为函数参数或函数返回值时正确标注函数签名"><a href="#闭包-Closure（三）当闭包作为函数参数或函数返回值时正确标注函数签名" class="headerlink" title="闭包 Closure（三）当闭包作为函数参数或函数返回值时正确标注函数签名"></a>闭包 Closure（三）当闭包作为函数参数或函数返回值时正确标注函数签名</h2><blockquote>
+<p>本章内容较长，且在本章内容尾部更新了对闭包的认识，读者应读完全章，不要取其中部分。</p>
+</blockquote>
+<p>闭包是一种匿名函数，它可以赋值给变量也可以作为参数传递给其它函数，不同于函数的是，它允许捕获调用者作用域中的值。</p>
+<p>Rust 闭包在形式上借鉴了 Smalltalk 和 Ruby 语言，与函数最大的不同就是它的参数是通过 |parm1| 的形式进行声明，如果是多个参数就 |param1, param2,…|，闭包的形式定义：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">|param1, param2,...| &#123;</span><br><span class="line">    语句<span class="number">1</span>;</span><br><span class="line">    语句<span class="number">2</span>;</span><br><span class="line">    返回表达式</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="闭包作为函数返回值"><a href="#闭包作为函数返回值" class="headerlink" title="闭包作为函数返回值"></a>闭包作为函数返回值</h3><p>在实现 <code>Cacher</code> 中我们将闭包作为参数传递给函数（方法），现在考虑如何将闭包应用在函数的返回值上，因为只有这样，才能将内部值传递出去。</p>
+<p>闭包在 Rust 中有一个独特的特性：每个闭包都有其自己独特的匿名类型（这个类型就是类似 <code>i32 String</code> 的一种数据格式类型），这是因为<strong>闭包类型不仅仅是由其参数和返回类型定义</strong>的，还包括它捕获的环境。每个闭包根据其捕获的环境（变量、生命周期等）具有不同的类型。<br>即使两个闭包有相同的签名，它们也被认为是不同的类型。这意味着直接返回闭包类型（<code>Fn(i32) -&gt; i32</code>）是不可能的，因为闭包的具体类型是未知的，且无法直接命名。</p>
+<h4 id="正确标注闭包作为函数返回值"><a href="#正确标注闭包作为函数返回值" class="headerlink" title="正确标注闭包作为函数返回值"></a>正确标注闭包作为函数返回值</h4><p>使用 impl Trait 语法允许我们返回一个实现了指定 trait 的类型，而不需要指定具体的类型。（impl Trait 形式来说明一个函数返回了一个类型，该类型实现了某个特征，外部使用时只能使用该特征已声明的属性）(函数返回中的 impl trait)[<a target="_blank" rel="noopener" href="https://course.rs/basic/trait/trait.html#%E5%87%BD%E6%95%B0%E8%BF%94%E5%9B%9E%E4%B8%AD%E7%9A%84-impl-trait]">https://course.rs/basic/trait/trait.html#%E5%87%BD%E6%95%B0%E8%BF%94%E5%9B%9E%E4%B8%AD%E7%9A%84-impl-trait]</a><br>使用 <code>impl trait</code> 形式将闭包标识为实现了某个特征的类型后就可以返回。在闭包的场景中，Fn、FnMut、FnOnce 它们分别对应不同的闭包类型。通过返回 impl Fn(参数类型) -&gt; 返回值类型，这将告诉 Rust 编译器，返回一个实现了 Fn trait 的类型，但不指定具体是哪个类型。<br>简而言之，impl 关键词的使用是因为闭包的类型是匿名且不可直接命名的，而 impl Trait 语法允许我们以一种抽象的方式返回实现了特定 trait 的闭包，而无需关心闭包的具体类型。这大大增加了代码的灵活性和可重用性。</p>
+<p>为什么闭包作为函数的参数时不需要显式的指定 impl ？<br>当闭包作为参数传递给函数时，<strong>不需要</strong>使用 impl 关键字，是因为在这种情况下可以直接指定闭包参数遵循的特定 trait（如 Fn、FnMut 或 FnOnce）。<br>这是通过使用<strong>trait 界定（trait bounds）</strong>来实现的(简单理解为自动推断和实现)，它允许函数接受任何实现了指定 trait 的类型。这种方式提供了足够的灵活性，同时避免了 impl Trait 在参数位置的使用。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">factory</span>() <span class="punctuation">-&gt;</span> <span class="keyword">impl</span> <span class="title class_">Fn</span>(<span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="type">i32</span> &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">num</span> = <span class="number">5</span>;</span><br><span class="line">    <span class="keyword">move</span> |x| x + num</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="variable">f</span> = <span class="title function_ invoke__">factory</span>();</span><br><span class="line"><span class="keyword">let</span> <span class="variable">answer</span> = <span class="title function_ invoke__">f</span>(<span class="number">1</span>);</span><br><span class="line"><span class="built_in">assert_eq!</span>(<span class="number">6</span>, answer);</span><br></pre></td></tr></table></figure>
+
+<p>用 <code>impl trait</code> 形式实现闭包作为返回值返回，最大的问题是 <code>impl trait</code> 要求返回只能有一个具体的类型。而闭包即使签名一致也可能是不同的类型。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">编译错误 error</span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">factory</span>(x: <span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="keyword">impl</span> <span class="title class_">Fn</span>(<span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="type">i32</span> &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">num</span> = <span class="number">5</span>;</span><br><span class="line">    <span class="keyword">if</span> x &gt; <span class="number">1</span> &#123;</span><br><span class="line">        |x| x + num</span><br><span class="line">     &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">         |x| x - num</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>与 impl trait 相对应的，动态特征对象不限制某一个具体的类型，因此可改为使用动态特征对象解决这个问题。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">factory</span>(x:<span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="type">Box</span>&lt;<span class="keyword">dyn</span> <span class="title function_ invoke__">Fn</span>(<span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="type">i32</span>&gt; &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">num</span> = <span class="number">5</span>;</span><br><span class="line">    <span class="keyword">if</span> x &gt; <span class="number">1</span>&#123;</span><br><span class="line">        <span class="type">Box</span>::<span class="title function_ invoke__">new</span>(<span class="keyword">move</span> |x| x + num) <span class="comment">// 仅实现了Fn特征，需要将所有权强制移入</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="type">Box</span>::<span class="title function_ invoke__">new</span>(<span class="keyword">move</span> |x| x - num)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当闭包作为函数参数或函数返回值时如何正确的标注函数签名？</p>
+<p>首先，Rust 要求函数的参数和返回值的内存大小是固定的，因此闭包作为 Trait，它的内存大小不固定，如 <code>Fn(i32) -&gt; i32</code> 是不能够直接作为参数和返回值的。<br>但有特殊情况，把闭包当作参数时，可以直接声明为闭包类型如 <code>Fn(i32) -&gt; i32</code>，这是因为函数体内的<strong>参数闭包</strong>有且只有一种闭包类型，Rust 通过使用<strong>trait 界定（trait bounds）</strong>允许函数接受任何实现了指定 trait 的类型。<br>可以理解成 Rust 自动推断为 <code>impl trait</code> 形式。这种参数闭包直接声明为闭包类型的方式提供了足够的灵活性，同时避免了 impl Trait 直接在参数位置的使用。</p>
+<p>其次，闭包作为返回值时，为了遵守 “Rust 要求函数的参数和返回值的内存大小是固定的” 的原则，不能直接将闭包类型作为函数的返回值声明，而应该使用 <code>impl trait</code> 或特征对象。<br>如果只有一种闭包，那么可以直接使用 <code>impl trait</code> 形式，如 <code>impl Fn(i32) -&gt; i32</code>，表明返回一个实现了指定 trait 的类型，impl Trait 形式来说明一个函数返回了一个类型，该类型实现了某个特征，外部使用时只能使用该特征已声明的属性，因此是固定大小的。(函数返回中的 impl trait)[<a target="_blank" rel="noopener" href="https://course.rs/basic/trait/trait.html#%E5%87%BD%E6%95%B0%E8%BF%94%E5%9B%9E%E4%B8%AD%E7%9A%84-impl-trait]">https://course.rs/basic/trait/trait.html#%E5%87%BD%E6%95%B0%E8%BF%94%E5%9B%9E%E4%B8%AD%E7%9A%84-impl-trait]</a><br>如果存在多个闭包类型，那么可以使用特征对象 <code>Box&lt;dyn Fn(i32) -&gt; i32&gt;</code> 来作为函数的返回值。</p>
+<blockquote>
+<p>多个闭包类型即多个位置声明定义的闭包，每个闭包都有其自己独特的匿名类型（这个类型就是类似 <code>i32 String</code> 的一种数据格式类型），这是因为<strong>闭包类型不仅仅是由其参数和返回类型定义</strong>的，还包括它捕获的环境。每个闭包根据其捕获的环境（变量、生命周期等）具有不同的类型。</p>
+</blockquote>
+<p>同时，当函数返回闭包时，需要注意返回的闭包是否具有变量的所有权，因为只有闭包获取了变量的所有权，在当前函数执行结束返回后，变量才不会被释放，才不会出现引用问题。当闭包作为函数的返回值返回时，常见的闭包都会有 <code>move</code> 关键字强制获取变量的所有权。</p>
+<h3 id="amp-mut-amp-mut-的各种位置认识"><a href="#amp-mut-amp-mut-的各种位置认识" class="headerlink" title="&amp; mut &amp;mut 的各种位置认识"></a>&amp; mut &amp;mut 的各种位置认识</h3><p>阅读：<a target="_blank" rel="noopener" href="https://github.com/sunface/rust-course/discussions/619#discussioncomment-2623736">https://github.com/sunface/rust-course/discussions/619#discussioncomment-2623736</a></p>
+<ul>
+<li>fn do1(c: String) {}：表示实参会将所有权传递给 c</li>
+<li>fn do2(c: &amp;String) {}：表示实参的不可变引用（指针）传递给 c，实参需带 &amp; 声明</li>
+<li>fn do3(c: &amp;mut String) {}：表示实参可变引用（指针）传递给 c，实参需带 let mut 声明，且传入需带 &amp;mut</li>
+<li>fn do4(mut c: String) {}：表示实参会将所有权传递给 c，且在函数体内 c 是可读可写的，实参无需 mut 声明</li>
+<li>fn do5(mut c: &amp;mut String) {}：表示实参可变引用指向的值传递给 c，且 c 在函数体内部是可读可写的，实参需带 let mut 声明，且传入需带 &amp;mut</li>
+</ul>
+<p>一句话总结：在函数参数中，冒号左边的部分，如：mut c，这个 mut 是对 🪄 函数体内部有效 🪄；冒号右边的部分，如：&amp;mut String，这个 &amp;mut 是针对 🪄 外部实参传入时的形式（声明）说明 🪄。</p>
+<h3 id="阅读"><a href="#阅读" class="headerlink" title="阅读"></a>阅读</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://course.rs/basic/trait/intro.html">泛型、特征、特征对象</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/lilpig/p/17022845.html#%E5%A4%8D%E6%9D%82%E4%B8%80%E7%82%B9%E6%8A%8A%E9%97%AD%E5%8C%85%E7%94%A8%E5%9C%A8%E5%87%BD%E6%95%B0%E4%B8%8A">闭包的使用案例</a></li>
+</ul>
+<h3 id="Code"><a href="#Code" class="headerlink" title="Code"></a>Code</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span> &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">x</span> = <span class="number">2</span>;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">closure</span> = || <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, x);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">factory</span>() <span class="punctuation">-&gt;</span> <span class="keyword">impl</span> <span class="title class_">Fn</span>(<span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="type">i32</span> &#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">x</span> = <span class="number">2</span>;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">closure</span> = <span class="keyword">move</span> |a| x + a;</span><br><span class="line">        closure</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">f</span> = <span class="title function_ invoke__">factory</span>();</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, <span class="title function_ invoke__">f</span>(<span class="number">1</span>));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// impl trait 只允许一种具体的类型，在有多种类型返回值时不适用</span></span><br><span class="line">    <span class="comment">// fn factory(x: i32) -&gt; impl Fn(i32) -&gt; i32 &#123;</span></span><br><span class="line">    <span class="comment">//     let num = 5;</span></span><br><span class="line">    <span class="comment">//     if x &gt; 1 &#123;</span></span><br><span class="line">    <span class="comment">//         |x| x + num</span></span><br><span class="line">    <span class="comment">//     &#125; else &#123;</span></span><br><span class="line">    <span class="comment">//         |x| x - num</span></span><br><span class="line">    <span class="comment">//     &#125;</span></span><br><span class="line">    <span class="comment">// &#125;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">factoryDyn</span>(x: <span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="type">Box</span>&lt;<span class="keyword">dyn</span> <span class="title function_ invoke__">Fn</span>(<span class="type">i32</span>) <span class="punctuation">-&gt;</span> <span class="type">i32</span>&gt; &#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">num</span> = <span class="number">5</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> x &gt; <span class="number">1</span> &#123;</span><br><span class="line">            <span class="type">Box</span>::<span class="title function_ invoke__">new</span>(<span class="keyword">move</span> |x| x + num)</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="type">Box</span>::<span class="title function_ invoke__">new</span>(<span class="keyword">move</span> |x| x - num)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Az</span>
+                    </p>
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2024/03/25/rust-%E9%97%AD%E5%8C%85-Closure%EF%BC%88%E4%BA%8C%EF%BC%89%E9%87%8D%E6%96%B0%E8%AE%A4%E8%AF%86%E9%97%AD%E5%8C%85/">rust: 闭包 Closure（二）重新认识闭包</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+  <div class="copyright">
+    <span>© Az | Powered by Hexo & Chic</span>
+  </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
