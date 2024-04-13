@@ -279,9 +279,9 @@
       
         <tags>
             
-            <tag> JavaScript </tag>
-            
             <tag> 前端 </tag>
+            
+            <tag> JavaScript </tag>
             
         </tags>
       
@@ -907,13 +907,13 @@
             
             <tag> 浏览器 </tag>
             
-            <tag> Web性能与安全 </tag>
-            
             <tag> 性能 </tag>
             
             <tag> 安全 </tag>
             
             <tag> Web </tag>
+            
+            <tag> Web性能与安全 </tag>
             
             <tag> 缓存 </tag>
             
