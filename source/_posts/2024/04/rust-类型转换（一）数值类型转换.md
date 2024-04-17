@@ -2,7 +2,7 @@
 title: 'rust: 类型转换（一）数值类型转换'
 date: 2024-04-14 21:59:57
 categories: rust
-tags: 
+tags: rust
 ---
 
 ## 类型转换
