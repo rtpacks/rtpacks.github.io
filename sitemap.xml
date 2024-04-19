@@ -814,6 +814,13 @@
     <priority>0.2</priority>
   </url>
   
+  <url>
+    <loc>https://rtpacks.github.io/tags/QQ/</loc>
+    <lastmod>2024-04-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
 
   
   <url>
@@ -965,6 +972,13 @@
   
   <url>
     <loc>https://rtpacks.github.io/categories/Vue/</loc>
+    <lastmod>2024-04-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://rtpacks.github.io/categories/QQ/</loc>
     <lastmod>2024-04-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
