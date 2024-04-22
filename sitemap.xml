@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://rtpacks.github.io/2024/04/22/rust-%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%EF%BC%88%E4%B8%80%EF%BC%89/</loc>
+    
+    <lastmod>2024-04-22</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://rtpacks.github.io/2024/04/21/rust-%E6%95%B4%E6%95%B0%E4%B8%8E%E6%9E%9A%E4%B8%BE/</loc>
     
     <lastmod>2024-04-21</lastmod>
@@ -871,6 +880,13 @@
   
   <url>
     <loc>https://rtpacks.github.io/tags/rust%E6%95%B4%E6%95%B0%E4%B8%8E%E6%9E%9A%E4%B8%BE/</loc>
+    <lastmod>2024-04-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://rtpacks.github.io/tags/%E6%8C%87%E9%92%88/</loc>
     <lastmod>2024-04-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
