@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://rtpacks.github.io/2024/04/21/rust-%E4%B8%8D%E5%AE%9A%E9%95%BF%E7%B1%BB%E5%9E%8B-DST-%E5%92%8C%E5%AE%9A%E9%95%BF%E7%B1%BB%E5%9E%8B-Sized/</loc>
+    
+    <lastmod>2024-04-24</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://rtpacks.github.io/2024/04/24/wsl-wsl2%E6%97%A0%E6%B3%95%E8%B0%83%E7%94%A8systemctl/</loc>
     
     <lastmod>2024-04-24</lastmod>
@@ -23,15 +32,6 @@
     <loc>https://rtpacks.github.io/2024/04/21/rust-%E6%95%B4%E6%95%B0%E4%B8%8E%E6%9E%9A%E4%B8%BE/</loc>
     
     <lastmod>2024-04-21</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://rtpacks.github.io/2024/04/21/rust-%E4%B8%8D%E5%AE%9A%E9%95%BF%E7%B1%BB%E5%9E%8B-DST-%E5%92%8C%E5%AE%9A%E9%95%BF%E7%B1%BB%E5%9E%8B-Sized/</loc>
-    
-    <lastmod>2024-04-20</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
