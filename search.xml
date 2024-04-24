@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>wsl: wsl2无法调用systemctl</title>
+      <link href="/2024/04/24/wsl-wsl2%E6%97%A0%E6%B3%95%E8%B0%83%E7%94%A8systemctl/"/>
+      <url>/2024/04/24/wsl-wsl2%E6%97%A0%E6%B3%95%E8%B0%83%E7%94%A8systemctl/</url>
+      
+        <content type="html"><![CDATA[<p>wsl2 （debian）默认不支持systemctl，报错信息：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">System has not been booted with systemd as init system (PID 1). Can&#x27;t operate</span><br></pre></td></tr></table></figure><p>在读完 <a href="https://learn.microsoft.com/zh-cn/windows/wsl/wsl-config">WSL 中的高级设置配置 | Microsoft Learn</a> 配置方法后，发现只配置 <code>wsl.conf</code>  并不生效，还是以上错误：</p><figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[boot]</span></span><br><span class="line"><span class="attr">systemd</span>=<span class="literal">true</span></span><br></pre></td></tr></table></figure><p>重新安装 systemd 和 systemctl：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt install systemd systemctl -y</span><br></pre></td></tr></table></figure><p>退出wsl用户空间：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">exit</span><br></pre></td></tr></table></figure><p>关闭并重启wsl：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wsl --shutdown</span><br><span class="line"></span><br><span class="line">wsl</span><br></pre></td></tr></table></figure><h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><ul><li><a href="https://learn.microsoft.com/zh-cn/windows/wsl/systemd">使用 systemd 通过 WSL 管理 Linux 服务 | Microsoft Learn</a></li><li><a href="https://learn.microsoft.com/zh-cn/windows/wsl/wsl-config">WSL 中的高级设置配置 | Microsoft Learn</a></li><li><a href="https://blog.csdn.net/qq_43685040/article/details/112056242?spm=1001.2101.3001.6650.1&utm_medium=distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-1-112056242-blog-133523514.235%5Ev43%5Epc_blog_bottom_relevance_base4&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-1-112056242-blog-133523514.235%5Ev43%5Epc_blog_bottom_relevance_base4">System has not been booted with systemd as init system (PID 1). Can‘t operate.问题解决方法</a></li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> wsl </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> wsl </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>rust: 智能指针（一）</title>
       <link href="/2024/04/22/rust-%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%EF%BC%88%E4%B8%80%EF%BC%89/"/>
       <url>/2024/04/22/rust-%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%EF%BC%88%E4%B8%80%EF%BC%89/</url>
