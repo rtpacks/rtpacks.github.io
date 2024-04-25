@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Az">
+
+
+    <meta name="subtitle" content="Welcome!">
+
+
+
+    <meta name="keywords" content="blog luckydog Withx">
+
+
+<title>rust: 智能指针（二）Box 对象分配 | Az&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+<link rel="stylesheet" href="/fonts/custom/iconfont.css">
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">I&#39;m Az</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">I&#39;m Az</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">rust: 智能指针（二）Box 对象分配</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Az</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">2024.04.25&nbsp;&nbsp;23:22:32</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/rust/">rust</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="智能指针（二）Box-对象分配"><a href="#智能指针（二）Box-对象分配" class="headerlink" title="智能指针（二）Box 对象分配"></a>智能指针（二）Box 对象分配</h2><p><code>Box&lt;T&gt;</code> 是 Rust 中最常见的智能指针，功能是将一个值分配到堆上，然后在栈上保留一个<strong>智能指针</strong>指向堆上的数据。</p>
+<p>要想用好 Box，需要深入了解计算机堆栈概念。</p>
+<p><strong>栈</strong></p>
+<p>栈内存从<strong>高位地址向下增长</strong>，且栈内存是连续分配的，一般来说操作系统对栈内存的大小都有限制，因此 C 语言中无法创建任意长度的数组（存储在栈）。<br>在 Rust 中，main 线程的栈大小是 8MB，普通线程是 2MB，在函数被调用时 Rust 会在线程内存中创建一个<strong>临时栈空间</strong>，调用结束后 Rust 会让这个栈空间里的所有对象自动进入 Drop 流程，最后栈顶指针自动移动到上一个调用栈顶，无需程序员手动干预，因而栈内存申请和释放是非常高效的。</p>
+<p><strong>堆</strong></p>
+<p>与栈相反，堆上内存则是从低位地址向上增长，堆内存通常只受物理内存限制，而且通常是不连续的，因此从性能的角度看，栈往往比堆更高。</p>
+<p>相比其它语言，Rust 堆上对象还有一个特殊之处，它们都拥有一个所有者，因此<strong>受所有权规则的限制</strong>：当赋值时，发生的是<strong>所有权的转移</strong>（只需浅拷贝栈上的引用或智能指针即可）</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">foo</span>(x: &amp;<span class="type">str</span>) <span class="punctuation">-&gt;</span> <span class="type">String</span> &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">s</span> = <span class="string">&quot;Hello, &quot;</span>.<span class="title function_ invoke__">to_string</span>() + x;</span><br><span class="line">    s</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span></span><br><span class="line"><span class="variable">println</span>!(<span class="string">&quot;&#123;&#125;&quot;</span>, <span class="title function_ invoke__">foo</span>(<span class="string">&quot;World&quot;</span>));</span><br></pre></td></tr></table></figure>
+
+<p>在 foo 函数中，s 是一个 String 类型，它是由存储在堆中的实际类型数据和存储在栈中的智能指针结构体（指向堆数据）共同组成的。<br>当 s 被从 foo 函数转移给 x 变量时，只需要将 s 栈上的智能指针复制一份赋予给 x，而底层数据不发生改变即可完成堆数据的所有权从 foo 函数内部到 x 的转移。</p>
+<h3 id="栈与堆的性能"><a href="#栈与堆的性能" class="headerlink" title="栈与堆的性能"></a>栈与堆的性能</h3><p>很多人可能会觉得栈的性能肯定比堆高，其实未必，这里有一个大概：</p>
+<ul>
+<li>小型数据，在栈上的分配性能和读取性能都要比堆上高</li>
+<li>中型数据，栈上分配性能高，但是读取性能和堆上并无区别，因为无法利用寄存器或 CPU 高速缓存（空间非常小），最终还是要经过一次内存寻址</li>
+<li>大型数据，只建议在堆上分配和使用</li>
+</ul>
+<p>总结：栈的<strong>分配速度</strong>比堆快，但是<strong>读取速度</strong>往往取决于数据能不能放入寄存器或 CPU 高速缓存。因此不要因为堆的性能不如栈这个印象，就总是优先选择使用栈，导致代码更复杂的实现。</p>
+<h3 id="Box-的使用场景"><a href="#Box-的使用场景" class="headerlink" title="Box 的使用场景"></a>Box 的使用场景</h3><p>由于 Box 是简单的封装，除了将值存储在堆上外，并没有其它性能上的损耗。而性能和功能往往是鱼和熊掌，因此 Box 相比其它智能指针，功能较为单一，可以在以下场景中使用它：</p>
+<ul>
+<li>特意的将数据分配在堆上</li>
+<li>数据较大时，又不想在转移所有权时进行数据拷贝</li>
+<li>类型的大小在编译期无法确定，但是我们又需要固定大小的类型时（递归对象，切片等）</li>
+<li>特征对象，用于说明对象实现了一个特征，而不是某个特定的类型</li>
+</ul>
+<h4 id="使用-Box-lt-T-gt-将数据存储在堆上"><a href="#使用-Box-lt-T-gt-将数据存储在堆上" class="headerlink" title="使用 Box&lt;T&gt; 将数据存储在堆上"></a>使用 <code>Box&lt;T&gt;</code> 将数据存储在堆上</h4><p>如果一个变量拥有一个数值，即直接声明变量 <code>let a = 3</code>，那变量 a 必然是存储在栈上的，如果想要 a 的值存储在堆上就需要使用 <code>Box&lt;T&gt;</code>：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">a</span> = <span class="type">Box</span>::<span class="title function_ invoke__">new</span>(<span class="number">2</span>);</span><br><span class="line"><span class="built_in">println!</span>(<span class="string">&quot;a = &#123;&#125;&quot;</span>, a); <span class="comment">// a = 3</span></span><br><span class="line"><span class="comment">// let b = a + 1; // 代码将报错 cannot add `&#123;integer&#125;` to `Box&lt;&#123;integer&#125;&gt;`</span></span><br></pre></td></tr></table></figure>
+
+<p>这样就可以创建一个智能指针指向了存储在堆上的 3，并且 a 持有了该智能指针，而智能指针往往都实现了 Deref 和 Drop 特征，因此：</p>
+<ul>
+<li>println! 可以正常打印出 a 的值，是因为它隐式地调用了 Deref 对智能指针 a 进行了解引用 <code>*a</code>，即 <code>println!(&quot;&#123;&#125;&quot;, *a);</code></li>
+<li>最后一行代码 <code>let b = a + 1</code> 报错，是因为<strong>在表达式中不能自动地执行隐式 Deref 解引用操作</strong>，需要手动使用 <code>*</code> 操作符来显式的进行解引用 <code>let b = *a + 1</code></li>
+<li>a 持有的智能指针将在作用域结束（main 函数结束）时，被释放掉，这是因为 <code>Box&lt;T&gt;</code> 实现了 Drop 特征</li>
+</ul>
+<blockquote>
+<p>Rust 会在方法调用和字段访问时自动应用解引用强制多态（deref coercions），这意味着如果类型实现了 Deref trait，Rust 会自动将引用类型转换为目标类型。<br>在一些其他情况下，如在标准比较操作或赋值中，Rust 不会自动应用解引用：<strong>在表达式中不能自动地执行隐式 Deref 解引用操作</strong>，需要手动使用 <code>*</code> 操作符解引用。</p>
+</blockquote>
+<h4 id="避免栈上数据的拷贝"><a href="#避免栈上数据的拷贝" class="headerlink" title="避免栈上数据的拷贝"></a>避免栈上数据的拷贝</h4><p>当栈上数据转移所有权时，实际上是把<strong>底层数据拷贝了一份</strong>，最终新旧变量各自拥有不同的数据，因此<strong>所有权未转移</strong>。<br>而堆上则不然，底层数据并不会被拷贝，转移所有权仅仅是<strong>复制一份栈中的指针</strong>，再将新的指针赋予新的变量，然后让拥有旧指针的变量失效，最终完成了<strong>所有权转移</strong>：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">arr</span> = [<span class="number">0</span>;<span class="number">1000</span>]; <span class="comment">// 在栈上创建一个长度为1000的数组</span></span><br><span class="line"><span class="keyword">let</span> <span class="variable">arr1</span> = arr; <span class="comment">// 将arr所有权转移arr1，由于 `arr` 分配在栈上，因此这里实际上是直接重新深拷贝了一份数据</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="将动态大小类型变为-Sized-固定大小类型"><a href="#将动态大小类型变为-Sized-固定大小类型" class="headerlink" title="将动态大小类型变为 Sized 固定大小类型"></a>将动态大小类型变为 Sized 固定大小类型</h4><p>Rust 需要在编译时知道类型占用多少空间，如果一种类型在编译时无法知道具体的大小，那么被称为动态大小类型 DST。<br>在闭包作为函数返回值（特征对象）和不定长类型（切片）章节中就曾使用 <code>Box</code> 将动态大小类型 DST 转化为定长类型（Sized）。</p>
+<p>除了特征对象和切片外，这里还有一种无法在编译时知道大小的类型是<strong>递归类型</strong>：在类型定义中又使用到了自身，或者说该类型的值的一部分可以是相同类型的其它值。</p>
+<p>这种值的嵌套理论上可以无限进行下去，所以 Rust 不知道递归类型需要多少空间，以函数式语言中常见的 Cons List 为例，它的每个节点包含一个 i32 值，还包含了一个新的 List，递归类型声明：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> <span class="title class_">List</span> &#123;</span><br><span class="line">    <span class="title function_ invoke__">Cons</span>(<span class="type">i32</span>, List),</span><br><span class="line">    Nil,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>但是上面这段代码声明是错误的，因为这种嵌套可以无限进行下去，Rust 认为该类型是一个 DST 类型：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">recursive type `List` has infinite size //递归类型 `List` 拥有无限长的大小</span><br></pre></td></tr></table></figure>
+
+<p>该数据类型可以无限拓展，因此要将 List 改成存储在堆上，可使用 <code>Box</code>, <code>Rc</code>, <code>&amp;</code> 阻断该数据类型在栈上的无限拓展的可能，即变为在栈上存储指针（固定大小），堆存储实际数据：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> <span class="title class_">List</span> &#123;</span><br><span class="line">    <span class="title function_ invoke__">Cons</span>(<span class="type">i32</span>, <span class="type">Box</span>&lt;List&gt;), <span class="comment">// 固定大小，因为 i32 和 Box 都是固定大小</span></span><br><span class="line">    Nil,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="特征对象"><a href="#特征对象" class="headerlink" title="特征对象"></a>特征对象</h4><p>特征是一种动态尺寸类型（Dynamically Sized Types，DST），即特征本身不具有固定的大小，因此不能直接实例化为对象。<br>在 Rust 中，特征通常通过指针（如 <code>Box&lt;T&gt;、&amp;T</code>）来使用，这些指针指向实现了该特征的具体类型的实例。<br>这些<strong>对动态尺寸类型的一种封装，使其可以通过具体的、已知大小的指针类型（如 <code>Box&lt;dyn Trait&gt;</code> 或 <code>&amp;dyn Trait</code>）来使用，这种封装类型就是一个特征对象</strong>。因此特征对象可以被视为具体的、已知大小的类型。</p>
+<p>在这里需要更新前几章的描述：特征对象是动态尺寸类型，这是有误的。正确的认识是：特征是动态尺寸类型，而特征对象是对特征的一种封装，使特征可以通过具体的，已知大小的指针类型来描述，因此特征对象是一个定长类型（Sized）。</p>
+<h3 id="Box-内存布局"><a href="#Box-内存布局" class="headerlink" title="Box 内存布局"></a>Box 内存布局</h3><p>前面提到过：<br>不能简单的将变量与类型视为只是一块栈内存或一块堆内存数据，比如 Vec 类型，rust 将其分成两部分数据：存储在堆中的实际类型数据与存储在栈上的管理信息数据。<br>其中存储在栈上的管理信息数据是引用类型，包含实际类型数据的地址、元素的数量，分配的空间等信息，<strong>rust 通过栈上的管理信息数据掌控实际类型数据的信息</strong>。</p>
+<p>因此来看一下几种常见的类型的内存模型，首先是 <code>Vec&lt;i32&gt;</code> 的内存布局：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">(stack)    (heap)</span><br><span class="line">┌──────┐   ┌───┐</span><br><span class="line">│ vec1 │──→│ 1 │</span><br><span class="line">└──────┘   ├───┤</span><br><span class="line">           │ 2 │</span><br><span class="line">           ├───┤</span><br><span class="line">           │ 3 │</span><br><span class="line">           ├───┤</span><br><span class="line">           │ 4 │</span><br><span class="line">           └───┘</span><br></pre></td></tr></table></figure>
+
+<p>智能指针存储在栈中，然后指向堆上的数组数据，String 类型与 Vec 类型内存布局是类似的，栈上存储智能指针，堆上存储实际类型数据。</p>
+<p>那如果数组中每个元素都是一个 Box 对象呢？来看看 <code>Vec&lt;Box&lt;i32&gt;&gt;</code> 的内存布局：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">                    (heap)</span><br><span class="line">(stack)    (heap)   ┌───┐</span><br><span class="line">┌──────┐   ┌───┐ ┌─→│ 1 │</span><br><span class="line">│ vec2 │──→│B1 │─┘  └───┘</span><br><span class="line">└──────┘   ├───┤    ┌───┐</span><br><span class="line">           │B2 │───→│ 2 │</span><br><span class="line">           ├───┤    └───┘</span><br><span class="line">           │B3 │─┐  ┌───┐</span><br><span class="line">           ├───┤ └─→│ 3 │</span><br><span class="line">           │B4 │─┐  └───┘</span><br><span class="line">           └───┘ │  ┌───┐</span><br><span class="line">                 └─→│ 4 │</span><br><span class="line">                    └───┘</span><br></pre></td></tr></table></figure>
+
+<p>看出智能指针 vec2 依然是存储在栈上，然后指针指向一个存储在堆上的数组，该数组中每个元素都是一个 Box 智能指针，Box 智能指针又指向了存储在堆上的实际值。<br>因此当我们从数组中取出某个元素时，取到的是对应的智能指针 Box，需要对该智能指针进行解引用，才能取出最终的值，以 B1 为例：B1 代表被 Box 分配到堆上的值 1。</p>
+<blockquote>
+<p>Rust 会在方法调用和字段访问时自动应用解引用强制多态（deref coercions），在一些其他情况下，如在标准比较操作或赋值中，Rust 不会自动应用解引用：<strong>在表达式中不能自动地执行隐式 Deref 解引用操作</strong>。<br>println! 实际上调用的就是 Display 特征的方法，所以 println 时存在自动解引用</p>
+</blockquote>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">arr</span> = <span class="built_in">vec!</span>[<span class="type">Box</span>::<span class="title function_ invoke__">new</span>(<span class="number">1</span>), <span class="type">Box</span>::<span class="title function_ invoke__">new</span>(<span class="number">2</span>)];</span><br><span class="line"><span class="keyword">let</span> (first, second) = (&amp;arr[<span class="number">0</span>], &amp;arr[<span class="number">1</span>]);</span><br><span class="line"><span class="keyword">let</span> <span class="variable">sum</span> = **first + **second;</span><br><span class="line"><span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;, &#123;&#125;, &#123;&#125;&quot;</span>, first, second, sum);</span><br></pre></td></tr></table></figure>
+
+<p>以上代码有几个值得注意的点：</p>
+<ul>
+<li>使用 &amp; 借用数组中的元素，否则会报所有权错误</li>
+<li><strong>表达式不能隐式的解引用</strong>，因此必须使用 ** 做两次解引用，第一次将 <code>&amp;Box&lt;i32&gt;</code> 类型转成 <code>Box&lt;i32&gt;</code>，第二次将 <code>Box&lt;i32&gt;</code> 转成 i32</li>
+</ul>
+<h3 id="Box-leak"><a href="#Box-leak" class="headerlink" title="Box::leak"></a>Box::leak</h3><blockquote>
+<p><a target="_blank" rel="noopener" href="https://course.rs/advance/smart-pointer/box.html#boxleak">https://course.rs/advance/smart-pointer/box.html#boxleak</a></p>
+</blockquote>
+<p>需要一个在运行期初始化的值，变成可以全局有效（即和整个程序活得一样久），那么就可以使用 <code>Box::leak</code>，例如有一个存储配置的结构体实例，它是在运行期动态插入内容，那么就可以将其转为全局有效，虽然 <code>Rc/Arc</code> 也可以实现此功能，但是 <code>Box::leak</code> 是性能最高的。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>Box 背后是调用 jemalloc 来做内存管理，所以堆上的空间无需我们的手动管理。与此类似，带 GC 的语言中的对象也是借助于 Box 概念来实现的，<strong>一切皆对象 &#x3D; 一切皆 Box</strong>， 只不过我们无需自己去 Box 罢了。</p>
+<h3 id="Code"><a href="#Code" class="headerlink" title="Code"></a>Code</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">arr1</span> = [<span class="number">0</span>; <span class="number">1000</span>];</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">arr2</span> = arr1; <span class="comment">// 由于数组存储在栈上，因此赋值转移时，深拷贝了一份数据</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:p&#125;, &#123;:p&#125;&quot;</span>, &amp;arr1, &amp;arr2);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">foo</span>(x: &amp;<span class="type">str</span>) <span class="punctuation">-&gt;</span> <span class="type">String</span> &#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">s</span> = <span class="string">&quot;Hello, &quot;</span>.<span class="title function_ invoke__">to_string</span>() + x;</span><br><span class="line">        s</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">x</span> = <span class="title function_ invoke__">foo</span>(<span class="string">&quot;World&quot;</span>);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, x);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 智能指针往往都实现了 Deref 和 Drop 特征</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">a</span> = <span class="type">Box</span>::<span class="title function_ invoke__">new</span>(<span class="number">3</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">a_deref</span> = *a;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;, &#123;&#125;&quot;</span>, *a, a_deref);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 避免在栈上存储大型数据，以避免复制成本</span></span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">arr1</span> = [<span class="number">0</span>, <span class="number">1000</span>];</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">arr2</span> = arr1; <span class="comment">// 复制了一份arr1数据</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">sum1</span>: <span class="type">i32</span> = arr1.<span class="title function_ invoke__">into_iter</span>().<span class="title function_ invoke__">map</span>(|x| x + <span class="number">1</span>).<span class="title function_ invoke__">sum</span>();</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">sum2</span> = arr2.<span class="title function_ invoke__">into_iter</span>().<span class="title function_ invoke__">map</span>(|x| x + <span class="number">1</span>).sum::&lt;<span class="type">i32</span>&gt;();</span><br><span class="line">    arr1[<span class="number">0</span>] = <span class="number">1</span>;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;, &#123;&#125;&quot;</span>, arr1[<span class="number">0</span>], arr2[<span class="number">0</span>]);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将动态大小类型变为 Sized 固定大小类型</span></span><br><span class="line">    <span class="keyword">enum</span> <span class="title class_">List</span> &#123;</span><br><span class="line">        <span class="comment">// Cons(i32, List), 错误的，因为这个类型可以无限拓展，因此要存储在堆上，可使用  `Box`, `Rc`, `&amp;`) 打断动态，即将在栈上存储指针，而不存储实际数据</span></span><br><span class="line">        <span class="title function_ invoke__">Cons</span>(<span class="type">i32</span>, <span class="type">Box</span>&lt;List&gt;),</span><br><span class="line">        Nil,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// BOX内存布局，自动解引用和手动解引用</span></span><br><span class="line">    <span class="comment">// Rust 会在方法调用和字段访问时自动应用解引用强制多态（deref coercions），在一些其他情况下，如在标准比较操作或赋值中，Rust 不会自动应用解引用：**在表达式中不能自动地执行隐式 Deref 解引用操作**。</span></span><br><span class="line">    <span class="comment">// println! 实际上调用的就是Display特征的方法，所以println时存在自动解引用</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">arr</span> = <span class="built_in">vec!</span>[<span class="type">Box</span>::<span class="title function_ invoke__">new</span>(<span class="number">0</span>), <span class="type">Box</span>::<span class="title function_ invoke__">new</span>(<span class="number">1</span>)];</span><br><span class="line">    <span class="keyword">let</span> (first, second) = (&amp;arr[<span class="number">0</span>], &amp;arr[<span class="number">1</span>]);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">sum</span> = **first + **second;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;, &#123;&#125;, &#123;&#125;&quot;</span>, first, second, sum);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Az</span>
+                    </p>
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2024/04/24/wsl-wsl2%E6%97%A0%E6%B3%95%E8%B0%83%E7%94%A8systemctl/">wsl: wsl2无法调用systemctl</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+  <div class="copyright">
+    <span>© Az | Powered by Hexo & Chic</span>
+  </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
