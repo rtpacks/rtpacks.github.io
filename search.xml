@@ -52,9 +52,21 @@
       <link href="/2024/05/16/css-%E5%B8%B8%E7%94%A8%E7%9A%84css%E9%80%89%E6%8B%A9%E8%A7%84%E5%88%99/"/>
       <url>/2024/05/16/css-%E5%B8%B8%E7%94%A8%E7%9A%84css%E9%80%89%E6%8B%A9%E8%A7%84%E5%88%99/</url>
       
-        <content type="html"><![CDATA[]]></content>
+        <content type="html"><![CDATA[<h4 id="不含有特定子元素的元素"><a href="#不含有特定子元素的元素" class="headerlink" title="不含有特定子元素的元素"></a>不含有特定子元素的元素</h4><p><strong>alias</strong></p><ul><li>某个元素（不包含 | 没有）指定后代</li></ul><p><strong>code</strong></p><figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-pseudo">:not</span>(:<span class="built_in">has</span>( .child )) </span><br><span class="line"><span class="selector-pseudo">:not</span>(&amp;:<span class="built_in">has</span>( .child ))</span><br></pre></td></tr></table></figure>]]></content>
       
       
+      <categories>
+          
+          <category> 常用 css 选择规则 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> css </tag>
+            
+        </tags>
       
     </entry>
     
