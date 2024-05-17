@@ -4,25 +4,6 @@
   
     
     <entry>
-      <title>git: rebase 重复提交问题</title>
-      <link href="/2024/05/17/git-rebase-%E9%87%8D%E5%A4%8D%E6%8F%90%E4%BA%A4%E9%97%AE%E9%A2%98/"/>
-      <url>/2024/05/17/git-rebase-%E9%87%8D%E5%A4%8D%E6%8F%90%E4%BA%A4%E9%97%AE%E9%A2%98/</url>
-      
-        <content type="html"><![CDATA[<h3 id="QA"><a href="#QA" class="headerlink" title="QA"></a>QA</h3><p>git rebase 出现重复提交的原因可能是：</p><p>有时候rebase会出现冲突，在解决冲突后可能会错误地再次使用 <code>git add</code> 命令将已经解决冲突的文件添加到暂存区，从而导致相同的提交重复应用到最终的提交历史。</p><p>解决方法：</p><ol><li>可以在解决冲突后，使用<code>git rebase --skip</code>命令跳过当前提交，避免将解决冲突的提交重复应用</li><li>在进行rebase操作之前，先使用<code>git log</code>命令查看提交历史，并使用交互式rebase来删除重复的提交</li></ol><h3 id="References"><a href="#References" class="headerlink" title="References"></a>References</h3><ul><li><a href="https://geek-docs.com/git/git-questions/1298_git_git_commits_are_duplicated_in_the_same_branch_after_doing_a_rebase.html">https://geek-docs.com/git/git-questions/1298_git_git_commits_are_duplicated_in_the_same_branch_after_doing_a_rebase.html</a></li></ul>]]></content>
-      
-      
-      <categories>
-          
-          <category> git </category>
-          
-      </categories>
-      
-      
-    </entry>
-    
-    
-    
-    <entry>
       <title>rust: Rc 与 Arc 引用计数，多个不可变引用的释放管理</title>
       <link href="/2024/05/16/rust-Rc-%E4%B8%8E-Arc-%E5%BC%95%E7%94%A8%E8%AE%A1%E6%95%B0%EF%BC%8C%E5%A4%9A%E4%B8%AA%E4%B8%8D%E5%8F%AF%E5%8F%98%E5%BC%95%E7%94%A8%E7%9A%84%E9%87%8A%E6%94%BE%E7%AE%A1%E7%90%86/"/>
       <url>/2024/05/16/rust-Rc-%E4%B8%8E-Arc-%E5%BC%95%E7%94%A8%E8%AE%A1%E6%95%B0%EF%BC%8C%E5%A4%9A%E4%B8%AA%E4%B8%8D%E5%8F%AF%E5%8F%98%E5%BC%95%E7%94%A8%E7%9A%84%E9%87%8A%E6%94%BE%E7%AE%A1%E7%90%86/</url>
@@ -67,6 +48,25 @@
             <tag> css </tag>
             
         </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>git: rebase 重复提交问题</title>
+      <link href="/2024/05/12/git-rebase-%E9%87%8D%E5%A4%8D%E6%8F%90%E4%BA%A4%E9%97%AE%E9%A2%98/"/>
+      <url>/2024/05/12/git-rebase-%E9%87%8D%E5%A4%8D%E6%8F%90%E4%BA%A4%E9%97%AE%E9%A2%98/</url>
+      
+        <content type="html"><![CDATA[<h3 id="QA"><a href="#QA" class="headerlink" title="QA"></a>QA</h3><p>git rebase 出现重复提交的原因可能是：</p><p>有时候rebase会出现冲突，在解决冲突后可能会错误地再次使用 <code>git add</code> 命令将已经解决冲突的文件添加到暂存区，从而导致相同的提交重复应用到最终的提交历史。</p><p>解决方法：</p><ol><li>可以在解决冲突后，使用<code>git rebase --skip</code>命令跳过当前提交，避免将解决冲突的提交重复应用</li><li>在进行rebase操作之前，先使用<code>git log</code>命令查看提交历史，并使用交互式rebase来删除重复的提交</li></ol><h3 id="References"><a href="#References" class="headerlink" title="References"></a>References</h3><ul><li><a href="https://geek-docs.com/git/git-questions/1298_git_git_commits_are_duplicated_in_the_same_branch_after_doing_a_rebase.html">https://geek-docs.com/git/git-questions/1298_git_git_commits_are_duplicated_in_the_same_branch_after_doing_a_rebase.html</a></li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> git </category>
+          
+      </categories>
+      
       
     </entry>
     
