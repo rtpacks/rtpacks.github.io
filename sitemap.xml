@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://rtpacks.github.io/2024/05/19/rust-%E5%86%85%E9%83%A8%E5%8F%AF%E5%8F%98%E6%80%A7%E7%9A%84-Cell-%E4%B8%8E-RefCell/</loc>
+    
+    <lastmod>2024-05-18</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://rtpacks.github.io/2024/05/18/canvas-measureText-%E5%87%BD%E6%95%B0%E4%B8%8E%E7%9C%81%E7%95%A5%E5%8F%B7/</loc>
     
     <lastmod>2024-05-18</lastmod>
