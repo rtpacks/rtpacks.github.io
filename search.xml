@@ -4,6 +4,25 @@
   
     
     <entry>
+      <title>canvas: measureText 函数与省略号</title>
+      <link href="/2024/05/18/canvas-measureText-%E5%87%BD%E6%95%B0%E4%B8%8E%E7%9C%81%E7%95%A5%E5%8F%B7/"/>
+      <url>/2024/05/18/canvas-measureText-%E5%87%BD%E6%95%B0%E4%B8%8E%E7%9C%81%E7%95%A5%E5%8F%B7/</url>
+      
+        <content type="html"><![CDATA[<p>.</p><h2 id="canvas-measureText-函数与省略号"><a href="#canvas-measureText-函数与省略号" class="headerlink" title="canvas: measureText 函数与省略号"></a>canvas: measureText 函数与省略号</h2><p>利用 <code>measureText</code> 可以做 canvas 的省略号功能，代码示例：</p><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title function_">drawText</span> = (<span class="params">text: <span class="built_in">string</span>, maxWidth: <span class="built_in">number</span>, x: <span class="built_in">number</span>, y: <span class="built_in">number</span></span>) =&gt; &#123;</span><br><span class="line">    <span class="keyword">const</span> rawWidth = ctx.<span class="title function_">measureText</span>(text).<span class="property">width</span>;</span><br><span class="line">    <span class="keyword">let</span> textWidth = rawWidth;</span><br><span class="line">    <span class="keyword">while</span> (text &amp;&amp; textWidth &gt; maxWidth) &#123;</span><br><span class="line">        text = text.<span class="title function_">substring</span>(<span class="number">0</span>, text.<span class="property">length</span> - <span class="number">1</span>);</span><br><span class="line">        textWidth = ctx.<span class="title function_">measureText</span>(<span class="string">`<span class="subst">$&#123;text&#125;</span>...`</span>).<span class="property">width</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    text = rawWidth === textWidth ? text : <span class="string">`<span class="subst">$&#123;text&#125;</span>...`</span>;</span><br><span class="line">    ctx.<span class="title function_">fillText</span>(text, x, y);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+      <categories>
+          
+          <category> canvas </category>
+          
+      </categories>
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>rust: Rc 与 Arc 引用计数，多个不可变引用的释放管理</title>
       <link href="/2024/05/16/rust-Rc-%E4%B8%8E-Arc-%E5%BC%95%E7%94%A8%E8%AE%A1%E6%95%B0%EF%BC%8C%E5%A4%9A%E4%B8%AA%E4%B8%8D%E5%8F%AF%E5%8F%98%E5%BC%95%E7%94%A8%E7%9A%84%E9%87%8A%E6%94%BE%E7%AE%A1%E7%90%86/"/>
       <url>/2024/05/16/rust-Rc-%E4%B8%8E-Arc-%E5%BC%95%E7%94%A8%E8%AE%A1%E6%95%B0%EF%BC%8C%E5%A4%9A%E4%B8%AA%E4%B8%8D%E5%8F%AF%E5%8F%98%E5%BC%95%E7%94%A8%E7%9A%84%E9%87%8A%E6%94%BE%E7%AE%A1%E7%90%86/</url>
@@ -607,9 +626,9 @@
       
         <tags>
             
-            <tag> 前端 </tag>
-            
             <tag> JavaScript </tag>
+            
+            <tag> 前端 </tag>
             
         </tags>
       
