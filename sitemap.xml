@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://rtpacks.github.io/2024/06/08/rust-%E5%B9%B6%E5%8F%91-Concurrent-%E5%92%8C%E5%B9%B6%E8%A1%8C-Parallel/</loc>
+    
+    <lastmod>2024-06-19</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://rtpacks.github.io/2024/06/05/rust-%E7%BB%93%E6%9E%84%E4%BD%93%E7%9A%84%E8%87%AA%E5%BC%95%E7%94%A8/</loc>
     
     <lastmod>2024-06-19</lastmod>
