@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>rust: 内联汇编</title>
+      <link href="/2024/07/06/rust-%E5%86%85%E8%81%94%E6%B1%87%E7%BC%96/"/>
+      <url>/2024/07/06/rust-%E5%86%85%E8%81%94%E6%B1%87%E7%BC%96/</url>
+      
+        <content type="html"><![CDATA[<h2 id="内联汇编"><a href="#内联汇编" class="headerlink" title="内联汇编"></a>内联汇编</h2><p>暂时不学，阅读：<a href="https://course.rs/advance/unsafe/inline-asm.html#%E5%86%85%E8%81%94%E6%B1%87%E7%BC%96">https://course.rs/advance/unsafe/inline-asm.html#内联汇编</a></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> Rust </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Rust </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>rust: unsafe：unsafe superpowers</title>
       <link href="/2024/07/02/rust-unsafe%EF%BC%9Aunsafe-superpowers/"/>
       <url>/2024/07/02/rust-unsafe%EF%BC%9Aunsafe-superpowers/</url>
