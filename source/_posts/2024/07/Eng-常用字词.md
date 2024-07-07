@@ -1,5 +1,5 @@
 ---
-title: 'rust: Eng: 常用字词'
+title: 'Eng: 常用字词'
 date: 2024-07-07 11:49:19
 categories: English
 tags: English
