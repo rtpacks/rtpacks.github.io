@@ -110,6 +110,12 @@ theme_config:
   # favicon
   favicon: /favicon.ico
 
+# theme: cactus
+# theme_config:
+#   # favicon
+#   favicon: /favicon.ico
+#   colorscheme: white
+
 stylus:
   compress: true
   sourcemaps:
