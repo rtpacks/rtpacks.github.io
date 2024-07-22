@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>ts: Record definition</title>
+      <link href="/2024/07/22/ts-Record-definition/"/>
+      <url>/2024/07/22/ts-Record-definition/</url>
+      
+        <content type="html"><![CDATA[<h2 id="ts-Record-definition"><a href="#ts-Record-definition" class="headerlink" title="ts: Record definition"></a>ts: Record definition</h2><p>一直在用 Record，对其中的属性很好奇，今天看了一下定义，发现其中有一个 <code>keyof any</code>：</p><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="title class_">Record</span>&lt;K <span class="keyword">extends</span> keyof <span class="built_in">any</span>, T&gt; = &#123;</span><br><span class="line">    [P <span class="keyword">in</span> K]: T;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure><p>查看 <code>keyof any</code> 等于的值：</p><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="variable constant_">KEY</span> =  keyof <span class="built_in">any</span>; <span class="comment">// string | number | symbol</span></span><br></pre></td></tr></table></figure><p>这是因为 JavaScript 所有的数据类型，它的 key 都是由 <code>string | number | symbol</code> 这三种组成的。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> TypeScript </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> TypeScript </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>rust: async 异步编程：Future 特征与任务调度</title>
       <link href="/2024/07/13/rust-async-%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B%EF%BC%9AFuture-%E7%89%B9%E5%BE%81%E4%B8%8E%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6/"/>
       <url>/2024/07/13/rust-async-%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B%EF%BC%9AFuture-%E7%89%B9%E5%BE%81%E4%B8%8E%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6/</url>
