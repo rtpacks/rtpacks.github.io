@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Az">
+
+
+    <meta name="subtitle" content="Welcome!">
+
+
+
+    <meta name="keywords" content="blog luckydog Withx">
+
+
+<title>workflow: 项目工程利用 bumpp + github action 控制版本发包 | Az&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+<link rel="stylesheet" href="/fonts/custom/iconfont.css">
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">I&#39;m Az</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">I&#39;m Az</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">workflow: 项目工程利用 bumpp + github action 控制版本发包</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Az</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">2024.08.16&nbsp;&nbsp;15:11:45</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/workflow/">workflow</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="项目工程利用-bumpp-github-action-控制版本发包"><a href="#项目工程利用-bumpp-github-action-控制版本发包" class="headerlink" title="项目工程利用 bumpp + github action 控制版本发包"></a>项目工程利用 bumpp + github action 控制版本发包</h2><p>学习到 vueuse, mixte 两个库利用 <code>bumpp + github action</code> 控制 monorepo 项目版本的具体流程，它共分为三步：</p>
+<ul>
+<li>项目的正常打包</li>
+<li>commitlint + changelog + bumpp 规范项目的 commit 信息，根据 commit 信息生成更新日志，最后由 bumpp 确定生成版本</li>
+<li>github action 根据 git 事件确定发版和更新 release assets</li>
+</ul>
+<p>当然 <code>bumpp + github action</code> 这种搭配也是适合非 monorepo 类型项目的版本控制，如果希望每个库都生成对应的 changelog，可以考虑使用 changesets。</p>
+<p>在阅读 <a target="_blank" rel="noopener" href="https://juejin.cn/post/7181409989670961207">基于 pnpm + changesets 的 monorepo 最佳实践最近在设计多组件包管理的 Monorepo 方案 - 掘金 (juejin.cn)</a>  后，再参考本文项目流程：<a target="_blank" rel="noopener" href="https://github.com/rtpacks/toolkit">rtpacks&#x2F;toolkit (github.com)</a>，这里使用 pnpm 作为 workspace 和包管理器。项目根目录新建 <code>.npmrc</code> 和 <code>pnpm-workspace.yml</code> 两个文件。</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># .npmrc</span></span><br><span class="line"><span class="attr">shamefully-hoist</span>=<span class="literal">true</span></span><br><span class="line"><span class="attr">strict-peer-dependencies</span>=<span class="literal">false</span></span><br><span class="line"><span class="attr">package-manager-strict</span>=<span class="literal">false</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># </span></span><br><span class="line"><span class="attr">packages:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">&quot;packages/*&quot;</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">playground</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">docs</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="1-项目的正常打包"><a href="#1-项目的正常打包" class="headerlink" title="1. 项目的正常打包"></a>1. 项目的正常打包</h3><p>采用 monorepo 形式管理多个库，涉及到多个库的打包配置，这里 vueuse 使用手动配置 meta&#x2F;packages 和 scripts 来完成。它分为三步：</p>
+<ul>
+<li>配置 meta&#x2F;packages.ts 中每个 package 的打包信息</li>
+<li>配置读取 meta&#x2F;packages.ts 的打包脚本</li>
+<li>配置使用打包脚本的命令</li>
+</ul>
+<p>meta&#x2F;packages 与 scripts：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── CHANGELOG.md</span><br><span class="line">├── eslint.config.js</span><br><span class="line">├── meta</span><br><span class="line">│   ├── alias.ts</span><br><span class="line">│   └── packages.ts</span><br><span class="line">├── package.json</span><br><span class="line">├── packages</span><br><span class="line">│   ├── core</span><br><span class="line">│   ├── react</span><br><span class="line">│   └── vue</span><br><span class="line">├── pnpm-lock.yaml</span><br><span class="line">├── pnpm-workspace.yaml</span><br><span class="line">├── scripts</span><br><span class="line">│   ├── build.ts</span><br><span class="line">│   ├── release.ts</span><br><span class="line">│   └── verify-commit.ts</span><br><span class="line">└── tsconfig.json</span><br></pre></td></tr></table></figure>
+
+
+
+<p>meta&#x2F;packages 记录每个 package 的打包配置信息，供 scripts 使用：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// import type &#123; PackageManifest &#125; from &#x27;@vueuse/metadata&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">interface</span> <span class="title class_">PackageManifest</span> &#123;</span><br><span class="line">  <span class="attr">entry</span>: <span class="built_in">string</span>;</span><br><span class="line">  <span class="attr">outDir</span>: <span class="built_in">string</span>;</span><br><span class="line">  outputFileName?: <span class="built_in">string</span>;</span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * 是否使用 Vue 及相关插件</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  useVue?: <span class="built_in">boolean</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* feature 额外的拓展 */</span></span><br><span class="line">  author?: <span class="built_in">string</span>;</span><br><span class="line">  description?: <span class="built_in">string</span>;</span><br><span class="line">  external?: <span class="built_in">string</span>[];</span><br><span class="line">  globals?: <span class="title class_">Record</span>&lt;<span class="built_in">string</span>, <span class="built_in">string</span>&gt;;</span><br><span class="line">  manualImport?: <span class="built_in">boolean</span>;</span><br><span class="line">  deprecated?: <span class="built_in">boolean</span>;</span><br><span class="line">  submodules?: <span class="built_in">boolean</span>;</span><br><span class="line">  build?: <span class="built_in">boolean</span>;</span><br><span class="line">  iife?: <span class="built_in">boolean</span>;</span><br><span class="line">  cjs?: <span class="built_in">boolean</span>;</span><br><span class="line">  mjs?: <span class="built_in">boolean</span>;</span><br><span class="line">  dts?: <span class="built_in">boolean</span>;</span><br><span class="line">  target?: <span class="built_in">string</span>;</span><br><span class="line">  utils?: <span class="built_in">boolean</span>;</span><br><span class="line">  copy?: <span class="built_in">string</span>[];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="attr">packages</span>: <span class="title class_">PackageManifest</span>[] = [</span><br><span class="line">  <span class="comment">// @rtpackx/core</span></span><br><span class="line">  &#123;</span><br><span class="line">    <span class="attr">entry</span>: <span class="string">&quot;packages/core/index.ts&quot;</span>,</span><br><span class="line">    <span class="attr">outDir</span>: <span class="string">&quot;packages/core/dist&quot;</span>,</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="comment">// @rtpackx/vue</span></span><br><span class="line">  &#123;</span><br><span class="line">    <span class="attr">entry</span>: <span class="string">&quot;packages/vue/index.ts&quot;</span>,</span><br><span class="line">    <span class="attr">outDir</span>: <span class="string">&quot;packages/vue/dist&quot;</span>,</span><br><span class="line">    <span class="attr">external</span>: [<span class="string">&quot;vue-router&quot;</span>], <span class="comment">// 排除打包的库，由外部提供依赖</span></span><br><span class="line">  &#125;,</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+
+
+
+<p>scripts 中用 node 读取 meta&#x2F;packages 信息，然后用 vite 根据配置信息打包生成产物：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; dirname, resolve &#125; <span class="keyword">from</span> <span class="string">&quot;node:path&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; fileURLToPath &#125; <span class="keyword">from</span> <span class="string">&quot;node:url&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; build &#125; <span class="keyword">from</span> <span class="string">&quot;vite&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="title class_">Vue</span> <span class="keyword">from</span> <span class="string">&quot;@vitejs/plugin-vue&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="title class_">VueJsx</span> <span class="keyword">from</span> <span class="string">&quot;@vitejs/plugin-vue-jsx&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> fs <span class="keyword">from</span> <span class="string">&quot;fs-extra&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; alias &#125; <span class="keyword">from</span> <span class="string">&quot;../meta/alias&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; packages &#125; <span class="keyword">from</span> <span class="string">&quot;../meta/packages&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> configVisualizerPlugin <span class="keyword">from</span> <span class="string">&quot;../config/plugin/visualizer&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> __dirname = <span class="title function_">dirname</span>(<span class="title function_">fileURLToPath</span>(<span class="keyword">import</span>.<span class="property">meta</span>.<span class="property">url</span>));</span><br><span class="line">fs.<span class="title function_">removeSync</span>(<span class="title function_">resolve</span>(__dirname, <span class="string">&quot;../packages/auto-imports.d.ts&quot;</span>));</span><br><span class="line">fs.<span class="title function_">removeSync</span>(<span class="title function_">resolve</span>(__dirname, <span class="string">&quot;../packages/.eslintrc-auto-import.json&quot;</span>));</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> externals = [<span class="string">&quot;vue&quot;</span>, <span class="string">&quot;vue-router&quot;</span>, <span class="string">&quot;vue-demi&quot;</span>, <span class="string">&quot;@vueuse/core&quot;</span>];</span><br><span class="line"><span class="keyword">const</span> <span class="title function_">execFn</span> = <span class="keyword">async</span> (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">const</span> manifest <span class="keyword">of</span> packages) &#123;</span><br><span class="line">    <span class="keyword">const</span> &#123; useVue, entry, outDir, outputFileName, external &#125; = manifest;</span><br><span class="line">    <span class="keyword">await</span> <span class="title function_">build</span>(&#123;</span><br><span class="line">      <span class="attr">resolve</span>: &#123; alias &#125;,</span><br><span class="line">      <span class="attr">plugins</span>: [<span class="title function_">configVisualizerPlugin</span>(), useVue &amp;&amp; [<span class="title class_">Vue</span>(), <span class="title class_">VueJsx</span>()]],</span><br><span class="line">      <span class="attr">build</span>: &#123;</span><br><span class="line">        outDir,</span><br><span class="line">        <span class="attr">lib</span>: &#123;</span><br><span class="line">          entry,</span><br><span class="line">          <span class="attr">formats</span>: [<span class="string">&quot;es&quot;</span>, <span class="string">&quot;cjs&quot;</span>],</span><br><span class="line">          <span class="attr">fileName</span>: <span class="function">(<span class="params">format</span>) =&gt;</span> <span class="string">`<span class="subst">$&#123;outputFileName ?? <span class="string">&quot;index&quot;</span>&#125;</span>.<span class="subst">$&#123;format === <span class="string">&quot;es&quot;</span> ? <span class="string">&quot;mjs&quot;</span> : format&#125;</span>`</span>,</span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">minify</span>: <span class="literal">true</span>,</span><br><span class="line">        <span class="attr">emptyOutDir</span>: <span class="literal">false</span>,</span><br><span class="line">        <span class="attr">rollupOptions</span>: &#123;</span><br><span class="line">          <span class="attr">external</span>: externals.<span class="title function_">concat</span>(external ?? []),</span><br><span class="line">        &#125;,</span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="attr">esbuild</span>: &#123;</span><br><span class="line">        <span class="attr">drop</span>: [<span class="string">&quot;console&quot;</span>, <span class="string">&quot;debugger&quot;</span>],</span><br><span class="line">        <span class="attr">minifyIdentifiers</span>: <span class="literal">true</span>,</span><br><span class="line">        <span class="attr">minifyWhitespace</span>: <span class="literal">true</span>,</span><br><span class="line">        <span class="attr">minifySyntax</span>: <span class="literal">true</span>,</span><br><span class="line">        <span class="attr">treeShaking</span>: <span class="literal">true</span>,</span><br><span class="line">      &#125;,</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="title function_">execFn</span>();</span><br></pre></td></tr></table></figure>
+
+
+
+<p>最后配置顶部 package.json 的运行命令，这样在 meta&#x2F;packages.ts 中配置的不同 package 都能生成产物：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;scripts&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;build&quot;</span><span class="punctuation">:</span> <span class="string">&quot;pnpm install &amp;&amp; tsx scripts/build.ts&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="2-commitlint-changelog-bumpp"><a href="#2-commitlint-changelog-bumpp" class="headerlink" title="2. commitlint + changelog + bumpp"></a>2. commitlint + changelog + bumpp</h3><p>如果希望自动生成完整的 changelog，那么规范的 commit 信息必不可少，这里利用 commitlint + changelog + bumpp 规范项目的 commit 信息，然后 changelog 根据 commit 信息生成更新日志，最后由 bumpp 确定生成版本。它分为三步：</p>
+<ul>
+<li>使用 git-hooks + commitlint 规范 commit 信息</li>
+<li>使用 changelog 工具生成 CHANGELOG.md</li>
+<li>使用 bumpp 自动修改顶层的 package.json 和 packages 下各个子包的 package.json 版本，并打上 tag 版本</li>
+</ul>
+<p>使用 commitlint 规范提交的 commit 信息：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pnpm add -Dw simple-git simple-git-hooks @commitlint/cli @commitlint/config-conventional bumpp tsx</span><br></pre></td></tr></table></figure>
+
+<p>配置 git-hook 和 changelog，这里的 lint-staged 默认你已经配置好，verify-commit.ts 可以在本项目中获取：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;scripts&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">         <span class="attr">&quot;changelog&quot;</span><span class="punctuation">:</span> <span class="string">&quot;npx conventional-changelog -p angular -i CHANGELOG.md -s -r 0&quot;</span><span class="punctuation">,</span></span><br><span class="line">         <span class="attr">&quot;preinstall&quot;</span><span class="punctuation">:</span> <span class="string">&quot;npx only-allow pnpm&quot;</span><span class="punctuation">,</span></span><br><span class="line">         <span class="attr">&quot;postinstall&quot;</span><span class="punctuation">:</span> <span class="string">&quot;simple-git-hooks&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;simple-git-hooks&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;pre-commit&quot;</span><span class="punctuation">:</span> <span class="string">&quot;pnpm lint-staged&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;commit-msg&quot;</span><span class="punctuation">:</span> <span class="string">&quot;npx tsx scripts/verify-commit.ts&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>现在执行 commit 提交就有规范要求，使用 <code>pnpm changelog</code> 即可根据规范的 commit 信息生成 CHANGELOG.md。</p>
+<p>最后使用 bumpp 修改版本号并打上对应的 tag：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;scripts&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;release&quot;</span><span class="punctuation">:</span> <span class="string">&quot;pnpm changelog &amp;&amp; tsx scripts/release.ts&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// scripts/release.ts</span></span><br><span class="line"><span class="keyword">import</span> process <span class="keyword">from</span> <span class="string">&quot;node:process&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; execSync &#125; <span class="keyword">from</span> <span class="string">&quot;node:child_process&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> fs <span class="keyword">from</span> <span class="string">&quot;fs-extra&quot;</span>;</span><br><span class="line"><span class="comment">// import &#123; readJSONSync &#125; from &quot;fs-extra&quot;; // error, The requested module &#x27;fs-extra&#x27; does not provide an export named &#x27;readJSONSync&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> &#123; <span class="attr">version</span>: oldVersion &#125; = fs.<span class="title function_">readJSONSync</span>(<span class="string">&quot;package.json&quot;</span>);</span><br><span class="line"><span class="title function_">execSync</span>(<span class="string">&quot;bumpp -r --no-commit --no-tag --no-push&quot;</span>, &#123; <span class="attr">stdio</span>: <span class="string">&quot;inherit&quot;</span> &#125;);</span><br><span class="line"><span class="keyword">const</span> &#123; version &#125; = fs.<span class="title function_">readJSONSync</span>(<span class="string">&quot;package.json&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (oldVersion === version) &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;canceled&quot;</span>);</span><br><span class="line">  process.<span class="title function_">exit</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title function_">execSync</span>(<span class="string">&quot;git add .&quot;</span>, &#123; <span class="attr">stdio</span>: <span class="string">&quot;inherit&quot;</span> &#125;);</span><br><span class="line"><span class="title function_">execSync</span>(<span class="string">`git commit -m &quot;chore: release v<span class="subst">$&#123;version&#125;</span>&quot;`</span>, &#123; <span class="attr">stdio</span>: <span class="string">&quot;inherit&quot;</span> &#125;);</span><br><span class="line"><span class="title function_">execSync</span>(<span class="string">`git tag -a v<span class="subst">$&#123;version&#125;</span> -m &quot;v<span class="subst">$&#123;version&#125;</span>&quot;`</span>, &#123; <span class="attr">stdio</span>: <span class="string">&quot;inherit&quot;</span> &#125;);</span><br></pre></td></tr></table></figure>
+
+
+
+<p>推送到 github，不要忘记 <code>--tags</code> ：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git push -u</span><br><span class="line">git push -u --tags</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="3-github-action"><a href="#3-github-action" class="headerlink" title="3. github action"></a>3. github action</h3><p>到目前位置，配置已经完成了绝大部分：</p>
+<ul>
+<li>项目可以正常打包</li>
+<li>commit 信息规范，根据 commit 信息可以自动生成 CHANGELOG.md，利用 bumpp 可以快速正确的修改版本</li>
+</ul>
+<p>最后利用 github action 完成 npmjs 发包和创建 github release assets，在 <code>.github/workflows</code> 中定义 github action：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">//</span> <span class="string">npm-publish.yaml</span></span><br><span class="line"><span class="attr">name:</span> <span class="string">Node.js</span> <span class="string">Package</span></span><br><span class="line"></span><br><span class="line"><span class="attr">on:</span></span><br><span class="line">  <span class="attr">push:</span></span><br><span class="line">    <span class="attr">tags:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;v*&quot;</span> <span class="comment"># for bumpp</span></span><br><span class="line"></span><br><span class="line"><span class="attr">permissions:</span></span><br><span class="line">  <span class="attr">contents:</span> <span class="string">write</span></span><br><span class="line"></span><br><span class="line"><span class="attr">jobs:</span></span><br><span class="line">  <span class="attr">publish:</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br><span class="line"></span><br><span class="line">    <span class="attr">steps:</span></span><br><span class="line">      <span class="comment"># env</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Setup</span> <span class="string">git</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">actions/checkout@v4</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">fetch-depth:</span> <span class="number">0</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Setup</span> <span class="string">pnpm</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">pnpm/action-setup@v4</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Setup</span> <span class="string">node</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">actions/setup-node@v4</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">node-version:</span> <span class="number">20</span></span><br><span class="line">          <span class="attr">registry-url:</span> <span class="string">https://registry.npmjs.org/</span></span><br><span class="line">          <span class="attr">cache:</span> <span class="string">pnpm</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Setup</span> <span class="string">Install</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">pnpm</span> <span class="string">install</span></span><br><span class="line">      <span class="comment"># build</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Build</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">pnpm</span> <span class="string">build</span></span><br><span class="line">        <span class="attr">env:</span></span><br><span class="line">          <span class="attr">NODE_OPTIONS:</span> <span class="string">--max-old-space-size=6144</span></span><br><span class="line">      <span class="comment"># npm-publish</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Publish</span> <span class="string">Beta</span></span><br><span class="line">        <span class="attr">if:</span> <span class="string">contains(github.event.release.name,</span> <span class="string">&#x27;beta&#x27;</span><span class="string">)</span> <span class="string">==</span> <span class="literal">true</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">pnpm</span> <span class="string">publish</span> <span class="string">-r</span> <span class="string">--access</span> <span class="string">public</span> <span class="string">--no-git-checks</span> <span class="string">--tag</span> <span class="string">beta</span></span><br><span class="line">        <span class="attr">env:</span></span><br><span class="line">          <span class="attr">NODE_AUTH_TOKEN:</span> <span class="string">$&#123;&#123;</span> <span class="string">secrets.NPM_TOKEN</span> <span class="string">&#125;&#125;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Publish</span></span><br><span class="line">        <span class="attr">if:</span> <span class="string">contains(github.event.release.name,</span> <span class="string">&#x27;beta&#x27;</span><span class="string">)</span> <span class="string">==</span> <span class="literal">false</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">pnpm</span> <span class="string">publish</span> <span class="string">-r</span> <span class="string">--access</span> <span class="string">public</span> <span class="string">--no-git-checks</span></span><br><span class="line">        <span class="attr">env:</span></span><br><span class="line">          <span class="attr">NODE_AUTH_TOKEN:</span> <span class="string">$&#123;&#123;</span> <span class="string">secrets.NPM_TOKEN</span> <span class="string">&#125;&#125;</span></span><br><span class="line">      <span class="comment"># github release</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Github</span> <span class="string">Release</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">softprops/action-gh-release@v2</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="comment"># files: |</span></span><br><span class="line">          <span class="comment">#   CHANGELOG.md</span></span><br><span class="line">          <span class="comment">#   LICENSE</span></span><br><span class="line">          <span class="attr">generate_release_notes:</span> <span class="literal">true</span></span><br><span class="line">        <span class="attr">env:</span></span><br><span class="line">          <span class="attr">GITHUB_TOKEN:</span> <span class="string">$&#123;&#123;</span> <span class="string">secrets.ACCESS_TOKEN</span> <span class="string">&#125;&#125;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>这里利用 <code>git</code> 触发 tags 推送事件，由 bumpp 打上的 tag 推送触发，构建项目并更新 npmjs 和 github release assets。NPM_TOKEN 和 ACCESS_TOKEN 需要自行在项目的 settings&#x2F;secret and variables 中配置。</p>
+<blockquote>
+<p>ACCESS_TOKEN 是 GITHUB_TOEKN，由于 secret 中不允许以 GITHUB 开头，所以改成 ACCESS。</p>
+</blockquote>
+<p>最后发版本时，只需要 pnpm release 即可生成对应的 CHANGELOG 和项目版本。如果希望所有的耗费性能的生成都由 github action 实现，那么还可以将 changelog 的生成和未来项目文档的生成都放在 github action。</p>
+<p>修订</p>
+<p>上述的 changelog 生成需要在打完 tag 后，但是很明显这里的流程是先生成 changlog 然后再打 tag，这样就会导致 changelog 总是落后 tag。</p>
+<p>可以选择在生成 tag 后再构建 changelog，不过这样带来的问题是该 tag 携带的并不是最新的 changelog。</p>
+<h3 id="References"><a href="#References" class="headerlink" title="References"></a>References</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/7181409989670961207">基于 pnpm + changesets 的 monorepo 最佳实践最近在设计多组件包管理的 Monorepo 方案 - 掘金 (juejin.cn)</a></li>
+</ul>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Az</span>
+                    </p>
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/github/"># github</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2024/08/21/JS-TS-export-%E5%92%8C-import-%E6%B3%A8%E6%84%8F%E9%97%AE%E9%A2%98/">JS/TS: export 和 import 注意问题</a>
+            
+            
+            <a class="next" rel="next" href="/2024/07/22/ts-Type-Definition/">ts: Type Definition</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+  <div class="copyright">
+    <span>© Az | Powered by Hexo & Chic</span>
+  </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
