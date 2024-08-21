@@ -8,9 +8,21 @@
       <link href="/2024/08/21/JS-TS-export-%E5%92%8C-import-%E6%B3%A8%E6%84%8F%E9%97%AE%E9%A2%98/"/>
       <url>/2024/08/21/JS-TS-export-%E5%92%8C-import-%E6%B3%A8%E6%84%8F%E9%97%AE%E9%A2%98/</url>
       
-        <content type="html"><![CDATA[]]></content>
+        <content type="html"><![CDATA[<h2 id="export-和-import-注意问题"><a href="#export-和-import-注意问题" class="headerlink" title="export 和 import 注意问题"></a>export 和 import 注意问题</h2><p>在默认工具库文件中，一般会有一个默认的 export 数据，例如 <code>export default function fn() &#123;&#125;</code> 或者 <code>export default &#123;&#125;</code>，这种默认导出在对外统一导出时会出现 <code>default</code> 覆盖问题。</p><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// useSplitter.ts</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">function</span> <span class="title function_">useSplitter</span>(<span class="params"></span>) &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// useVisible.ts</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">function</span> <span class="title function_">useVisible</span>(<span class="params"></span>) &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// index.ts</span></span><br><span class="line"><span class="keyword">export</span> * <span class="keyword">from</span> <span class="string">&quot;./useSplitter&quot;</span></span><br><span class="line"><span class="keyword">export</span> * <span class="keyword">from</span> <span class="string">&quot;./useVisible&quot;</span></span><br></pre></td></tr></table></figure><p>useVisible 的 <code>default export</code> 会将 useSplitter 的 <code>default export</code> 覆盖，只能通过具体的文件来引入。</p><h3 id="issue-参考"><a href="#issue-参考" class="headerlink" title="issue 参考"></a>issue 参考</h3><ul><li>[<a href="https://github.com/rtpacks/toolkit/issues/14">Bug] It cannot import useSplitter directly from @rtpackx&#x2F;vue because useSplitter is overridden by another default export. · Issue #14 · rtpacks&#x2F;toolkit (github.com)</a></li></ul>]]></content>
       
       
+      <categories>
+          
+          <category> JS/TS </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> JS/TS </tag>
+            
+        </tags>
       
     </entry>
     

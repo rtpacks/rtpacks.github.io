@@ -1141,6 +1141,13 @@
     <priority>0.2</priority>
   </url>
   
+  <url>
+    <loc>https://rtpacks.github.io/tags/JS-TS/</loc>
+    <lastmod>2024-08-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
 
   
   <url>
@@ -1355,6 +1362,13 @@
   
   <url>
     <loc>https://rtpacks.github.io/categories/workflow/</loc>
+    <lastmod>2024-08-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://rtpacks.github.io/categories/JS-TS/</loc>
     <lastmod>2024-08-21</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
