@@ -4,6 +4,56 @@
   
     
     <entry>
+      <title>ts: 字符串字面量的多种类型定义方式</title>
+      <link href="/2024/10/15/ts-%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%AD%97%E9%9D%A2%E9%87%8F%E7%9A%84%E5%A4%9A%E7%A7%8D%E7%B1%BB%E5%9E%8B%E5%AE%9A%E4%B9%89%E6%96%B9%E5%BC%8F/"/>
+      <url>/2024/10/15/ts-%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%AD%97%E9%9D%A2%E9%87%8F%E7%9A%84%E5%A4%9A%E7%A7%8D%E7%B1%BB%E5%9E%8B%E5%AE%9A%E4%B9%89%E6%96%B9%E5%BC%8F/</url>
+      
+        <content type="html"><![CDATA[<p>以往定义字符串字面量时，只会用到固定形式如 <code>type Color = &#39;red&#39; | &#39;blue&#39; | &#39;green&#39;</code>，今天无意看到 lib.dom.d.ts 中有些字符串字面量类型的定义非常奇特，可以更精确的表示类型：</p><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="title class_">AutoFillSection</span> = <span class="string">`section-<span class="subst">$&#123;<span class="built_in">string</span>&#125;</span>`</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> <span class="title class_">AutoFillField</span> = <span class="title class_">AutoFillNormalField</span> | <span class="string">`<span class="subst">$&#123;OptionalPrefixToken&lt;AutoFillContactKind&gt;&#125;</span><span class="subst">$&#123;AutoFillContactField&#125;</span>`</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> <span class="title class_">AutoFill</span> = <span class="title class_">AutoFillBase</span> | <span class="string">`<span class="subst">$&#123;OptionalPrefixToken&lt;AutoFillSection&gt;&#125;</span><span class="subst">$&#123;OptionalPrefixToken&lt;AutoFillAddressKind&gt;&#125;</span><span class="subst">$&#123;AutoFillField&#125;</span><span class="subst">$&#123;OptionalPostfixToken&lt;AutoFillCredentialField&gt;&#125;</span>`</span>;</span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+      <categories>
+          
+          <category> TypeScript </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> TypeScript </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>TS: 根据 tsdoc 规范自动生成文档</title>
+      <link href="/2024/08/21/TS-%E6%A0%B9%E6%8D%AE-tsdoc-%E8%A7%84%E8%8C%83%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E6%96%87%E6%A1%A3/"/>
+      <url>/2024/08/21/TS-%E6%A0%B9%E6%8D%AE-tsdoc-%E8%A7%84%E8%8C%83%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E6%96%87%E6%A1%A3/</url>
+      
+        <content type="html"><![CDATA[<h2 id="根据-tsdoc-规范自动生成文档"><a href="#根据-tsdoc-规范自动生成文档" class="headerlink" title="根据 tsdoc 规范自动生成文档"></a>根据 tsdoc 规范自动生成文档</h2><p>使用 <code>rollup-plugin-dts</code> 打包生成一份包含库中所有类型的 <code>d.ts</code> 文件，使用 <code>api-executor</code> 利用 <code>d.ts</code> 文件生成文档模型，使用 <code>api-document</code> 利用文档模型生成 <code>md</code> 文件，最后使用 <code>vitepress</code> 汇总 <code>md</code> 文件并美化展示。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> tsdoc </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> tsdoc </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>JS/TS: export 和 import 注意问题</title>
       <link href="/2024/08/21/JS-TS-export-%E5%92%8C-import-%E6%B3%A8%E6%84%8F%E9%97%AE%E9%A2%98/"/>
       <url>/2024/08/21/JS-TS-export-%E5%92%8C-import-%E6%B3%A8%E6%84%8F%E9%97%AE%E9%A2%98/</url>
