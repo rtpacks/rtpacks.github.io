@@ -17,7 +17,7 @@
     <meta name="keywords" content="blog luckydog Withx">
 
 
-<title>ts: 字符串字面量的多种类型定义方式 | Az&#39;s Blog</title>
+<title>ENV: VSCode 终端不能识别系统设置的环境变量 | Az&#39;s Blog</title>
 
 
 
@@ -134,11 +134,76 @@
                 <div class="container">
     
     
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
 
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title">ts: 字符串字面量的多种类型定义方式</h1>
+            <h1 class="post-title">ENV: VSCode 终端不能识别系统设置的环境变量</h1>
             
                 <div class="post-meta">
                     
@@ -147,27 +212,22 @@
 
                     
                         <span class="post-time">
-                        Date: <a href="#">2024.10.15&nbsp;&nbsp;17:34:47</a>
+                        Date: <a href="#">2025.02.27&nbsp;&nbsp;11:25:57</a>
                         </span>
                     
-                    
-                        <span class="post-category">
-                    Category:
-                            
-                                <a href="/categories/TypeScript/">TypeScript</a>
-                            
-                        </span>
                     
                 </div>
             
         </header>
 
         <div class="post-content">
-            <p>以往定义字符串字面量时，只会用到固定形式如 <code>type Color = &#39;red&#39; | &#39;blue&#39; | &#39;green&#39;</code>，今天无意看到 lib.dom.d.ts 中有些字符串字面量类型的定义非常奇特，可以更精确的表示类型：</p>
-<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="title class_">AutoFillSection</span> = <span class="string">`section-<span class="subst">$&#123;<span class="built_in">string</span>&#125;</span>`</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> <span class="title class_">AutoFillField</span> = <span class="title class_">AutoFillNormalField</span> | <span class="string">`<span class="subst">$&#123;OptionalPrefixToken&lt;AutoFillContactKind&gt;&#125;</span><span class="subst">$&#123;AutoFillContactField&#125;</span>`</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> <span class="title class_">AutoFill</span> = <span class="title class_">AutoFillBase</span> | <span class="string">`<span class="subst">$&#123;OptionalPrefixToken&lt;AutoFillSection&gt;&#125;</span><span class="subst">$&#123;OptionalPrefixToken&lt;AutoFillAddressKind&gt;&#125;</span><span class="subst">$&#123;AutoFillField&#125;</span><span class="subst">$&#123;OptionalPostfixToken&lt;AutoFillCredentialField&gt;&#125;</span>`</span>;</span><br></pre></td></tr></table></figure>
+            <p>默认情况好像是 vscode 会自动还原上一次 terminal 的环境变量，在设置中搜索并修改属性：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">&quot;terminal.integrated.persistentSessionReviveProcess&quot;</span><span class="punctuation">:</span> <span class="string">&quot;never&quot;</span></span><br></pre></td></tr></table></figure>
 
-
-
+<p>重启 VSCode 即可。</p>
+<h3 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/266858097">vscode终端不能识别系统设置的环境变量？ - 知乎</a></li>
+</ul>
 
         </div>
 
@@ -191,7 +251,7 @@
                 <span class="tag">
                     
                     
-                        <a href="/tags/TypeScript/"># TypeScript</a>
+                        <a href="/tags/ENV/"># ENV</a>
                     
                         
                 </span>
@@ -204,10 +264,8 @@
         </section>
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="/2025/02/27/ENV-VSCode-%E7%BB%88%E7%AB%AF%E4%B8%8D%E8%83%BD%E8%AF%86%E5%88%AB%E7%B3%BB%E7%BB%9F%E8%AE%BE%E7%BD%AE%E7%9A%84%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F/">ENV: VSCode 终端不能识别系统设置的环境变量</a>
             
-            
-            <a class="next" rel="next" href="/2024/08/21/TS-%E6%A0%B9%E6%8D%AE-tsdoc-%E8%A7%84%E8%8C%83%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E6%96%87%E6%A1%A3/">TS: 根据 tsdoc 规范自动生成文档</a>
+            <a class="next" rel="next" href="/2024/10/15/ts-%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%AD%97%E9%9D%A2%E9%87%8F%E7%9A%84%E5%A4%9A%E7%A7%8D%E7%B1%BB%E5%9E%8B%E5%AE%9A%E4%B9%89%E6%96%B9%E5%BC%8F/">ts: 字符串字面量的多种类型定义方式</a>
             
         </section>
 

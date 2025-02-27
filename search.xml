@@ -4,6 +4,25 @@
   
     
     <entry>
+      <title>ENV: VSCode 终端不能识别系统设置的环境变量</title>
+      <link href="/2025/02/27/ENV-VSCode-%E7%BB%88%E7%AB%AF%E4%B8%8D%E8%83%BD%E8%AF%86%E5%88%AB%E7%B3%BB%E7%BB%9F%E8%AE%BE%E7%BD%AE%E7%9A%84%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F/"/>
+      <url>/2025/02/27/ENV-VSCode-%E7%BB%88%E7%AB%AF%E4%B8%8D%E8%83%BD%E8%AF%86%E5%88%AB%E7%B3%BB%E7%BB%9F%E8%AE%BE%E7%BD%AE%E7%9A%84%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F/</url>
+      
+        <content type="html"><![CDATA[<p>默认情况好像是 vscode 会自动还原上一次 terminal 的环境变量，在设置中搜索并修改属性：</p><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">&quot;terminal.integrated.persistentSessionReviveProcess&quot;</span><span class="punctuation">:</span> <span class="string">&quot;never&quot;</span></span><br></pre></td></tr></table></figure><p>重启 VSCode 即可。</p><h3 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h3><ul><li><a href="https://www.zhihu.com/question/266858097">vscode终端不能识别系统设置的环境变量？ - 知乎</a></li></ul>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> ENV </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>ts: 字符串字面量的多种类型定义方式</title>
       <link href="/2024/10/15/ts-%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%AD%97%E9%9D%A2%E9%87%8F%E7%9A%84%E5%A4%9A%E7%A7%8D%E7%B1%BB%E5%9E%8B%E5%AE%9A%E4%B9%89%E6%96%B9%E5%BC%8F/"/>
       <url>/2024/10/15/ts-%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%AD%97%E9%9D%A2%E9%87%8F%E7%9A%84%E5%A4%9A%E7%A7%8D%E7%B1%BB%E5%9E%8B%E5%AE%9A%E4%B9%89%E6%96%B9%E5%BC%8F/</url>
