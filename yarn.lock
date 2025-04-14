@@ -1860,6 +1860,11 @@ hexo-admin@^2.3.0:
     serve-static "^1.4.0"
     write-good "^0.10.0"
 
+hexo-asset-img@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.npmmirror.com/hexo-asset-img/-/hexo-asset-img-1.2.0.tgz#d6d816fbea47ff3da97da13bce58bd0314bdaaee"
+  integrity sha512-PfjFF8DvG22KZ9ZldzpCFJUerH+IJ7e4ARw9BsD3PtJsAbYJGLQfLt/XFnel/r9d2dDYjMlQf1urFdLirseqEA==
+
 hexo-cli@^4.3.0:
   version "4.3.0"
   resolved "https://registry.npmmirror.com/hexo-cli/-/hexo-cli-4.3.0.tgz"
