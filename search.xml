@@ -4,6 +4,25 @@
   
     
     <entry>
+      <title>AI: AI 辅助写作 MCP 提示词</title>
+      <link href="/2025/04/22/AI-AI-%E8%BE%85%E5%8A%A9%E5%86%99%E4%BD%9C-MCP-%E6%8F%90%E7%A4%BA%E8%AF%8D/"/>
+      <url>/2025/04/22/AI-AI-%E8%BE%85%E5%8A%A9%E5%86%99%E4%BD%9C-MCP-%E6%8F%90%E7%A4%BA%E8%AF%8D/</url>
+      
+        <content type="html"><![CDATA[<p>在开始之前，收集必要的文档，以帮助 AI 了解 MCP。</p><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">## 需求</span></span><br><span class="line"></span><br><span class="line">基于提供的 MCP 相关资料，帮我构建一个 MCP Server，需求如下：</span><br><span class="line"></span><br><span class="line"><span class="bullet">-</span>  提供一个获取当前时间的工具</span><br><span class="line"><span class="bullet">-</span>  接收时区作为参数（可选）</span><br><span class="line"><span class="bullet">-</span>  编写清晰的注释和说明</span><br><span class="line"><span class="bullet">-</span>  要求功能简洁、只包含关键功能</span><br><span class="line"><span class="bullet">-</span>  使用 TypeScript 编写</span><br><span class="line"></span><br><span class="line">请参考下面四个资料：</span><br><span class="line"></span><br><span class="line"><span class="section">## [参考资料 1] MCP 基础介绍</span></span><br><span class="line"></span><br><span class="line"><span class="bullet">-</span>  粘贴 https://modelcontextprotocol.io/introduction 里的内容。</span><br><span class="line"></span><br><span class="line"><span class="section">## [参考资料 2] MCP 核心架构</span></span><br><span class="line"></span><br><span class="line"><span class="bullet">-</span>  粘贴 https://modelcontextprotocol.io/docs/concepts/architecture 里的内容。</span><br><span class="line"></span><br><span class="line"><span class="section">## [参考资料 3] MCP Server 开发指引</span></span><br><span class="line"></span><br><span class="line"><span class="bullet">-</span>  粘贴 https://modelcontextprotocol.io/quickstart/server 里的内容。</span><br><span class="line"></span><br><span class="line"><span class="section">## [参考资料 4] MCP Typescript SDK 文档</span></span><br><span class="line"></span><br><span class="line"><span class="bullet">-</span>  粘贴 https://github.com/modelcontextprotocol/typescript-sdk/blob/main/README.md 里的内容。</span><br></pre></td></tr></table></figure><h3 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h3><ul><li><a href="https://juejin.cn/post/7493455615244959794">https://juejin.cn/post/7493455615244959794</a></li></ul>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> AI </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>css: gradient</title>
       <link href="/2025/04/14/css-gradient/"/>
       <url>/2025/04/14/css-gradient/</url>
