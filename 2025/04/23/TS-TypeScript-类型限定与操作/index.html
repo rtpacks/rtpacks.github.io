@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Az">
+
+
+    <meta name="subtitle" content="Welcome!">
+
+
+
+    <meta name="keywords" content="blog luckydog Withx">
+
+
+<title>TS: TypeScript 类型限定与操作 | Az&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+<link rel="stylesheet" href="/fonts/custom/iconfont.css">
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">I&#39;m Az</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">I&#39;m Az</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">TS: TypeScript 类型限定与操作</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Az</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">2025.04.23&nbsp;&nbsp;17:54:51</a>
+                        </span>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <ol>
+<li>利用泛型，精确的限定 key 对应的 value 类型</li>
+</ol>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> <span class="title class_">ExtTrait</span> &#123;</span><br><span class="line">  <span class="attr">loading</span>: <span class="built_in">boolean</span>;</span><br><span class="line">  <span class="attr">dropdown</span>: <span class="built_in">boolean</span>;</span><br><span class="line">  <span class="attr">bk_name</span>: <span class="built_in">string</span>;</span><br><span class="line">  <span class="attr">error</span>: <span class="built_in">boolean</span>;</span><br><span class="line">  <span class="attr">edit</span>: <span class="built_in">boolean</span>;</span><br><span class="line">  <span class="attr">editor</span>: <span class="title class_">InputInstance</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> <span class="title class_">SchemaItem</span> = <span class="title class_">ExtTrait</span> &amp; <span class="title class_">TreeNodeLike</span>;</span><br><span class="line"><span class="keyword">type</span> <span class="title class_">SchemaItemMap</span> = <span class="title class_">Record</span>&lt;<span class="built_in">string</span>, <span class="title class_">SchemaItem</span>&gt;;</span><br><span class="line"><span class="keyword">const</span> itemMap = ref&lt;<span class="title class_">SchemaItemMap</span>&gt;(&#123;&#125;);</span><br><span class="line"><span class="keyword">const</span> setItemExtTrait = &lt;T <span class="keyword">extends</span> keyof <span class="title class_">ExtTrait</span>&gt;<span class="function">(<span class="params"></span></span></span><br><span class="line"><span class="params"><span class="function">  id: Unit,</span></span></span><br><span class="line"><span class="params"><span class="function">  trait: T,</span></span></span><br><span class="line"><span class="params"><span class="function">  value: ExtTrait[T]</span></span></span><br><span class="line"><span class="params"><span class="function"></span>) =&gt;</span> &#123;</span><br><span class="line">  itemMap.<span class="property">value</span>[id] = &#123; ...itemMap.<span class="property">value</span>[id], [trait]: value &#125;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// test</span></span><br><span class="line"><span class="title function_">setItemExtTrait</span>(<span class="string">&quot;12&quot;</span>, <span class="string">&quot;dropdown&quot;</span>, <span class="literal">true</span>);</span><br></pre></td></tr></table></figure>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Az</span>
+                    </p>
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2025/04/22/AI-AI-%E8%BE%85%E5%8A%A9%E5%86%99%E4%BD%9C-MCP-%E6%8F%90%E7%A4%BA%E8%AF%8D/">AI: AI 辅助写作 MCP 提示词</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+  <div class="copyright">
+    <span>© Az | Powered by Hexo & Chic</span>
+  </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
