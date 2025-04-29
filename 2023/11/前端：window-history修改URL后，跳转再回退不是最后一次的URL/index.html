@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Az">
+
+
+    <meta name="subtitle" content="Welcome!">
+
+
+
+    <meta name="keywords" content="blog luckydog Withx">
+
+
+<title>前端：window.history修改URL后，跳转再回退不是最后一次的URL | Az&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+<link rel="stylesheet" href="/fonts/custom/iconfont.css">
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">I&#39;m Az</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">I&#39;m Az</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">前端：window.history修改URL后，跳转再回退不是最后一次的URL</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Az</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">2023.11.18&nbsp;&nbsp;18:15:43</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/vue-router/">vue-router</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>vue2 (<code>vue-router3</code>) 没有去 debug 源码，但是在公司的另外一个项目通过 history (window.history.replaceState) 去修改URL，vue-router3 是实时更新内部的 <code>currentRoute</code>，所以在修改参数后，去跳转再回退，是最后一次的URL。</p>
+<p>今天 debug <code>vue-router4</code> 发现，它的逻辑是记录当前页面最后一次通过 <code>popstate</code> 事件变化的 URL，也就是只处理 <code>popstate</code> 事件发生时的状态，通过 window.history 的 pushState 和 replaceState 去修改 URL 不会触发 popstate 事件，所以 vue-router4 没有感知是这个原因。</p>
+<p>目前来看解决办法：</p>
+<ol>
+<li>给当前的路由加上 state，在通过 window.history.replaceState 修改参数后，给当前的路由对象加上 state，返回再把 state 取出来然后回显状态。</li>
+<li>不通过 window.history.replaceState 无刷新修改参数，而是通过 vue-router 修改参数，达到更新路由的目的。</li>
+<li>既然 vue-router4 通过 popstate 事件处理逻辑，那手动触发 <code>popstate</code> 事件就可以了，在通过 window.history 修改参数后，手动 <code>dispatch popstate</code> 事件 <code>window.dispatchEvent(new PopStateEvent(&quot;popstate&quot;))</code> 达到触发 router 的目的，这个和第二种类似。目前副作用未知，我用的这种方式。</li>
+<li>手动 hack vue router，让它实时更新，这个我没做尝试。</li>
+</ol>
+<p>参考：</p>
+<ol>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/vuejs/router/issues/366">https://github.com/vuejs/router/issues/366</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/vuejs/router/issues/2035">https://github.com/vuejs/router/issues/2035</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/vuejs/router/issues/1270">https://github.com/vuejs/router/issues/1270</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/single-spa/single-spa/pull/291">https://github.com/single-spa/single-spa/pull/291</a></p>
+</li>
+</ol>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Az</span>
+                    </p>
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/vue-router/"># vue-router</a>
+                    
+                        <a href="/tags/history/"># history</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2024/03/%E5%89%8D%E7%AB%AF%EF%BC%9A%E5%88%A9%E7%94%A8%E7%94%9F%E6%88%90%E5%99%A8%E5%92%8C%E8%BF%AD%E4%BB%A3%E5%99%A8%E5%AE%9E%E7%8E%B0%E5%88%86%E7%A6%BB%E9%80%BB%E8%BE%91/">前端：利用生成器和迭代器实现分离逻辑</a>
+            
+            
+            <a class="next" rel="next" href="/2023/10/%E7%90%86%E8%B4%A2%EF%BC%9A%E3%80%8A%E6%8C%87%E6%95%B0%E5%9F%BA%E9%87%91%E6%8A%95%E8%B5%84%E6%8C%87%E5%8D%97%E3%80%8B-%E7%AC%AC%E4%B8%89%E7%AB%A0%E7%AC%94%E8%AE%B0/">理财：《指数基金投资指南》- 第三章笔记</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+  <div class="copyright">
+    <span>© Az | Powered by Hexo & Chic</span>
+  </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Az">
+
+
+    <meta name="subtitle" content="Welcome!">
+
+
+
+    <meta name="keywords" content="blog luckydog Withx">
+
+
+<title>前端：个人前端项目的有关约定和规范 | Az&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+<link rel="stylesheet" href="/fonts/custom/iconfont.css">
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">I&#39;m Az</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">I&#39;m Az</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">前端：个人前端项目的有关约定和规范</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Az</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">2023.07.29&nbsp;&nbsp;21:32:35</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E5%89%8D%E7%AB%AF/">前端</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>个人认为技术人员掌握的前端框架不应该只限定在某一个（如 React、Vue），对于不同框架一般我是按照以下规则进行规范的，可有选择性的调整。</p>
+<blockquote>
+<p>小驼峰式命名法 camelCase | lowerCamelCase</p>
+<p>大驼峰式命名法 CamelCase | UpperCamelCase</p>
+<p>蛇形命名法，也称下划线命名法 snake_case | SNAKE_CASE</p>
+<p>串式命名法，也称破折号式、连字符式 kebab-case | dash-case</p>
+</blockquote>
+<h3 id="1-项目组织"><a href="#1-项目组织" class="headerlink" title="1. 项目组织"></a>1. 项目组织</h3><p>ToDo</p>
+<h3 id="2-类、变量、参数"><a href="#2-类、变量、参数" class="headerlink" title="2. 类、变量、参数"></a>2. 类、变量、参数</h3><ul>
+<li>类采用 <code>UpperCamelCase</code> （大驼峰命名）形式。</li>
+<li>接口参数为了序列化一般设计成 <code>snake_case</code> 形式，为了对齐接口参数，变量命名一般也采用 <code>snake_case</code> 形式。如果与后端更习惯于 <code>camelCase</code>，那么接口参数和变量可以统一采用 <code>camelCase</code>。</li>
+<li>（不建议使用）接口参数为 <code>snake_case</code> 形式，变量为 <code>camelCase</code> 形式，这种形式可能需要大量转换命名。</li>
+</ul>
+<h3 id="3-函数、工具"><a href="#3-函数、工具" class="headerlink" title="3. 函数、工具"></a>3. 函数、工具</h3><ul>
+<li>习惯上，为了快速区分 <code>组件</code> 、<code>变量</code> 、<code>参数</code>，函数的命名是 <code>camelCase</code>，如 <code>useColumns</code>、<code>useLocalStorage</code>。</li>
+<li>函数、工具文件、文件夹的命名是 <code>kebab-case</code>形式，如 <code>use-column.ts</code>。</li>
+</ul>
+<h3 id="4-常量、枚举"><a href="#4-常量、枚举" class="headerlink" title="4. 常量、枚举"></a>4. 常量、枚举</h3><ul>
+<li>常量和枚举的命名统一是 <code>SNAKE_CASE</code> 形式。与普通全小写 <code>snake_case</code> 不同，常量和枚举需要采用全大写的 <code>SNAKE_CASE</code> 形式。</li>
+<li>常量和枚举存储文件以 <code>constants.ts</code> 或 <code>enums.ts</code> 命名，存放在各个使用对象的最小父级目录。如果常量和枚举数量极少，可以直接存放在 <code>api</code> 文件内。</li>
+</ul>
+<h3 id="5-组件"><a href="#5-组件" class="headerlink" title="5. 组件"></a>5. 组件</h3><ul>
+<li>文件、文件夹命名格式统一是 <code>kebab-case</code>，即小写字母和短横线(-)的组合，如文件夹 <code>header-search</code> ，文件 <code>modal-form.vue</code>、 <code>modal-form.tsx</code>。</li>
+<li>使用组件时，统一使用 <code>UpperCamelCase</code> 形式。</li>
+<li>props 稍有区分，Vue 偏好于 <code>kebab-case</code>，React 只能用 <code>camelCase</code>。约定优先使用 <code>camelCase</code>。</li>
+</ul>
+<h4 id="Vue"><a href="#Vue" class="headerlink" title="Vue"></a>Vue</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;script lang=&quot;ts&quot; setup&gt;</span><br><span class="line">import HeaderSearch from &quot;@/components/header-search.vue&quot;;</span><br><span class="line">&lt;/script&gt;</span><br><span class="line"></span><br><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;HeaderSearch :modelValue=&quot;model_value&quot;&gt;&lt;/HeaderSearch&gt;</span><br><span class="line">&lt;/template&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="React"><a href="#React" class="headerlink" title="React"></a>React</h4><figure class="highlight tsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="title class_">React</span>, &#123; useMemo &#125; <span class="keyword">from</span> <span class="string">&quot;react&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="title class_">HeaderSearch</span> <span class="keyword">from</span> <span class="string">&quot;@/components/header-search.tsx&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> () =&gt; &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="language-xml"><span class="tag">&lt;<span class="name">HeaderSearch</span> <span class="attr">modelValue</span>=<span class="string">&quot;&#123;model_value&#125;&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">HeaderSearch</span>&gt;</span></span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Az</span>
+                    </p>
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/%E5%89%8D%E7%AB%AF/"># 前端</a>
+                    
+                        <a href="/tags/%E7%BA%A6%E5%AE%9A%E4%B8%8E%E8%A7%84%E8%8C%83/"># 约定与规范</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2023/08/%E4%B8%80.%20%E8%BE%93%E5%85%A5URL%E5%88%B0%E5%91%88%E7%8E%B0%E9%A1%B5%E9%9D%A2/">一. 输入URL到呈现页面</a>
+            
+            
+            <a class="next" rel="next" href="/2023/06/Rust-unit-02-%E6%95%B0%E5%80%BC%E7%B1%BB%E5%9E%8B/">Rust: unit 02-数值类型</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+  <div class="copyright">
+    <span>© Az | Powered by Hexo & Chic</span>
+  </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

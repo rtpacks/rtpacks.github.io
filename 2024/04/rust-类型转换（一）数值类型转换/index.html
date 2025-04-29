@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Az">
+
+
+    <meta name="subtitle" content="Welcome!">
+
+
+
+    <meta name="keywords" content="blog luckydog Withx">
+
+
+<title>rust: 类型转换（一）数值类型转换 | Az&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+<link rel="stylesheet" href="/fonts/custom/iconfont.css">
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">I&#39;m Az</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">I&#39;m Az</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">rust: 类型转换（一）数值类型转换</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Az</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">2024.04.14&nbsp;&nbsp;21:59:57</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/rust/">rust</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="类型转换"><a href="#类型转换" class="headerlink" title="类型转换"></a>类型转换</h2><p>Rust 是类型安全的语言，因此在 Rust 中做类型转换不是一件简单的事。</p>
+<p>首先看一段错误的实例，a 和 b 拥有不同的类型，<strong>Rust 不允许两种不同的类型进行比较</strong>：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">a</span>: <span class="type">i32</span> = <span class="number">10</span>;</span><br><span class="line"><span class="keyword">let</span> <span class="variable">b</span>: <span class="type">u16</span> = <span class="number">100</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> a &lt; b &#123; <span class="built_in">println!</span>(<span class="string">&quot;a &lt; b 执行&quot;</span>); &#125; 代码报错，因为a和b是不同的类型，不能直接用于比较</span><br></pre></td></tr></table></figure>
+
+<p>解决方法很简单，把数据类型改成同一种就可以通过编译。针对数值类型（包括字符 ASCII），rust 提供了两种<strong>专属数值类型的转换方式 <code>as</code> 和 <code>TryInto</code></strong></p>
+<h3 id="as-转换"><a href="#as-转换" class="headerlink" title="as 转换"></a>as 转换</h3><p>as 转换非常方便，但使用时需要小心。因为每个数值类型能表达的数据范围不同，如果把范围较大的类型转换成较小的类型，可能会造成数据溢出的错误。</p>
+<p>因此<strong>尽量把范围较小的类型转换成较大的类型</strong>，来避免这些问题的发生。数值类型可以通过 <code>i8::MAX</code> 的形式查看该类型能表达的最大值。</p>
+<h4 id="数值与数值"><a href="#数值与数值" class="headerlink" title="数值与数值"></a>数值与数值</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">a</span>: <span class="type">i32</span> = <span class="number">10</span>;</span><br><span class="line"><span class="keyword">let</span> <span class="variable">b</span>: <span class="type">u16</span> = <span class="number">100</span>;</span><br><span class="line"><span class="keyword">let</span> <span class="variable">transformed_a</span> = a <span class="keyword">as</span> <span class="type">u16</span>;</span><br><span class="line"><span class="keyword">let</span> <span class="variable">transformed_b</span> = b <span class="keyword">as</span> <span class="type">i32</span>;</span><br><span class="line"><span class="built_in">println!</span>(<span class="string">&quot;&#123;transformed_a&#125;, &#123;transformed_b&#125;&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<h4 id="数值与字符"><a href="#数值与字符" class="headerlink" title="数值与字符"></a>数值与字符</h4><p>转换字符，只有 <code>u8</code> 类型的数据（ASCII 范围）才能转换成字符，但字符可以转换成包含 u8 范围的数值类型，如 i16，u16 等</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">a</span> = <span class="string">&#x27;a&#x27;</span>;</span><br><span class="line"><span class="keyword">let</span> <span class="variable">transformed_a</span> = a <span class="keyword">as</span> <span class="type">u8</span>;</span><br><span class="line"><span class="keyword">let</span> <span class="variable">c</span>: <span class="type">u8</span> = <span class="number">99</span>;</span><br><span class="line"><span class="keyword">let</span> <span class="variable">transformed_c</span> = c <span class="keyword">as</span> <span class="type">char</span>;</span><br><span class="line"><span class="built_in">println!</span>(<span class="string">&quot;&#123;transformed_a&#125;, &#123;transformed_c&#125;&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<h4 id="数值与内存指针"><a href="#数值与内存指针" class="headerlink" title="数值与内存指针"></a>数值与内存指针</h4><p>rust 指针可通过 <code>as_mut_ptr</code> 获取，它的形式与 <code>C</code> 一样，数组的指针也是第一个元素的指针。</p>
+<p>指针常用 usize（4 bytes(32 bit) 或 8 bytes(64 bit）表示。</p>
+<blockquote>
+<p>数组指针偏移，第 N+1 元素地址 &#x3D; 第 N 元素地址 + 元素内存大小</p>
+</blockquote>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">v</span> = <span class="built_in">vec!</span>[<span class="number">0</span>; <span class="number">3</span>];</span><br><span class="line"><span class="keyword">let</span> <span class="variable">p1</span>: *<span class="keyword">mut</span> <span class="type">i32</span> = v.<span class="title function_ invoke__">as_mut_ptr</span>();</span><br><span class="line"><span class="keyword">let</span> <span class="variable">first_address</span> = p1 <span class="keyword">as</span> <span class="type">usize</span>;</span><br><span class="line"><span class="keyword">let</span> <span class="variable">second_address</span> = first_address + size_of::&lt;<span class="type">i32</span>&gt;(); <span class="comment">// 数组指针偏移，第N+1元素地址 = 第 N 元素地址 + 元素大小</span></span><br><span class="line"><span class="keyword">let</span> <span class="variable">p2</span> = second_address <span class="keyword">as</span> *<span class="keyword">mut</span> <span class="type">i32</span>;</span><br><span class="line"><span class="keyword">unsafe</span> &#123;</span><br><span class="line">    *p2 += <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">println!</span>(</span><br><span class="line">    <span class="string">&quot;v = &#123;:?&#125;, second_address = &#123;:?&#125; p2 = &#123;:?&#125;&quot;</span>,</span><br><span class="line">    v, second_address, p2</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<h4 id="强制类型转换的边角知识"><a href="#强制类型转换的边角知识" class="headerlink" title="强制类型转换的边角知识"></a>强制类型转换的边角知识</h4><ul>
+<li>转换不具有传递性 就算 e as U1 as U2 是合法的，也不能说明 e as U2 是合法的（e 不能直接转换成 U2），因为 as 关键字执行的转换可能涉及到具体的转换逻辑和额外的步骤，这些逻辑在不同的转换路径中可能不适用。</li>
+</ul>
+<h3 id="TryInto-特征"><a href="#TryInto-特征" class="headerlink" title="TryInto 特征"></a>TryInto 特征</h3><p>在一些场景中，使用 as 关键字会有比较大的限制，比如转换失败直接 panic。如果希望在类型转换上拥有完全的控制而不依赖内置的转换，例如处理转换错误，那么可以使用 TryInto 特征。</p>
+<p><strong>如果你要使用一个特征的方法，那么你需要引入该特征到当前的作用域中</strong>，如果希望使用 try_into 方法，需要引入对应的 TryInto 特征。</p>
+<blockquote>
+<p>在 1.75.0，TryInto 已通过 <code>std::prelude</code> 预导入，无需手动 use 手动导入。</p>
+</blockquote>
+<p>try_into 方法会尝试进行一次转换，并返回一个 Result，此时就可以对其进行相应的错误处理（使用时需要给结果标注转换后的类型）。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> std::convert::TryInto;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="variable">a</span> = <span class="number">8</span> <span class="keyword">as</span> <span class="type">i32</span>;</span><br><span class="line"><span class="keyword">let</span> <span class="variable">b</span>: <span class="type">u8</span> = a.<span class="title function_ invoke__">try_into</span>().<span class="title function_ invoke__">expect</span>(<span class="string">&quot;转换失败&quot;</span>);</span><br><span class="line"><span class="keyword">let</span> <span class="variable">c</span>: <span class="type">u8</span> = <span class="keyword">match</span> a.<span class="title function_ invoke__">try_into</span>() &#123;</span><br><span class="line">    <span class="title function_ invoke__">Ok</span>(v) =&gt; v,</span><br><span class="line">    <span class="title function_ invoke__">Err</span>(e) =&gt; <span class="built_in">panic!</span>(<span class="string">&quot;expr&quot;</span>),</span><br><span class="line">&#125;;</span><br><span class="line"><span class="built_in">println!</span>(<span class="string">&quot;&#123;b&#125;, &#123;c&#125;&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>巩固 rust 认识<br>rust 编译的过程，会根据给定的类型生成对应的代码，给变量标注类型和给表达式指定类型的效果是一样的：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">a</span> = <span class="number">8</span> <span class="keyword">as</span> <span class="type">u8</span>;</span><br><span class="line"><span class="keyword">let</span> <span class="variable">b</span>: <span class="type">u8</span> = <span class="number">8</span>;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h3 id="Code"><a href="#Code" class="headerlink" title="Code"></a>Code</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">a</span>: <span class="type">i32</span> = <span class="number">10</span>;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">b</span>: <span class="type">u16</span> = <span class="number">100</span>;</span><br><span class="line">    <span class="comment">// if a &lt; b &#123; println!(&quot;a &lt; b 执行了&quot;) &#125; 代码报错，因为 a 和 b是不同的类型，rust不允许两种不同的类型进行比较</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>, <span class="type">i8</span>::MIN);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>, <span class="type">u8</span>::MIN == <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 数值与数值</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">transformed_a</span> = a <span class="keyword">as</span> <span class="type">u16</span>;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">transformed_b</span> = b <span class="keyword">as</span> <span class="type">i32</span>;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;transformed_a&#125;, &#123;transformed_b&#125;&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 数值与字符</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">a</span> = <span class="string">&#x27;a&#x27;</span>;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">transformed_a</span> = a <span class="keyword">as</span> <span class="type">u32</span>;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">c</span>: <span class="type">u8</span> = <span class="number">99</span>;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">transformed_c</span> = c <span class="keyword">as</span> <span class="type">char</span>;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;transformed_a&#125;, &#123;transformed_c&#125;&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 数值与内存指针</span></span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">v</span> = <span class="built_in">vec!</span>[<span class="number">0</span>; <span class="number">3</span>];</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">p1</span>: *<span class="keyword">mut</span> <span class="type">i32</span> = v.<span class="title function_ invoke__">as_mut_ptr</span>();</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">first_address</span> = p1 <span class="keyword">as</span> <span class="type">usize</span>;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">second_address</span> = first_address + size_of::&lt;<span class="type">i32</span>&gt;();</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">p2</span> = second_address <span class="keyword">as</span> *<span class="keyword">mut</span> <span class="type">i32</span>;</span><br><span class="line">    <span class="keyword">unsafe</span> &#123;</span><br><span class="line">        *p2 += <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">println!</span>(</span><br><span class="line">        <span class="string">&quot;v = &#123;:?&#125;, second_address = &#123;:?&#125; p2 = &#123;:?&#125;&quot;</span>,</span><br><span class="line">        v, second_address, p2</span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">a</span> = <span class="number">8</span> <span class="keyword">as</span> <span class="type">i32</span>;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">b_1</span>: <span class="type">u8</span> = a.<span class="title function_ invoke__">try_into</span>().<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">b</span>: <span class="type">u8</span> = a.<span class="title function_ invoke__">try_into</span>().<span class="title function_ invoke__">expect</span>(<span class="string">&quot;转换失败&quot;</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">c</span>: <span class="type">u8</span> = <span class="keyword">match</span> a.<span class="title function_ invoke__">try_into</span>() &#123;</span><br><span class="line">        <span class="title function_ invoke__">Ok</span>(v) =&gt; v,</span><br><span class="line">        <span class="title function_ invoke__">Err</span>(e) =&gt; <span class="built_in">panic!</span>(<span class="string">&quot;expr&quot;</span>),</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;b&#125;, &#123;c&#125;&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Az</span>
+                    </p>
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/rust/"># rust</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2024/04/rust-%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2%EF%BC%88%E4%BA%8C%EF%BC%89%E9%80%9A%E7%94%A8%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2/">rust: 类型转换（二）通用类型转换</a>
+            
+            
+            <a class="next" rel="next" href="/2024/04/rust-%E8%BF%AD%E4%BB%A3%E5%99%A8%E7%9A%84%E4%B8%A4%E7%A7%8D%E9%80%82%E9%85%8D%E5%99%A8-%E6%B6%88%E8%B4%B9%E8%80%85%E9%80%82%E9%85%8D%E5%99%A8%E5%92%8C%E8%BF%AD%E4%BB%A3%E5%99%A8%E9%80%82%E9%85%8D%E5%99%A8/">rust: 迭代器的两种适配器-消费者适配器和迭代器适配器</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+  <div class="copyright">
+    <span>© Az | Powered by Hexo & Chic</span>
+  </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

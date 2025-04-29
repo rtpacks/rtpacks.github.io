@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Az">
+
+
+    <meta name="subtitle" content="Welcome!">
+
+
+
+    <meta name="keywords" content="blog luckydog Withx">
+
+
+<title>rust: 全局变量 | Az&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+<link rel="stylesheet" href="/fonts/custom/iconfont.css">
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">I&#39;m Az</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">I&#39;m Az</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">rust: 全局变量</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Az</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">2024.06.27&nbsp;&nbsp;17:56:16</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/Rust/">Rust</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="全局变量"><a href="#全局变量" class="headerlink" title="全局变量"></a>全局变量</h2><p>在一些场景，我们可能需要全局变量来简化状态共享的代码，包括全局 ID，全局数据存储等等。</p>
+<p>全局变量是一种特殊的变量，在 rust 中相对复杂，但有一点可以肯定，全局变量的生命周期肯定是’static，但是不代表它需要用 static 来声明。</p>
+<p>具体来说，全局变量分为编译期初始化和运行期初始化两种。</p>
+<p><strong>常量与普通变量的区别</strong></p>
+<ul>
+<li>关键字是 const 而不是 let</li>
+<li>定义常量必须指明类型（如 i32），不能省略</li>
+<li>定义常量时变量的命名规则一般是全部大写</li>
+<li>对于变量出现重复的定义(绑定)会发生变量遮盖，后面定义的变量会遮住前面定义的变量，常量则不允许出现重复的定义</li>
+<li>常量可以在任意作用域进行定义，其生命周期贯穿整个程序的生命周期。编译时编译器会尽可能将其内联到代码中，所以在不同地方对同一常量的引用并不能保证引用到相同的内存地址</li>
+<li>编译期初始化常量的赋值只能是常量表达式&#x2F;数学表达式，也就是说必须是在编译期就能计算出的值，如果需要在运行时才能得出结果的值比如函数，则不能赋值给常量表达式。即常量的赋值不能在程序运行时通过配置实现。</li>
+</ul>
+<h3 id="编译期初始化"><a href="#编译期初始化" class="headerlink" title="编译期初始化"></a>编译期初始化</h3><p>大多数使用的全局变量都只需要在编译期初始化，例如静态配置、计数器、状态值等等。</p>
+<h4 id="静态常量"><a href="#静态常量" class="headerlink" title="静态常量"></a>静态常量</h4><p>全局常量可以在程序任何一部分使用，如果它是定义在某个模块中，则需要引入对应的模块才能使用。全局常量很适合用作静态配置：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> MAX_ID: <span class="type">usize</span> =  <span class="type">usize</span>::MAX / <span class="number">2</span>;</span><br><span class="line"><span class="built_in">println!</span>(<span class="string">&quot;最大的用户 ID = &#123;&#125;&quot;</span>, MAX_ID);</span><br></pre></td></tr></table></figure>
+
+<p>常量可以在任意作用域中定义，编译时编译器会尽可能将其内联到代码中，所以在不同地方对同一常量的引用并不能保证引用到相同的内存地址。</p>
+<h4 id="静态变量"><a href="#静态变量" class="headerlink" title="静态变量"></a>静态变量</h4><p>静态变量允许声明一个全局的变量，常用于全局数据统计，例如统计总请求数：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 静态变量</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">mut</span> REQUEST_COUNT: <span class="type">usize</span> = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">unsafe</span> &#123;</span><br><span class="line">    <span class="comment">// 操作 static 类型的变量需要 unsafe 模块</span></span><br><span class="line">    <span class="comment">// 因为这种使用方式往往并不安全，当在多线程中同时去修改时，会不可避免的遇到脏数据</span></span><br><span class="line">    REQUEST_COUNT = <span class="number">2</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">unsafe</span> &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;REQUEST_COUNT = &#123;&#125;&quot;</span>, REQUEST_COUNT);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>操作 static 类型的变量需要 unsafe 作用域，因为这种使用方式往往并不安全，当在多线程中同时去修改时，会不可避免的遇到脏数据。</p>
+<p>和常量相同，定义静态变量的时候必须赋值为在编译期就可以计算出的值(常量表达式&#x2F;数学表达式)，不能是运行时才能计算出的值(如函数)，即不能通过程序运行时再配置定义静态变量。</p>
+<p>编译期初始化错误的案例：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> NAMES: Mutex&lt;<span class="type">String</span>&gt; = Mutex::<span class="title function_ invoke__">new</span>(<span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;Sunface, Jack, Allen&quot;</span>)); <span class="comment">// 错误，静态变量不能通过函数在编译期初始化</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="静态变量和常量的区别"><a href="#静态变量和常量的区别" class="headerlink" title="静态变量和常量的区别"></a>静态变量和常量的区别</h4><ul>
+<li>静态变量不会被内联，在整个程序中，静态变量只有一个实例，所有的引用都会指向同一个地址</li>
+<li>为了能在多线程中正常使用，存储在静态变量中的值必须要实现 Sync trait</li>
+</ul>
+<h4 id="原子类型"><a href="#原子类型" class="headerlink" title="原子类型"></a>原子类型</h4><p>原子类型是多线程共享数据的线程安全的最好方式之一：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 原子类型是共享状态最好的一种方式</span></span><br><span class="line"><span class="keyword">static</span> REQUEST_RECV: AtomicUsize = AtomicUsize::<span class="title function_ invoke__">new</span>(<span class="number">0</span>);</span><br><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">handles</span>: <span class="type">Vec</span>&lt;JoinHandle&lt;()&gt;&gt; = <span class="type">Vec</span>::<span class="title function_ invoke__">new</span>();</span><br><span class="line"><span class="keyword">for</span> <span class="variable">i</span> <span class="keyword">in</span> <span class="number">0</span>..<span class="number">100</span> &#123;</span><br><span class="line">    handles.<span class="title function_ invoke__">push</span>(thread::<span class="title function_ invoke__">spawn</span>(<span class="keyword">move</span> || &#123;</span><br><span class="line">        REQUEST_RECV.<span class="title function_ invoke__">fetch_add</span>(i, Ordering::SeqCst);</span><br><span class="line">    &#125;));</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">for</span> <span class="variable">h</span> <span class="keyword">in</span> handles &#123;</span><br><span class="line">    h.<span class="title function_ invoke__">join</span>().<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">println!</span>(<span class="string">&quot;REQUEST_RECV = &#123;&#125;&quot;</span>, REQUEST_RECV.<span class="title function_ invoke__">load</span>(Ordering::SeqCst));</span><br></pre></td></tr></table></figure>
+
+<h3 id="运行期初始化"><a href="#运行期初始化" class="headerlink" title="运行期初始化"></a>运行期初始化</h3><p>为什么需要运行期初始化呢？常见的场景是：一个全局的动态配置，它在程序开始后，才加载数据进行初始化，最终可以让各个线程直接访问使用。</p>
+<p>编译期初始化最大的限制是必须赋值为在编译期就可以计算出的值(常量表达式&#x2F;数学表达式)，不能是运行时才能计算出的值(如函数)：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> NAMES: Mutex&lt;<span class="type">String</span>&gt; = Mutex::<span class="title function_ invoke__">new</span>(<span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;Hello World&quot;</span>)); <span class="comment">// 错误，静态变量不能通过函数在编译期初始化</span></span><br></pre></td></tr></table></figure>
+
+<p>因为 Rust 的<strong>借用和生命周期规则的限制</strong>，如果需要在运行期初始化一个全局变量，就需要考虑 <code>lazy_static</code>、<code>Box::leak</code> 等方式。</p>
+<h4 id="lazy-static"><a href="#lazy-static" class="headerlink" title="lazy_static"></a>lazy_static</h4><p>lazy_static 是社区提供的非常强大的宏，用于懒初始化静态变量，之前的静态变量都是在编译期初始化的，因此无法使用函数调用进行赋值，而 lazy_static 允许在运行期初始化静态变量！</p>
+<p>lazy_static 宏，匹配的是 static ref，所以定义的静态变量都是不可变引用。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 使用 lazy_static 在运行期初始化一个全局变量</span></span><br><span class="line">lazy_static! &#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">ref</span> NAMES: Mutex&lt;<span class="type">String</span>&gt; = Mutex::<span class="title function_ invoke__">new</span>(<span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;Hello&quot;</span>));</span><br><span class="line">&#125;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">names</span> = NAMES.<span class="title function_ invoke__">lock</span>().<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">    names.<span class="title function_ invoke__">push_str</span>(<span class="string">&quot; World&quot;</span>);</span><br><span class="line">    names.<span class="title function_ invoke__">push</span>(<span class="string">&#x27;!&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">println!</span>(<span class="string">&quot;NAMES = &#123;:?&#125;&quot;</span>, NAMES.<span class="title function_ invoke__">lock</span>().<span class="title function_ invoke__">unwrap</span>());</span><br></pre></td></tr></table></figure>
+
+<p>需要注意的是，lazy_static 直到运行到 main 中的第一行代码时，才进行初始化。<br>并且使用 lazy_static 在每次访问静态变量时，会有轻微的性能损失，因为其内部实现用了一个底层的并发原语 std::sync::Once，在每次访问该变量时，程序都会执行一次原子指令用于确认静态变量的初始化是否完成。</p>
+<h4 id="Box-leak"><a href="#Box-leak" class="headerlink" title="Box::leak"></a>Box::leak</h4><p>在正常的生命周期中，rust 是不允许将一个只有局部生命周期的变量赋值给 <code>&#39;static</code> 全局的生命周期，因为这容易造成访问未定义的行为，非常不安全。</p>
+<p>通过 <code>Box::leak</code> 将一个变量从内存中泄露，使其成为 <code>&#39;static</code> 生命周期，这样就可以赋值给 <code>&#39;static</code> 生命周期的全局变量，也就能达到在运行时初始化全局变量的目的。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Box::leak 将变量从内存中泄露出去，使其成为 &#x27;static 的生命周期，这样就可以赋值给具有 &#x27;static 生命周期的全局变量，也就能达到在运行时初始化全局变量的目的</span></span><br><span class="line"><span class="meta">#[derive(Debug)]</span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">Config</span> &#123;</span><br><span class="line">    secret: <span class="type">String</span>,</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">mut</span> CONFIG: <span class="type">Option</span>&lt;&amp;<span class="keyword">mut</span> Config&gt; = <span class="literal">None</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="variable">config</span> = <span class="type">Box</span>::<span class="title function_ invoke__">new</span>(Config &#123;</span><br><span class="line">    secret: <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;Hello World&quot;</span>),</span><br><span class="line">&#125;);</span><br><span class="line"><span class="keyword">unsafe</span> &#123;</span><br><span class="line">    CONFIG = <span class="title function_ invoke__">Some</span>(<span class="type">Box</span>::<span class="title function_ invoke__">leak</span>(config));</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>, CONFIG);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="函数返回全局变量"><a href="#函数返回全局变量" class="headerlink" title="函数返回全局变量"></a>函数返回全局变量</h4><p>借助 Box::leak 通过借用和生命周期规则校验，将一个变量变为 <code>&#39;static</code>，保证与程序活的一样久即可：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 函数返回一个全局变量，借助 Box::leak 即可</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">init_static</span>() <span class="punctuation">-&gt;</span> &amp;<span class="symbol">&#x27;static</span> <span class="keyword">mut</span> Config &#123;</span><br><span class="line">    <span class="type">Box</span>::<span class="title function_ invoke__">leak</span>(<span class="type">Box</span>::<span class="title function_ invoke__">new</span>(Config &#123;</span><br><span class="line">        secret: <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;None DO&quot;</span>),</span><br><span class="line">    &#125;))</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">unsafe</span> &#123;</span><br><span class="line">    CONFIG = <span class="title function_ invoke__">Some</span>(<span class="title function_ invoke__">init_static</span>());</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>, CONFIG);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="OnceCell-和-OnceLock"><a href="#OnceCell-和-OnceLock" class="headerlink" title="OnceCell 和 OnceLock"></a>OnceCell 和 OnceLock</h3><p>在 Rust 标准库中提供了实验性的 lazy::OnceCell 和 lazy::SyncOnceCell (在 Rust 1.70.0 版本及以上的标准库中，替换为稳定的 cell::OnceCell 和 sync::OnceLock)两种 Cell。<br>前者用于单线程，后者用于多线程，它们用来存储堆上的信息，并且具有最多只能赋值一次的特性。</p>
+<p>阅读：<a target="_blank" rel="noopener" href="https://course.rs/advance/global-variable.html#%E6%A0%87%E5%87%86%E5%BA%93%E4%B8%AD%E7%9A%84-oncecell">https://course.rs/advance/global-variable.html#标准库中的-oncecell</a></p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ul>
+<li>编译期初始化的全局变量，const 创建常量，static 创建静态变量，Atomic 创建原子类型</li>
+<li>运行期初始化的全局变量，lazy_static 用于懒初始化，Box::leak 利用内存泄漏将一个变量的生命周期变为’static</li>
+</ul>
+<h3 id="Code"><a href="#Code" class="headerlink" title="Code"></a>Code</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="comment">//  静态常量</span></span><br><span class="line">    <span class="keyword">const</span> MAX_ID: <span class="type">usize</span> = <span class="type">usize</span>::MAX / <span class="number">2</span>;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;最大的用户 ID = &#123;&#125;&quot;</span>, MAX_ID);</span><br><span class="line">    <span class="comment">// 静态变量不能通过函数在编译期初始化</span></span><br><span class="line">    <span class="comment">// static NAMES: Mutex&lt;String&gt; = Mutex::new(String::from(&quot;Hello World&quot;));</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 静态变量</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">mut</span> REQUEST_COUNT: <span class="type">usize</span> = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">unsafe</span> &#123;</span><br><span class="line">        <span class="comment">// 操作 static 类型的变量需要 unsafe 作用域</span></span><br><span class="line">        <span class="comment">// 因为这种使用方式往往并不安全，当在多线程中同时去修改时，会不可避免的遇到脏数据</span></span><br><span class="line">        REQUEST_COUNT = <span class="number">2</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">unsafe</span> &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;REQUEST_COUNT = &#123;&#125;&quot;</span>, REQUEST_COUNT);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 原子类型是共享状态最好的一种方式</span></span><br><span class="line">    <span class="keyword">static</span> REQUEST_RECV: AtomicUsize = AtomicUsize::<span class="title function_ invoke__">new</span>(<span class="number">0</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">handles</span>: <span class="type">Vec</span>&lt;JoinHandle&lt;()&gt;&gt; = <span class="type">Vec</span>::<span class="title function_ invoke__">new</span>();</span><br><span class="line">    <span class="keyword">for</span> <span class="variable">i</span> <span class="keyword">in</span> <span class="number">0</span>..<span class="number">100</span> &#123;</span><br><span class="line">        handles.<span class="title function_ invoke__">push</span>(thread::<span class="title function_ invoke__">spawn</span>(<span class="keyword">move</span> || &#123;</span><br><span class="line">            REQUEST_RECV.<span class="title function_ invoke__">fetch_add</span>(i, Ordering::SeqCst);</span><br><span class="line">        &#125;));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> <span class="variable">h</span> <span class="keyword">in</span> handles &#123;</span><br><span class="line">        h.<span class="title function_ invoke__">join</span>().<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;REQUEST_RECV = &#123;&#125;&quot;</span>, REQUEST_RECV.<span class="title function_ invoke__">load</span>(Ordering::SeqCst));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 使用 lazy_static 在运行期初始化一个全局变量</span></span><br><span class="line">    lazy_static! &#123;</span><br><span class="line">        <span class="keyword">static</span> <span class="keyword">ref</span> NAMES: Mutex&lt;<span class="type">String</span>&gt; = Mutex::<span class="title function_ invoke__">new</span>(<span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;Hello&quot;</span>));</span><br><span class="line">    &#125;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">names</span> = NAMES.<span class="title function_ invoke__">lock</span>().<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">        names.<span class="title function_ invoke__">push_str</span>(<span class="string">&quot; World&quot;</span>);</span><br><span class="line">        names.<span class="title function_ invoke__">push</span>(<span class="string">&#x27;!&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;NAMES = &#123;:?&#125;&quot;</span>, NAMES.<span class="title function_ invoke__">lock</span>().<span class="title function_ invoke__">unwrap</span>());</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Box::leak 将变量从内存中泄露出去，使其成为 &#x27;static 的生命周期，这样就可以赋值给具有 &#x27;static 生命周期的全局变量，也就能达到在运行时初始化全局变量的目的</span></span><br><span class="line">    <span class="meta">#[derive(Debug)]</span></span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">Config</span> &#123;</span><br><span class="line">        secret: <span class="type">String</span>,</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">mut</span> CONFIG: <span class="type">Option</span>&lt;&amp;<span class="keyword">mut</span> Config&gt; = <span class="literal">None</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">config</span> = <span class="type">Box</span>::<span class="title function_ invoke__">new</span>(Config &#123;</span><br><span class="line">        secret: <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;Hello World&quot;</span>),</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="keyword">unsafe</span> &#123;</span><br><span class="line">        CONFIG = <span class="title function_ invoke__">Some</span>(<span class="type">Box</span>::<span class="title function_ invoke__">leak</span>(config));</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>, CONFIG);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 函数返回一个全局变量，借助 Box::leak 即可</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">init_static</span>() <span class="punctuation">-&gt;</span> &amp;<span class="symbol">&#x27;static</span> <span class="keyword">mut</span> Config &#123;</span><br><span class="line">        <span class="type">Box</span>::<span class="title function_ invoke__">leak</span>(<span class="type">Box</span>::<span class="title function_ invoke__">new</span>(Config &#123;</span><br><span class="line">            secret: <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;None DO&quot;</span>),</span><br><span class="line">        &#125;))</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">unsafe</span> &#123;</span><br><span class="line">        CONFIG = <span class="title function_ invoke__">Some</span>(<span class="title function_ invoke__">init_static</span>());</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>, CONFIG);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Az</span>
+                    </p>
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Rust/"># Rust</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2024/06/rust-%E8%BD%AC%E6%8D%A2%E5%92%8C%E8%BE%B9%E7%95%8C%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/">rust: 转换和边界异常处理</a>
+            
+            
+            <a class="next" rel="next" href="/2024/06/rust-%E5%9F%BA%E4%BA%8E-Send-%E5%92%8C-Sync-%E7%9A%84%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8/">rust: 基于 Send 和 Sync 的线程安全</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+  <div class="copyright">
+    <span>© Az | Powered by Hexo & Chic</span>
+  </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

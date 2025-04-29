@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Az">
+
+
+    <meta name="subtitle" content="Welcome!">
+
+
+
+    <meta name="keywords" content="blog luckydog Withx">
+
+
+<title>二. Web性能与安全 - 性能方向 | Az&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+<link rel="stylesheet" href="/fonts/custom/iconfont.css">
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">I&#39;m Az</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">I&#39;m Az</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">二. Web性能与安全 - 性能方向</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Az</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">2023.08.03&nbsp;&nbsp;11:37:24</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E6%B5%8F%E8%A7%88%E5%99%A8/">浏览器</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="深入理解浏览器缓存机制"><a href="#深入理解浏览器缓存机制" class="headerlink" title="深入理解浏览器缓存机制"></a>深入理解浏览器缓存机制</h2><p><img src="/assets/image-20220907085640-8nz781x.png" alt="image"></p>
+<p>缓存是提升网页性能最好的方式之一，开发者只需要控制几个字段就可以减少大量的数据传输和低效的网络请求。</p>
+<p>目前几乎所有的<strong>缓存控制字段</strong>是来源于后端服务器的<strong>响应</strong>，这里不包括浏览器的存储如 <code>Storage</code>，<code>IndexedDB</code>。为什么前端工程师还需要学网络http部分？</p>
+<p>答案是前端工程师才更了解业务的具体场景是什么，如图片加载缓存优化。前端不直接控制缓存字段，而是与后端沟通定义当前<strong>场景的缓存策略</strong>，只有了解了缓存有哪些策略才能够针对某一场景的缓存进行优化。</p>
+<blockquote>
+<p>由于之前一上来就是各种复杂的缓存组合策略，所以学而退，退而学。参考前辈的笔记，从主流的控制字段结合分析缓存字段的发展，相信会有入门理解的收获。</p>
+</blockquote>
+<p>一个数据请求过程可以分成发起网络请求，服务器处理，浏览器响应三个部分。浏览器缓存能够在第一、第三阶段，也就是发起网络请求、浏览器响应优化性能。比如第一阶段直接使用缓存<strong>不发起请求</strong>，第三阶段浏览器发起请求了但是请求资源未变化，不需要重新传送，<strong>减少响应数据</strong>。</p>
+<p>学习缓存需要认识<strong>缓存位置</strong>，<strong>缓存策略</strong>以及实际场景<strong>如何应用缓存策略</strong>。</p>
+<h2 id="1-缓存位置"><a href="#1-缓存位置" class="headerlink" title="1. 缓存位置"></a>1. 缓存位置</h2><p>从缓存位置上来说缓存分为四种，并各有优先级，按照优先级查找缓存，找到且符合要求即结束查找并返回，注意Chrome中，Memory Cache优先级是最高的</p>
+<ul>
+<li>Service Worker</li>
+<li>Memory Cache</li>
+<li>Disk Cache</li>
+<li>Push Cache</li>
+</ul>
+<h3 id="1-1-Service-Worker（可先不深入，但需要了解）"><a href="#1-1-Service-Worker（可先不深入，但需要了解）" class="headerlink" title="1.1 Service Worker（可先不深入，但需要了解）"></a>1.1 Service Worker（可先不深入，但需要了解）</h3><p>Service Worker 是运行在浏览器背后的<strong>独立线程</strong>，一般可以用来实现缓存功能。使用 Service Worker的话，传输协议必须为 <strong>HTTPS</strong>。因为 Service Worker 中涉及到请求拦截，所以必须使用 HTTPS 协议来保障安全。 <strong>Service Worker 的缓存与浏览器其他内建的缓存机制不同，它可以让我们自由控制缓存哪些文件、如何匹配缓存、如何读取缓存，并且缓存是持续性的</strong> 。</p>
+<p>Service Worker 检查资源是否存在其缓存中，并根据其编程的缓存策略决定是否返回资源。这个操作不会自动发生，需要在注册的 Service Worker 中定义 <code>fetch</code> 事件去拦截并处理网络请求，这样才能命中 Service Worker 缓存而不是网络或者 HTTP 缓存。</p>
+<p>简单的理解：<strong>前端</strong>定义规则手动控制文件的缓存，利用<code>fetch</code>事件，在发送网络请求前拦截并检查本地是否缓存了数据，以决定是否发起网络请求。相信作为一名前端工程师会有本地存储 token 的经验，发起网络请求前检查本地的 token，如果 token 不存在可以直接返回，不发起请求，Service Worker就是类似的工作原理。</p>
+<p>Service Worker 看起来也是一个缓存技术，为什么要使用 Service Worker？</p>
+<p>答案：</p>
+<ul>
+<li><p>提高WebApp的离线缓存能力，缩小 WebApp 与 NativeApp 之间差距。在无网情况下发起一个网络请求，网页会一直加载，最后跳出网络未连接的提示，而原生的App即使是在无网络情况下如单机游戏，还是正常运行。</p>
+</li>
+<li><p>事件同步：即使关闭了当前 Web 页面也可以正常工作。如 Web 邮件客户端通知</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://x5.tencent.com/product/service-worker.html#:~:text=Service%20Worker%E4%BC%98%E5%8A%BF%E5%8F%8A%E5%85%B8%E5%9E%8B%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF,1%E3%80%81%E7%A6%BB%E7%BA%BF%E7%BC%93%E5%AD%98%EF%BC%9A%E5%8F%AF%E4%BB%A5%E5%B0%86H5%E5%BA%94%E7%94%A8%E4%B8%AD%E4%B8%8D%E5%8F%98%E5%8C%96%E7%9A%84%E8%B5%84%E6%BA%90%E6%88%96%E8%80%85%E5%BE%88%E5%B0%91%E5%8F%98%E5%8C%96%E7%9A%84%E8%B5%84%E6%BA%90%E9%95%BF%E4%B9%85%E7%9A%84%E5%AD%98%E5%82%A8%E5%9C%A8%E7%94%A8%E6%88%B7%E7%AB%AF%EF%BC%8C%E6%8F%90%E5%8D%87%E5%8A%A0%E8%BD%BD%E9%80%9F%E5%BA%A6%E3%80%81%E9%99%8D%E4%BD%8E%E6%B5%81%E9%87%8F%E6%B6%88%E8%80%97%E3%80%81%E9%99%8D%E4%BD%8E%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%8E%8B%E5%8A%9B%E3%80%82%20%E5%A6%82%E4%B8%AD%E9%87%8D%E5%BA%A6%E7%9A%84H5%E6%B8%B8%E6%88%8F%E3%80%81%E6%A1%86%E6%9E%B6%E6%95%B0%E6%8D%AE%E7%8B%AC%E7%AB%8B%E7%9A%84web%E8%B5%84%E8%AE%AF%E5%AE%A2%E6%88%B7%E7%AB%AF%E3%80%81web%E9%82%AE%E4%BB%B6%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%AD%89">腾讯浏览服务-Service Worker (tencent.com)</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/115243059">service worker 是什么？看这篇就够了 - 知乎 (zhihu.com)</a></p>
+</li>
+</ul>
+<h3 id="1-2-Memory-Cache"><a href="#1-2-Memory-Cache" class="headerlink" title="1.2 Memory Cache"></a>1.2 Memory Cache</h3><p>Memory Cache 也就是内存中的缓存，主要包含的是当前中页面中已经抓取到的资源，例如页面上已经下载的样式、脚本、图片等。读取内存中的数据肯定比磁盘快，内存缓存虽然读取高效，可是缓存持续性很短，会随着进程的释放而释放。  <strong>一旦我们关闭 Tab 页面，内存中的缓存也就被释放了</strong> 。</p>
+<blockquote>
+<p>既然内存缓存效率那么高，是不是可以将所有的缓存都使用内存来存储呢？</p>
+</blockquote>
+<blockquote>
+<p>这是不可能的。首先从容量上看，计算机内存容量比硬盘小得多，操作系统需要精打细算内存的使用，所以能让我们使用的内存必然不多。其次，内存在断电情况下不保存数据的，所以不可能将所有的数据都放在内存。</p>
+</blockquote>
+<p>当我们访问过页面以后，再次刷新页面，可以发现很多数据都来自于内存缓存（Size字段）</p>
+<p><img src="/assets/image-20220907185452-fa5jojc.png" alt="image"></p>
+<blockquote>
+<p>古老的浏览器解析一个网页的流程是串行的，网络请求下载，解析，网络请求下载另外一个文件，解析。现代的浏览器都是并行下载的，即一边解析，一边可能几个线程在下载不同的资源文件。</p>
+</blockquote>
+<p>内存缓存中有一块重要的缓存资源是 <code>preloader</code> 、<code>preload</code>相关指令（例如<code>&lt;link rel=&quot;prefetch&quot;&gt;</code>）下载的资源。总所周知 preloader 的相关指令已经是页面优化的常见手段之一，它可以一边解析 js&#x2F;css 文件，一边网络请求下一个资源，并不一定只是一个网络请求，可能同时存在多个线程在下载资源。关于缓存字段，将在下文详细介绍。</p>
+<p>需要注意的是：<strong>内存缓存在缓存资源时并不关心 HTTP 缓存头 Cache-Control 是什么值</strong>，<strong>同时资源的匹配也并非仅仅是对 URL 做匹配，还可能会对 Content-Type ， CORS 等其他特征做校验</strong> 。</p>
+<p>简单总结：目前几乎所有的 <strong>HTTP缓存控制字段</strong> 都来源于后端服务的<strong>响应</strong>，在Chrome中，内存缓存的优先级是最高的。内存缓存不关心HTTP响应的缓存头字段，同时资源的匹配也并非只是对URL做匹配，还可能会对Content-TYpe，CORS等其他特征做校验。</p>
+<h3 id="1-3-Disk-Cache"><a href="#1-3-Disk-Cache" class="headerlink" title="1.3 Disk Cache"></a>1.3 Disk Cache</h3><p>Disk Cache 是存储在硬盘上的缓存，虽然读取速度较慢，但是什么都能存储到磁盘中， <strong>比之 Memory Cache 胜在容量和存储时效性上</strong> ，能够长时间的保存缓存。</p>
+<blockquote>
+<p>在所有浏览器缓存中，<strong>Disk Cache 覆盖面基本是最大的</strong>。它会根据 HTTP Herder 中的<strong>缓存字段判</strong>断哪些资源需要缓存，哪些资源可以不请求<strong>直接使用</strong>，哪些资源已经过期需要<strong>重新请求</strong>。并且即使在跨站点的情况下，相同地址的资源一旦被硬盘缓存下来，就不会再次去请求数据。</p>
+<p>例如：常见的JQuery压缩包，在Disk Cache缓存后，所有使用JQuery的站点都可以使用本地缓存的JQuery。</p>
+</blockquote>
+<p>绝大部分的缓存都来自 Disk Cache，关于 HTTP 的协议头中的缓存字段，我们会在下文进行详细介绍。</p>
+<p>那么浏览器什么时候会将资源缓存到硬盘中呢？关于这点，网上说法不一，不过以下观点比较靠得住：</p>
+<ul>
+<li>对于<strong>大文件</strong>来说，大概率是不存储在内存中的，反之优先</li>
+<li>当前<strong>系统内存使用率高</strong>的话，文件优先存储进硬盘</li>
+</ul>
+<p>简单总结 Disk Cache</p>
+<ul>
+<li>容量大</li>
+<li>时间长</li>
+<li>跨站点</li>
+<li>覆盖范围最广</li>
+</ul>
+<h3 id="1-4-Push-Cache（需要了解，但在Service-Worker之后）"><a href="#1-4-Push-Cache（需要了解，但在Service-Worker之后）" class="headerlink" title="1.4 Push Cache（需要了解，但在Service Worker之后）"></a>1.4 Push Cache（需要了解，但在Service Worker之后）</h3><p>Push Cache（推送缓存）是 HTTP&#x2F;2 中的内容，按照缓存的优先级，当以上三种缓存都没有命中时，它才会被使用。 <strong>它只在会话（Session）中存在，一旦会话结束就被释放，并且缓存时间也很短暂</strong> ，在Chrome浏览器中只有5分钟左右，同时它也并非严格执行HTTP头中的缓存指令。</p>
+<p>Push Cache 在国内能够查到的资料很少，也是因为 HTTP&#x2F;2 在国内不够普及。这里推荐阅读<code>Jake Archibald</code>的 <a target="_blank" rel="noopener" href="https://links.jianshu.com/go?to=https://jakearchibald.com/2017/h2-push-tougher-than-i-thought/">HTTP&#x2F;2 push is tougher than I thought</a> 这篇文章，文章中的几个结论：</p>
+<ul>
+<li>所有的资源都能被推送，并且能够被缓存,但是 Edge 和 Safari 浏览器支持相对比较差</li>
+<li>可以推送 no-cache 和 no-store 的资源</li>
+<li>一旦连接被关闭，Push Cache 就被释放</li>
+<li>多个页面可以使用同一个HTTP&#x2F;2的连接，也就可以使用同一个Push Cache。这主要还是依赖浏览器的实现而定，出于对性能的考虑，有的浏览器会对相同域名但不同的tab标签使用同一个HTTP连接。</li>
+<li>Push Cache 中的缓存只能被使用一次</li>
+<li>浏览器可以拒绝接受已经存在的资源推送</li>
+<li>你可以给其他域名推送资源</li>
+</ul>
+<h2 id="2-缓存过程分析（缓存策略）"><a href="#2-缓存过程分析（缓存策略）" class="headerlink" title="2. 缓存过程分析（缓存策略）"></a>2. 缓存过程分析（缓存策略）</h2><p>如果以上四种缓存都没有命中的话，那么只能发起请求来获取资源了。那么为了性能上的考虑，大部分的接口都应该选择好缓存策略， <strong>通常浏览器缓存策略分为两种：强缓存和协商缓存，并且缓存策略都是通过设置 HTTP Header 来实现的</strong> 。</p>
+<p>浏览器与服务器通信的方式为<strong>应答模式</strong>，即是：浏览器发起HTTP请求 – 服务器响应该请求， <strong>那么浏览器怎么确定一个资源该不该缓存，如何去缓存呢</strong> ？浏览器第一次向服务器发起该请求后拿到请求结果后，将请求结果和缓存标识存入浏览器缓存， <strong>即浏览器对资源缓存的处理是根据第一次请求资源时返回的响应头来确定的</strong> 。具体过程如下图：</p>
+<p><img src="/assets/image-20220907235229-v01zwzm.png" alt="image" title="第一次缓存过程"></p>
+<blockquote>
+<p>无论是什么时候发起的请求，浏览器首先匹配浏览器缓存，如果没有缓存命中或者缓存过期才会发送网络请求请求最新资源。在资源响应后，浏览器会根据HTTP响应中的<strong>缓存字段</strong>来控制缓存方式（若无缓存字段，则为默认缓存方式，默认缓存方式在下文介绍）。</p>
+</blockquote>
+<p>由上图我们可以知道：</p>
+<ul>
+<li>浏览器每次发起请求，都先在浏览器缓存中<strong>查找</strong>该请求的结果以及缓存标识</li>
+<li>浏览器每次拿到返回的请求结果都会将该结果和缓存标识<strong>存入浏览器缓存</strong>中</li>
+</ul>
+<p>以上两点结论就是浏览器缓存机制的关键，<strong>浏览器查找和存入确保了每个请求的缓存存入与读取</strong>，只要我们再理解浏览器缓存的使用规则，那么所有的问题就迎刃而解了，本文也将围绕着这点进行详细分析。为了方便大家理解，这里我们根据<strong>是否需要向服务器重新发起HTTP请求</strong>将缓存过程分为两个部分，分别是强缓存和协商缓存。</p>
+<h2 id="3-强缓存和协商缓存"><a href="#3-强缓存和协商缓存" class="headerlink" title="3. 强缓存和协商缓存"></a>3. 强缓存和协商缓存</h2><p>强缓存和协商缓存两个<strong>阶段</strong>并不容易理解，读者需要细心阅读并反复思考。</p>
+<p>按照是否需要<strong>向服务器重新发起HTTP请求</strong>将缓存的过程分为两个部分，<strong>强缓存阶段和协商缓存阶段</strong>。<strong>Memory Cache 和 Disk Cache 都属于强缓存</strong>。现代浏览器缓存存储图像和网页等(主要在磁盘上)，而你的操作系统缓存文件可能大部分在内存缓存中。</p>
+<p>注意：<strong>强缓存和协商缓存是一个阶段</strong>，而不是指具体的缓存位置或形式。</p>
+<p>浏览器每次发送请求前都会检查自身缓存，称为<strong>强缓存</strong>阶段，具有不存在、存在两种情况</p>
+<ul>
+<li><p>缓存不存在，属于强缓存失效阶段，请求新资源</p>
+</li>
+<li><p>缓存存在，可以分成未过期、已过期两种情况</p>
+<ul>
+<li><p>缓存未过期，属于强缓存<strong>生效</strong>，那么<strong>结束</strong>并返回对应缓存</p>
+</li>
+<li><p>缓存已过期，属于强缓存<strong>失效</strong>，那么进入<strong>协商</strong>缓存阶段，可以分成生效，失效两种情况</p>
+<ul>
+<li>服务器资源未修改，返回 <strong>304</strong>，属于协商缓存生效</li>
+<li>服务器资源已修改，返回 <strong>200</strong>，属于协商缓存失效</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>从以上分析中可以得到结论</p>
+<p>每一次网络请求都会进入强缓存阶段，当 <strong>缓存存在</strong> 且 <strong>缓存已过期</strong> 时才能进入协商缓存阶段。<strong>缓存不存在</strong>时发起的网络请求不属于协商缓存阶段，这一点和后续的协商缓存容易混淆，也请记住<strong>缓存不存在</strong>能表达的两种情况，第一次请求和请求后被删除。特殊的，当<strong>缓存存在</strong>时，强缓存中有一个字段 <code>Cache-Control: no-cache</code> 可以直接使强缓存失效并进入协商缓存，将在强缓存中详细介绍。</p>
+<p>简单总结：浏览器发送请求前检查自身缓存，属于强缓存阶段；<strong>缓存存在</strong> 且 <strong>缓存已过期，需要重新发起网络请求</strong>则是协商缓存阶段。</p>
+<h3 id="3-1-强缓存"><a href="#3-1-强缓存" class="headerlink" title="3.1 强缓存"></a>3.1 强缓存</h3><p>强缓存：<strong>不会向服务器重新发送请求，直接从缓存中读取资源</strong>，在 Chrome 控制台的 Network 选项中可以看到该请求返回 <strong>200</strong> 的状态码，并且 Size 显示from disk cache 或 from memory cache。</p>
+<p>强缓存可以通过设置两种 HTTP Header 实现：Expires 和 Cache-Control。</p>
+<h4 id="3-1-1-Expires"><a href="#3-1-1-Expires" class="headerlink" title="3.1.1 Expires"></a>3.1.1 Expires</h4><p><strong>Expires：缓存过期时间，用来指定资源到期的时间，是服务器端的具体的时间点</strong> 。也就是说，Expires &#x3D; max-age + 请求时间，需要和 Last-modified 结合使用。Expires 是 Web 服务器<strong>响应消息头字段</strong>，在响应 http 请求时告诉浏览器在过期时间前浏览器可以直接从浏览器缓存取数据，而无需再次请求。</p>
+<p><strong>Expires 是 HTTP&#x2F;1 的产物，受限于本地时间，如果修改了本地时间，可能会造成缓存失效</strong> 。<code>Expires: Wed, 22 Oct 2018 08:41:00 GMT</code> 表示资源会在 Wed, 22 Oct 2018 08:41:00 GMT 后过期，需要再次请求。如果修改当前的时间查过Expires给定的时间，那么浏览器就会重新发起请求，进入<strong>协商缓存阶段</strong>。</p>
+<h4 id="3-1-2-Cache-Control"><a href="#3-1-2-Cache-Control" class="headerlink" title="3.1.2 Cache-Control"></a>3.1.2 Cache-Control</h4><p>在 HTTP&#x2F;1.1 中，Cache-Control 是最重要的规则，主要用于控制网页缓存。比如当<code>Cache-Control:max-age=300</code>时，则代表在这个请求正确返回时间（浏览器也会记录下来）的5分钟内再次加载资源，就会命中强缓存。</p>
+<p>Cache-Control 可以在请求头或者响应头中设置，并且可以组合使用多种指令：</p>
+<p><img src="/assets/image-20220908002252-w0l3req.png" alt="image" title="组合使用多种指令"></p>
+<ul>
+<li><p><strong>public</strong> ： <strong>所有内容都将被缓存（客户端和代理服务器都可缓存）</strong> 。具体来说响应可被任何中间节点缓存，如 Browser &lt;– proxy1 &lt;–  proxy2 &lt;– Server，中间的 proxy 可以缓存资源，比如下次再请求同一资源 proxy1 直接把自己缓存的东西给 Browser 而不再向 proxy2 要。</p>
+</li>
+<li><p><strong>private</strong> ： <strong>所有内容只有客户端可以缓存</strong> ，Cache-Control 的默认取值。具体来说，表示中间节点不允许缓存，对于 Browser &lt;– proxy1 &lt;–  proxy2 &lt;– Server，proxy 会老老实实把 Server 返回的数据发送给 proxy1，自己不缓存任何数据。当下次 Browser 再次请求时 proxy 会做好请求转发而不是自作主张给自己缓存的数据。</p>
+</li>
+<li><p><strong>no-cache</strong> ：<strong>客户端缓存内容，是否使用缓存则需要经过协商缓存来验证决定。</strong>表示不使用 Cache-Control 的缓存控制方式做前置验证，而是使用 Etag 或者Last-Modified字段来控制缓存。<strong>需要注意的是，no-cache 这个名字有一点误导。设置了 no-cache 之后，并不是说浏览器就不再缓存数据，只是浏览器在使用缓存数据时，需要先确认一下数据是否还跟服务器保持一致。</strong></p>
+</li>
+<li><p><strong>no-store</strong> ：所有内容都不会被缓存，即不使用强制缓存，也不使用协商缓存。</p>
+</li>
+<li><p><strong>max-age</strong> ：max-age&#x3D;xxx (xxx is numeric) 表示缓存内容将在当前响应时间的xxx秒后失效，一般响应头中会包含 Date 字段。</p>
+</li>
+<li><p><strong>s-maxage</strong> （单位为s)：同 max-age 作用一样，只在代理服务器中生效（比如CDN缓存）。比如当 s-maxage&#x3D;60 时，在这 60 秒中，即使更新了 CDN 的内容，浏览器也不会进行请求。max-age 用于普通缓存，而 s-maxage 用于代理缓存。 <strong>s-maxage 的优先级高于 max-age</strong> 。如果存在 s-maxage，则会覆盖掉 max-age 和 Expires header。</p>
+</li>
+<li><p><strong>max-stale</strong> ：能容忍的最大过期时间。max-stale 指令标示了客户端愿意接收一个已经过期了的响应。如果指定了 max-stale 的值，则最大容忍时间为对应的秒数。如果没有指定，那么说明浏览器愿意接收任何 age 的响应（age 表示响应由源站生成或确认的时间与当前时间的差值）。</p>
+</li>
+<li><p><strong>min-fresh</strong> ：能够容忍的最小新鲜度。min-fresh 标示了客户端不愿意接受新鲜度不多于当前时间加上 min-fresh 设定的时间之和的响应。简单来说不要太新的资源。</p>
+</li>
+</ul>
+<p><img src="/assets/image-20220908002929-cfakxvf.png" alt="image" title="强缓存流程分析"></p>
+<p>从图中我们可以看到，我们可以将多个指令配合起来一起使用，达到多个目的。比如说我们希望资源能被缓存下来，并且是客户端和代理服务器都能缓存，还能设置缓存失效时间等等。</p>
+<p>Cache-Control字段属性解读</p>
+<ul>
+<li>可被复用指的是资源能否被缓存，不能缓存的标识是 <code>no-store</code>。</li>
+<li>资源在使用时是否保持一致指的是是否需要每次都检查资源有效性。<code>no-cache</code> 的设计很容易让人误解，<code>no-cache</code> 指的是每次使用缓存资源是否都需要向服务器验证是否过期，如果不过期则返回 <strong>304</strong> 和空响应体表示直接使用缓存，过期则重新返回 <strong>200</strong> 和最新资源。</li>
+<li>在网络请求中，可能会经过代理服务器，<code>public, private</code> 控制是否允许代理服务器缓存资源，<code>public</code> 表示均允许缓存，<code>private</code> 表示仅有客户端才允许缓存。</li>
+<li>权限设置完成后，便是指定缓存的时效。代理服务器缓存有属性 <code>s-maxage</code> 属性，客户端缓存有属性 <code>max-age</code> 和缓存字段 <code>Expires</code> 控制时效。Cache-Control字段的优先级高于Expires字段，Cache-Control字段中的属性 <code>s-maxage</code>优先级高于 <code>max-age</code>。注意区分属性的优先级和字段的优先级。</li>
+<li>最大过期时间设置后，还可以设置允许的最大过期时间 <code>max-state</code> 和允许的最小新鲜时间 <code>min-fresh</code>。</li>
+</ul>
+<h4 id="3-1-3-Expires-和-Cache-Control"><a href="#3-1-3-Expires-和-Cache-Control" class="headerlink" title="3.1.3 Expires 和 Cache-Control"></a>3.1.3 Expires 和 Cache-Control</h4><p>其实这两者差别不大，区别就在于 Expires 是 HTTP1.0 的产物，Cache-Control是HTTP1.1 的产物，两者同时存在的话，Cache-Control 优先级高于 Expires；在某些不支持 HTTP1.1 的环境下，Expires 就会发挥用处。所以 Expires 其实是过时的产物，现阶段它的存在只是一种兼容性的写法。</p>
+<p>强缓存判断缓存是否有效的依据来自于是否超出某个时间或者某个时间段，而不关心服务器端文件是否已经更新。Expires、Cache-Control 字段依赖于本地时间 +  过期时间 + 允许最大过期时间。</p>
+<blockquote>
+<p>如果设置max-age&#x3D;60s，请求完成后的 60s 内服务端修改了资源，那么浏览器获得的资源是什么呢？浏览器在 60s 内不会重新请求资源，这就导致浏览器获得的资源不是最新的。</p>
+</blockquote>
+<p>强缓存的判断策略可能会导致加载文件不是服务器端最新的内容，是否还记得在 Cache-Control 中，具有一个属性 <code>no-cache</code>，表示跳过强缓存阶段，每次使用资源都需要发送请求和服务器确认是否为最新资源。可以认为<code>no-cache</code> 正是解决因为依赖于时间的判断没有极高靠性问题而出现的。</p>
+<p>那我们如何获知服务器端内容是否已经发生了更新呢？此时我们需要用到协商缓存策略。</p>
+<h3 id="3-2-协商缓存"><a href="#3-2-协商缓存" class="headerlink" title="3.2 协商缓存"></a>3.2 协商缓存</h3><p>协商缓存就是在 <strong>缓存存在</strong> 且 <strong>缓存已过期</strong> 的情况下，浏览器（重新）发送网络请求请求最新的资源的过程。特殊的，当<strong>缓存存在</strong>，强缓存中的一个属性 <code>Cache-Control:no-cache</code> 可以让强缓存失效并进入协商缓存。</p>
+<p>协商缓存有两种情况</p>
+<ul>
+<li>服务器返回 <strong>304</strong> 和 Not Modified，协商缓存生效</li>
+</ul>
+<p><img src="/assets/image-20220908093254-l6lldq5.png" alt="image.png"></p>
+<ul>
+<li>服务器返回 <strong>200</strong> 和 最新资源，协商缓存失效</li>
+</ul>
+<p><img src="/assets/image-20220908113245-vjb4pbx.png" alt="image.png"></p>
+<p><strong>条件：</strong>是否还记得进入协商缓存的要求？<strong>缓存存在</strong> 且 <strong>缓存已过期</strong> 是进入协商缓存的必要条件，特殊的，当<strong>缓存存在</strong>，强缓存中的一个属性 <code>Cache-Control:no-cache</code> 可以让强缓存失效并进入协商缓存。强缓存中通过 Expires 或 Cache-Control: max-age 判断缓存是否过期，那么在协商缓存中，如何确定是否协商生效呢？或者说服务器如何确定是否返回资源。</p>
+<p>这个确定的方法很简单，协商缓存可以通过设置两种<strong>响应</strong> HTTP Header 实现，<strong>Last-Modified 和 ETag</strong> 。</p>
+<h4 id="3-2-1-Last-Modified"><a href="#3-2-1-Last-Modified" class="headerlink" title="3.2.1 Last-Modified"></a>3.2.1 Last-Modified</h4><p>Last-Modified 字段是当前资源<strong>缓存不存在</strong>，请求成功后<strong>响应头</strong>中携带的参数字段，而后被浏览器缓存。Last-Modified 的值是这个资源在服务器上的<strong>最后修改时间</strong>，浏览器接收后缓存文件和 header 信息。</p>
+<p>注意：缓存不存在能够表示两种情况：第一次请求、请求后被删除</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">Last-Modified</span><span class="punctuation">: </span>Fri, 22 Jul 2016 01:47:00 GMT</span><br></pre></td></tr></table></figure>
+
+<p>浏览器下一次请求这个资源，浏览器检测到当前资源缓存中有 Last-Modified 这个 header 字段，于是在<strong>请求头</strong>中添加 If-Modified-Since 这个 header 字段，值就是 缓存的 header 信息中 Last-Modified 字段的值，服务器收到这个资源请求，会根据 If-Modified-Since 的值与服务器中这个资源的最后修改时间对比，如果没有变化，返回 <strong>304</strong> 和<strong>空的响应体</strong>，表示浏览器直接从缓存读取资源，此时表示<strong>协商缓存生效</strong>；如果 If-Modified-Since 的时间小于服务器中这个资源的最后修改时间，说明文件有更新，于是返回 <strong>200</strong> 和<strong>新的资源文件</strong>，此时表示<strong>协商缓存失效</strong>。返回 <strong>304</strong> 能够有效的降低数据的传输量，这也是为什么缓存能够提高性能的原因。</p>
+<p><strong>简单总结：</strong>Last-Modified 和 If-Modified-Since 是配对的，Last-Modified 是缓存不存在时，发送网络请求且请求成功后携带的<strong>响应头</strong>的字段，而后被浏览器缓存，当浏览器再一次请求这个资源，浏览器检查缓存并发现 Last-Modified 字段，就会在<strong>请求头</strong>上添加 If-Modified-Since 字段，值就是 Last-Modified 的值。服务器收到请求后对比 if-Modified-Since 和 服务器中改资源的最后修改时间，如果相等返回 <strong>304</strong> 和空响应体，响应头中还会有 Last-Modified 字段，此时表示<strong>协商缓存生效</strong>，如果不相等则会返回 <strong>200</strong> 和最新资源，<strong>响应头</strong>中携带最新的最后修改时间即 Last-Modified 字段，此时表示协商缓存失效，浏览器缓存当前资源和 header 信息。</p>
+<p><img src="/assets/image-20220908133821-ssuujgp.png" alt="image.png" title="协商缓存失效、生效"></p>
+<p>Last-Modified 具有一些弊端</p>
+<ul>
+<li>如果<strong>本地</strong>打开缓存文件，即使没有对文件进行修改，但还是会造成 Last-Modified <strong>被修改</strong>，服务端不能命中缓存导致发送相同的资源</li>
+<li>因为 Last-Modified 只能以秒计时，如果在<strong>不可感知的时间内</strong>修改完成文件，那么服务端会认为资源还是命中了，不会返回正确的资源</li>
+</ul>
+<p>既然根据文件修改时间来决定是否缓存尚有不足，能否可以直接根据文件内容是否修改来决定缓存策略？所以 HTTP1.1 出现了 <code>ETag</code> 和 <code>If-None-Match</code>。</p>
+<h4 id="3-2-2-ETag"><a href="#3-2-2-ETag" class="headerlink" title="3.2.2 ETag"></a>3.2.2 ETag</h4><p>ETag 和 Last-Modified 类似，是在<strong>缓存不存在</strong>时，浏览器发起请求，请求成功后<strong>响应头</strong>携带的字段，而后被浏览器缓存。与 Last-Modified 不同的是 ETag 的值是根据某一算法如哈希生成的文件唯一标识，<strong>只要资源有变化，ETag就会重新生成</strong> 。</p>
+<p>浏览器在下一次加载该资源向服务器发送请求时，浏览器检查到当前资源的缓存具有 ETag，则会将缓存中的 ETag 值放到<strong>请求头</strong>中的 If-None-Match，服务器只需要比较客户端传来的 If-None-Match 和服务器上该资源的 ETag 是否一致，就能判断资源相对客户端是否被修改过。如果服务器发现 ETag 匹配不上，那么直接以常规 <strong>200</strong> 回包形式将新的资源（当然也包括了新的 ETag）发给客户端，此时表示<strong>协商缓存失效</strong>，浏览器缓存新的资源和 header 信息；如果 ETag 是一致的，则直接返回 <strong>304</strong> 和空响应体知会客户端直接使用本地缓存即可，此时响应头中还是携带有 ETag。</p>
+<p><img src="/assets/image-20220908135926-h1v1twu.png" alt="image.png"></p>
+<p>ETag 和 If-Node-Match 是配对的，与 Last-Modified 和 If-Modifed-Since 一样，但是 ETag 是使用的是文件的唯一标识，能够提升可靠性，但是因为需要计算文件的唯一标识，所以性能会比Last-Modified低。</p>
+<h4 id="3-2-3-Last-Modified-和-ETag"><a href="#3-2-3-Last-Modified-和-ETag" class="headerlink" title="3.2.3 Last-Modified 和 ETag"></a>3.2.3 Last-Modified 和 ETag</h4><p>在<strong>缓存不存在</strong>时，浏览器发起网络请求请求资源，请求成功后，浏览器缓存资源文件和缓存 header 信息，在协商缓存阶段检查缓存的 header 信息，如果是 ETag 则给请求投添加 If-None-Match，如果是 Last-Modified，则给请求头添加 If-Modified-Since，服务器对字段做检查比较，决定协商缓存是否生效。注意：ETag 优先级高于 Last-Modified，也就是说会优先使用 ETag。</p>
+<p>简单总结</p>
+<ul>
+<li>在精确度上，ETag 要优于 Last-Modified。</li>
+</ul>
+<p>Last-Modified 的时间单位是秒，如果某个文件在 1 秒内改变了多次，那么它们的Last-Modified 其实并没有体现出来修改，但是 ETag 每次都会改变确保了精度；<strong>如果是负载均衡的服务器，各个服务器生成的 Last-Modified 也有可能不一致</strong>。</p>
+<ul>
+<li>在性能上，ETag 要逊于 Last-Modified，因为 Last-Modified 只需要记录时间，而 ETag 需要服务器通过算法来计算出一个 hash 值。</li>
+<li>在优先级上，服务器校验优先考虑 ETag</li>
+</ul>
+<h2 id="4-缓存机制"><a href="#4-缓存机制" class="headerlink" title="4. 缓存机制"></a>4. 缓存机制</h2><p><strong>强缓存</strong>优先于<strong>协商缓存</strong>，若强制缓存 ( Expires 和 Cache-Control ) 生效则直接使用缓存，若不生效则进行协商缓存 (Last-Modified &#x2F; If-Modified-Since和Etag &#x2F; If-None-Match)，协商缓存由服务器决定是否使用缓存，若协商缓存失效，那么代表该请求的缓存失效，返回 <strong>200</strong>，重新返回资源和缓存标识，浏览器将缓存资源和 header 信息，此时表示<strong>协商缓存失效</strong>，若<strong>协商缓存生效</strong>则返回 <strong>304</strong> 和空响应体，表示继续使用缓存，此时响应头中仍然携带缓存控制字段， 此时表示协商缓存成功。</p>
+<p>协商缓存只有在 <strong>缓存存在</strong> 且 <strong>缓存已过期</strong> 时才允许进入，特殊的，当缓存存在时，强制缓存（强缓存）的一个字段 <code>Cache-Control:no-cache</code> 可以强制缓存失效并进入协商缓存阶段，其原因就是 <code>Cache-Control:no-cache</code> 字段信息允许不检查强制缓存。</p>
+<p><img src="/assets/image-20220908141753-3z6jz59.png" alt="image.png" title="缓存机制"></p>
+<p>如果没有指定缓存策略，缓存的字段信息，那么浏览器会如何做呢？</p>
+<p>对于这种情况，<strong>浏览器会采用一个启发式的算法，通常会取响应头中的 Date 减去 Last-Modified 值的 10% 作为缓存时间。</strong></p>
+<h2 id="5-实际场景应用缓存策略"><a href="#5-实际场景应用缓存策略" class="headerlink" title="5. 实际场景应用缓存策略"></a>5. 实际场景应用缓存策略</h2><h3 id="5-1-频繁变动的资源"><a href="#5-1-频繁变动的资源" class="headerlink" title="5.1 频繁变动的资源"></a>5.1 频繁变动的资源</h3><figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">Cache-Control</span><span class="punctuation">: </span>no-cache</span><br></pre></td></tr></table></figure>
+
+<p>频繁变动的资源对时效性要求比较强，从直观上，可以不使用缓存字段，但是不使用缓存字段就意味着默认缓存策略即<strong>浏览器会采用一个启发式的算法，通常会取响应头中的 Date 减去 Last-Modified 值的 10% 作为缓存时间</strong>，这不符合要求。</p>
+<p>最理想的策略是：每当有该资源的请求时，就和服务器确认资源是否发生了变化，如果发生了变化则重新传送数据，如果没有发生变化则使用本地的缓存数据。</p>
+<p>解析：按照理想策略，应该请服务器来鉴定资源有效性。每一个请求都会进入强缓存阶段，所以需要跳出强缓存阶段，接着才能请服务器鉴定。而使强缓存失效的方法有两种，资源不存在，资源已过期。可以设置<code>Cache-Control: max-age=0</code>，每一次请求都会发现资源过期，强缓存失效并进入协商缓存，携带 ETag 或 Last-Modified 并进行请求，服务器对比值决定协商缓存是否生效。之前也声明过，特殊的，在缓存存在时，强缓存的<code>Cache-Control: no-cache</code> 可以使强缓存失效并进入协商缓存，即跳过强缓存的检查（会进入强缓存阶段，但跳过对比检查）进入协商缓存，刚好符合频繁变动的缓存需求，所以这两种方式都可以，只不过设置过期时间方式浏览器会多做一步过期的检查。</p>
+<h3 id="5-2-不常变化的资源"><a href="#5-2-不常变化的资源" class="headerlink" title="5.2 不常变化的资源"></a>5.2 不常变化的资源</h3><figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">Cache-Control</span><span class="punctuation">: </span>max-age=31536000</span><br></pre></td></tr></table></figure>
+
+<p>通常在处理这类资源时，给它们的 Cache-Control 配置一个很大的 <code>max-age=31536000</code> (一年)，这样浏览器之后请求相同的 URL 会命中强制缓存。而为了解决更新的问题，就需要在文件名(或者路径)中添加 hash， 版本号等<strong>动态字符</strong>，之后<strong>更改动态字符</strong>，从而达到<strong>更改引用 URL</strong> 的目的，让之前的强制缓存失效 (其实并未立即失效，只是不再使用了而已)。</p>
+<p>在线提供的类库 (如 <code>jquery-3.3.1.min.js</code>, <code>lodash.min.js</code> 等) 均采用这个模式。</p>
+<h2 id="6-用户行为对缓存的影响"><a href="#6-用户行为对缓存的影响" class="headerlink" title="6. 用户行为对缓存的影响"></a>6. 用户行为对缓存的影响</h2><p>所谓用户行为对浏览器缓存的影响，指的就是用户在浏览器如何操作时，会触发怎样的缓存策略。主要有 3 种：</p>
+<ul>
+<li>打开网页，地址栏输入地址， 查找 Disk Cache 中是否有匹配。如有则使用，如没有则发送网络请求。</li>
+<li>普通刷新 (F5)：因为 TAB 并没有关闭，因此 Memory Cache 是可用的，会被优先使用(如果匹配的话)。其次才是 Disk Cache。</li>
+<li>强制刷新 (Ctrl + F5)：浏览器不使用缓存，因此发送的<strong>请求头</strong>部均带有 <code>Cache-control: no-cache</code>(为了兼容，还带了 <code>Pragma: no-cache</code>),服务器直接返回 200 和最新内容。</li>
+</ul>
+<p>需要分清楚<strong>请求头</strong>中的 no-cache 和<strong>响应头</strong>中的 no-cache，两者的作用是不相同的。</p>
+<p><strong>请求头</strong>的 no-cache 表示浏览器不想读缓存，并不是说没有缓存。一般在浏览器按 Ctrl+F5 强制刷新时，请求头里就有这个no-cache，也就是跳过强缓存和协商缓存阶段，直接请求服务器。（如果直接按F5的话，请求头是 max-age&#x3D;0，只跳过强缓存，但进行协商缓存）。</p>
+<p><strong>响应头</strong>的 no-cache 表示跳过强缓存检查（会进入强缓存阶段，但不检查时间，使强缓存失效并接入协商缓存，max-age&#x3D;0 检查时间，使强缓存失效，再进入协商缓存）</p>
+<h2 id="个人总结"><a href="#个人总结" class="headerlink" title="个人总结"></a>个人总结</h2><p>缓存能够有效的减少网络请求数量或降低网络传送的数据量，主要用于页面的性能优化、降低数据流量成本等。</p>
+<p>认识学习缓存需要从缓存的位置、缓存的策略和实际场景应用缓存策略三个方面入手。了解缓存位置可以知晓浏览器将缓存放在哪，各种不同的缓存位置有什么优势；了解基础缓存策略（强缓存、协商缓存可以看成是本地判断和远程判断）可以知晓缓存优先级需要控制在哪，是强缓存还是协商缓存。基础缓存策略配合缓存位置，就可以组合出针对不同场景地各种复杂的缓存方式。</p>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/54cc04190252">深入理解浏览器的缓存机制 - 简书 (jianshu.com)</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903747357769742?utm_source=gold_browser_extension">一文读懂前端缓存 - 掘金 (juejin.cn)</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/cxyqts/p/13093564.html">http缓存强制缓存和协商缓存？- 博客园 (cnblogs.com)</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/7031923575044964389">后端一次给你10万条数据，如何优雅展示，到底考察我什么? - 掘金 (juejin.cn)</a></li>
+</ul>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Az</span>
+                    </p>
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/"># 浏览器</a>
+                    
+                        <a href="/tags/Web%E6%80%A7%E8%83%BD%E4%B8%8E%E5%AE%89%E5%85%A8/"># Web性能与安全</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2023/08/%E4%BA%8C.%20Web%E6%80%A7%E8%83%BD%E4%B8%8E%E5%AE%89%E5%85%A8/">二. Web性能与安全</a>
+            
+            
+            <a class="next" rel="next" href="/2023/08/%E4%B8%80.%20%E8%BE%93%E5%85%A5URL%E5%88%B0%E5%91%88%E7%8E%B0%E9%A1%B5%E9%9D%A2/">一. 输入URL到呈现页面</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+  <div class="copyright">
+    <span>© Az | Powered by Hexo & Chic</span>
+  </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

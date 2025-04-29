@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Az">
+
+
+    <meta name="subtitle" content="Welcome!">
+
+
+
+    <meta name="keywords" content="blog luckydog Withx">
+
+
+<title>rust: newtype 和类型别名 TypeAlias | Az&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+<link rel="stylesheet" href="/fonts/custom/iconfont.css">
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">I&#39;m Az</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">I&#39;m Az</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">rust: newtype 和类型别名 TypeAlias</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Az</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">2024.04.19&nbsp;&nbsp;23:18:24</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/rust/">rust</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="newtype-和类型别名-TypeAlias"><a href="#newtype-和类型别名-TypeAlias" class="headerlink" title="newtype 和类型别名 TypeAlias"></a>newtype 和类型别名 TypeAlias</h2><p>学习如何创建自定义类型，以及了解何为动态大小的类型</p>
+<h3 id="newtype"><a href="#newtype" class="headerlink" title="newtype"></a>newtype</h3><blockquote>
+<p><a target="_blank" rel="noopener" href="https://course.rs/basic/compound-type/struct.html#%E5%85%83%E7%BB%84%E7%BB%93%E6%9E%84%E4%BD%93tuple-struct">https://course.rs/basic/compound-type/struct.html#%E5%85%83%E7%BB%84%E7%BB%93%E6%9E%84%E4%BD%93tuple-struct</a></p>
+</blockquote>
+<p>什么是 newtype？简单来说，就是使用<strong>元组结构体</strong>将已有的类型包裹起来，形成 <code>struct Meters(u32)</code> 的结构，此处 <code>Meters</code> 就是一个 newtype。</p>
+<p>newtype 的设计主要是为了增强类型安全并提供更明确的<strong>语义区分</strong>。这种设计允许开发者从现有的类型<strong>派生出新的类型</strong>，而这些新类型在逻辑上虽然与原始类型相似，但在类型系统中被视为完全不同的类型，这有助于避免类型间的错误混用。</p>
+<p>例如 <code>struct Millimeters(u32)</code> 和 <code>struct Meters(u32)</code> 在逻辑形式上是与 u32 相同的，但是它们在类型系统是完全不一样的类型。即使两个 newtype 底层都是使用 u32，它们也不能互相替换，除非进行显式的类型转换。</p>
+<p>从三个方面来解释：</p>
+<ul>
+<li>自定义类型可以让我们给出更有意义和可读性的类型名，例如与其使用 u32 作为距离的单位类型，我们可以使用 Meters，它的可读性要好得多</li>
+<li>对于某些场景，只有 newtype 可以很好地解决</li>
+<li>隐藏内部类型的细节</li>
+</ul>
+<h4 id="为外部类型实现外部特征"><a href="#为外部类型实现外部特征" class="headerlink" title="为外部类型实现外部特征"></a>为外部类型实现外部特征</h4><blockquote>
+<p><a target="_blank" rel="noopener" href="https://rustwiki.org/zh-CN/book/ch10-02-traits.html#%E4%B8%BA%E7%B1%BB%E5%9E%8B%E5%AE%9E%E7%8E%B0-trait">https://rustwiki.org/zh-CN/book/ch10-02-traits.html#%E4%B8%BA%E7%B1%BB%E5%9E%8B%E5%AE%9E%E7%8E%B0-trait</a> </p>
+<p>[rust-note&#x2F;docs&#x2F;unit 18-Trait 特征（二）.md at main · rtpacks&#x2F;rust-note (github.com)](<a target="_blank" rel="noopener" href="https://github.com/rtpacks/rust-note/blob/main/docs/unit">https://github.com/rtpacks/rust-note/blob/main/docs/unit</a> 18-Trait 特征（二）.md#trait-作用域孤儿规则)</p>
+</blockquote>
+<p>在为类型实现 trait 中，提到过一个孤儿原则：如果你想要为类型 A 实现 Trait T，那么 A 或者 T 至少有一个是在<strong>当前作用域中定义</strong>的！也就是不能为外部类型实现外部 trait。</p>
+<p>这是因为由于类型可以实现多个 Trait，而不同的 Trait 可能存在相同的方法名，因此类型实体调用 Trait 方法时，必须明确方法来自哪个 Trait，所以需要孤儿原则来保证调用明确的方法。</p>
+<p>例如，如果想使用 <code>println!(&quot;&#123;&#125;&quot;, v)</code> 的方式去格式化输出一个动态数组 <code>Vec</code>，以期给用户提供更加清晰可读的内容，那么就需要为 Vec 实现 Display 特征。<br>但是这里有一个问题： <code>Vec</code> 类型定义在标准库中，<code>Display</code> 亦然，根据孤儿院则不能给外部类型实现外部特征，不能直接为 Vec 实现 Display 特征。</p>
+<p>现在可以通过 newtype <strong>定义新类型</strong>来解决这个问题，定义一个元组结构体，通过 <code>.0</code> 访问原始类型数据：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">Wrapper</span>(<span class="type">Vec</span>&lt;<span class="type">String</span>&gt;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">fmt</span>::Display <span class="keyword">for</span> <span class="title class_">Wrapper</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">fmt</span>(&amp;<span class="keyword">self</span>, f: &amp;<span class="keyword">mut</span> fmt::Formatter) <span class="punctuation">-&gt;</span> fmt::<span class="type">Result</span> &#123;</span><br><span class="line">        <span class="built_in">write!</span>(f, <span class="string">&quot;[&#123;&#125;]&quot;</span>, <span class="keyword">self</span>.<span class="number">0</span>.<span class="title function_ invoke__">join</span>(<span class="string">&quot;, &quot;</span>)) <span class="comment">// 访问元组中的元素，即原始数据</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="variable">w</span> = <span class="title function_ invoke__">Wrapper</span>(<span class="built_in">vec!</span>[<span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hello&quot;</span>), <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;world&quot;</span>)]);</span><br><span class="line"><span class="built_in">println!</span>(<span class="string">&quot;w = &#123;&#125;&quot;</span>, w);</span><br></pre></td></tr></table></figure>
+
+<p>通过 newtype 形式定义新类型 <code>struct Wrapper(Vec&lt;String&gt;)</code> 后，就满足孤儿原则的当前作用域必须存在类型或特征要求。</p>
+<h4 id="更好的可读性及类型异化"><a href="#更好的可读性及类型异化" class="headerlink" title="更好的可读性及类型异化"></a>更好的可读性及类型异化</h4><p><strong>更好的可读性不等于更少的代码</strong>，但可读性的提升降低维护代码的难度。例如 <code>struct Millimeters(u32)</code> 和 <code>struct Meters(u32)</code> 在逻辑形式上是与 u32 相同的，但是它们在类型系统是完全不一样的，两个类型不允许直接相加。</p>
+<p>如果需要两个类型实现相加操作，约定返回 Millimeters，可以为其实现 Add 特征：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// newtype实现可读性的提升</span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">Meters</span>(<span class="type">u32</span>);</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">Millimeters</span>(<span class="type">u32</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 解除Add默认只能使用相同类型的限制</span></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">Add</span>&lt;Millimeters&gt; <span class="keyword">for</span> <span class="title class_">Meters</span> &#123;</span><br><span class="line">    <span class="keyword">type</span> <span class="title class_">Output</span> = Millimeters;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">add</span>(<span class="keyword">self</span>, rhs: Millimeters) <span class="punctuation">-&gt;</span> Millimeters &#123;</span><br><span class="line">        <span class="title function_ invoke__">Millimeters</span>(<span class="keyword">self</span>.<span class="number">0</span> * <span class="number">1000</span> + rhs.<span class="number">0</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">fmt</span>::Display <span class="keyword">for</span> <span class="title class_">Millimeters</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">fmt</span>(&amp;<span class="keyword">self</span>, f: &amp;<span class="keyword">mut</span> std::fmt::Formatter&lt;<span class="symbol">&#x27;_</span>&gt;) <span class="punctuation">-&gt;</span> fmt::<span class="type">Result</span> &#123;</span><br><span class="line">        <span class="built_in">write!</span>(f, <span class="string">&quot;&#123;&#125;mm&quot;</span>, <span class="keyword">self</span>.<span class="number">0</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="variable">diff</span> = <span class="title function_ invoke__">Meters</span>(<span class="number">3</span>) + <span class="title function_ invoke__">Millimeters</span>(<span class="number">3000</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, diff); <span class="comment">// 6000</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="隐藏内部类型的细节"><a href="#隐藏内部类型的细节" class="headerlink" title="隐藏内部类型的细节"></a>隐藏内部类型的细节</h4><p>Rust 的类型有很多自定义的方法，假如把某个类型传给了用户，又不想用户调用类型方法，就可以使用 newtype：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">Meters</span>(<span class="type">u32</span>);</span><br><span class="line"><span class="keyword">let</span> <span class="variable">i</span>: <span class="type">u32</span> = <span class="number">2</span>;</span><br><span class="line"><span class="built_in">assert_eq!</span>(i.<span class="title function_ invoke__">pow</span>(<span class="number">2</span>), <span class="number">4</span>); <span class="comment">// u32 具有 pow 方法</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="variable">n</span> = <span class="title function_ invoke__">Meters</span>(i);</span><br><span class="line"><span class="comment">// assert_eq!(n.pow(2), 4); 错误，Meters(u32) 没有 pow 方法</span></span><br></pre></td></tr></table></figure>
+
+<p>虽然 newtype 能够隐藏方法，但是用户可以通过 <code>n.0.pow(2)</code> 的方式来绕过限制，并调用内部类型的方法：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">assert_eq!</span>(i.<span class="title function_ invoke__">pow</span>(<span class="number">2</span>), <span class="number">4</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="类型别名-TypeAlias"><a href="#类型别名-TypeAlias" class="headerlink" title="类型别名 TypeAlias"></a>类型别名 TypeAlias</h3><p>使用 newtype 可以创建新类型，也可以使用一个更传统的方式，用类型别名来创建<strong>新的类型名称</strong>：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 使用TypeAlias创建新的类型名称，与原有类型相等</span></span><br><span class="line"><span class="keyword">type</span> <span class="title class_">MetersType</span> = <span class="type">u32</span>;</span><br><span class="line"><span class="keyword">type</span> <span class="title class_">MillimetersType</span> = <span class="type">u32</span>;</span><br><span class="line"><span class="keyword">let</span> <span class="variable">diff1</span>: MetersType = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">let</span> <span class="variable">diff2</span>: MillimetersType = <span class="number">3000</span>;</span><br><span class="line"><span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, diff1 * <span class="number">1000</span> + diff2);</span><br></pre></td></tr></table></figure>
+
+<p><strong>类型别名并不是一个独立的全新的类型，而是某一个类型的别名</strong>，因此编译器依然会把类型别名视为原有类型。</p>
+<p>与 newtype 的区别：</p>
+<ul>
+<li>类型别名只是别名，是为了让可读性更好，并不是全新的类型，而 newtype 是一个全新的类型</li>
+<li>类型别名无法实现为外部类型实现外部特征等功能，因为类型别名还是等于原有类型，而 newtype 可以</li>
+</ul>
+<p>类型别名除了让类型可读性更好，还能<strong>减少模版代码的使用</strong>，在一些引用交叉类型的代码上：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">f</span>: <span class="type">Box</span>&lt;<span class="keyword">dyn</span> <span class="title function_ invoke__">Fn</span>() + <span class="built_in">Send</span> + <span class="symbol">&#x27;static</span>&gt; = <span class="type">Box</span>::<span class="title function_ invoke__">new</span>(|| <span class="built_in">println!</span>(<span class="string">&quot;hi&quot;</span>));</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">takes_long_type</span>(f: <span class="type">Box</span>&lt;<span class="keyword">dyn</span> <span class="title function_ invoke__">Fn</span>() + <span class="built_in">Send</span> + <span class="symbol">&#x27;static</span>&gt;) &#123;&#125;</span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">returns_long_type</span>() <span class="punctuation">-&gt;</span> <span class="type">Box</span>&lt;<span class="keyword">dyn</span> <span class="title function_ invoke__">Fn</span>() + <span class="built_in">Send</span> + <span class="symbol">&#x27;static</span>&gt; &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>f 是一个令人眼花缭乱的类型 <code>Box&lt;dyn Fn() + Send + &#39;static&gt;</code>，使用时标注非常的麻烦，此时就可以用类型别名来解决：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="title class_">Thunk</span> = <span class="type">Box</span>&lt;<span class="keyword">dyn</span> <span class="title function_ invoke__">Fn</span>() + <span class="built_in">Send</span> + <span class="symbol">&#x27;static</span>&gt;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="variable">f</span>: Thunk = <span class="type">Box</span>::<span class="title function_ invoke__">new</span>(|| <span class="built_in">println!</span>(<span class="string">&quot;hi&quot;</span>));</span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">takes_long_type</span>(f: Thunk) &#123;&#125;</span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">returns_long_type</span>() <span class="punctuation">-&gt;</span> Thunk &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>常用的 <code>std::io</code> 的 Result 也是经过类型别名简化的，它实际上是 <code>std::result::Result&lt;T, std::io::Error&gt;</code> 的别名</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="title class_">Result</span>&lt;T&gt; = std::result::<span class="type">Result</span>&lt;T, std::io::Error&gt;;</span><br></pre></td></tr></table></figure>
+
+<p>如果为了区分 <code>std::io</code> 和 <code>std::fmt</code> 的 Result 和 Error 类型，同时简化模板代码，那可以使用类型别名来简化代码中 <code>std::io</code> 和 <code>std::fmt</code> 两者的 Result 和 Error：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="title class_">IOError</span> = std::io::Error;</span><br><span class="line"><span class="keyword">type</span> <span class="title class_">FmtError</span> = std::fmt::Error;</span><br><span class="line"><span class="keyword">type</span> <span class="title class_">IOResult</span>&lt;T&gt; = std::result::<span class="type">Result</span>&lt;T, IOError&gt;;</span><br><span class="line"><span class="keyword">type</span> <span class="title class_">FmtResult</span>&lt;T&gt; = std::result::<span class="type">Result</span>&lt;T, FmtError&gt;;</span><br></pre></td></tr></table></figure>
+
+<p><strong>类型别名并不是一个独立的全新的类型，而是某一个类型的别名</strong>，编译器依然会把类型别名视为原有类型，因此可以用类型别名来调用真实类型的所有方法。</p>
+<h3 id="永不返回类型"><a href="#永不返回类型" class="headerlink" title="! 永不返回类型"></a>! 永不返回类型</h3><p>在 TypeScript 中有一个 <code>never</code> 类型，表示永不返回类型，永不返回类型可能发生在<strong>函数运行异常</strong>和<strong>程序死循环</strong>这两点上。</p>
+<p>rust 用 <code>!</code> 表示永不返回类型，它除了在函数运行异常和程序死循环外，还能用在 match 匹配中。<br>以下是一段错误代码，要赋值给 v，就必须保证 match 的各个分支返回的值是同一个类型，第一个分支返回数值、另一个分支返回元类型 ()，所以会出错。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">i</span> = <span class="number">2</span>;</span><br><span class="line"><span class="keyword">let</span> <span class="variable">v</span> = <span class="keyword">match</span> i &#123;</span><br><span class="line">   <span class="number">0</span>..=<span class="number">3</span> =&gt; i,</span><br><span class="line">   _ =&gt; <span class="built_in">println!</span>(<span class="string">&quot;不合规定的值:&#123;&#125;&quot;</span>, i)</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>可以用 <code>!</code> 永不返回类型解决这个问题，panic 的返回值是 !，代表它决不会返回任何值，既然没有任何返回值，那自然不会存在分支类型不匹配的情况。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">i</span> = <span class="number">2</span>;</span><br><span class="line"><span class="keyword">let</span> <span class="variable">v</span> = <span class="keyword">match</span> i &#123;</span><br><span class="line">   <span class="number">0</span>..=<span class="number">3</span> =&gt; i,</span><br><span class="line">   _ =&gt; <span class="built_in">panic!</span>(<span class="string">&quot;不合规定的值:&#123;&#125;&quot;</span>, i)</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Code"><a href="#Code" class="headerlink" title="Code"></a>Code</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="comment">//  newtype 使用元组结构体快速构建新类型，解决孤儿原则的限制</span></span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">Wrapper</span>(<span class="type">Vec</span>&lt;<span class="type">String</span>&gt;);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">impl</span> <span class="title class_">Display</span> <span class="keyword">for</span> <span class="title class_">Wrapper</span> &#123;</span><br><span class="line">        <span class="keyword">fn</span> <span class="title function_">fmt</span>(&amp;<span class="keyword">self</span>, f: &amp;<span class="keyword">mut</span> std::fmt::Formatter&lt;<span class="symbol">&#x27;_</span>&gt;) <span class="punctuation">-&gt;</span> std::fmt::<span class="type">Result</span> &#123;</span><br><span class="line">            <span class="built_in">write!</span>(f, <span class="string">&quot;[&#123;&#125;]&quot;</span>, <span class="keyword">self</span>.<span class="number">0</span>.<span class="title function_ invoke__">join</span>(<span class="string">&quot;,&quot;</span>))</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">w</span> = <span class="title function_ invoke__">Wrapper</span>(<span class="built_in">vec!</span>[<span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;Hello&quot;</span>), <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;World&quot;</span>)]);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;w&#125;&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// newtype实现可读性的提升</span></span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">Meters</span>(<span class="type">u32</span>);</span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">Millimeters</span>(<span class="type">u32</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 解除Add默认只能使用相同类型的限制</span></span><br><span class="line">    <span class="keyword">impl</span> <span class="title class_">Add</span>&lt;Millimeters&gt; <span class="keyword">for</span> <span class="title class_">Meters</span> &#123;</span><br><span class="line">        <span class="keyword">type</span> <span class="title class_">Output</span> = Millimeters;</span><br><span class="line">        <span class="keyword">fn</span> <span class="title function_">add</span>(<span class="keyword">self</span>, rhs: Millimeters) <span class="punctuation">-&gt;</span> Millimeters &#123;</span><br><span class="line">            <span class="title function_ invoke__">Millimeters</span>(<span class="keyword">self</span>.<span class="number">0</span> * <span class="number">1000</span> + rhs.<span class="number">0</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">impl</span> <span class="title class_">fmt</span>::Display <span class="keyword">for</span> <span class="title class_">Millimeters</span> &#123;</span><br><span class="line">        <span class="keyword">fn</span> <span class="title function_">fmt</span>(&amp;<span class="keyword">self</span>, f: &amp;<span class="keyword">mut</span> std::fmt::Formatter&lt;<span class="symbol">&#x27;_</span>&gt;) <span class="punctuation">-&gt;</span> fmt::<span class="type">Result</span> &#123;</span><br><span class="line">            <span class="built_in">write!</span>(f, <span class="string">&quot;&#123;&#125;mm&quot;</span>, <span class="keyword">self</span>.<span class="number">0</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">diff</span> = <span class="title function_ invoke__">Meters</span>(<span class="number">3</span>) + <span class="title function_ invoke__">Millimeters</span>(<span class="number">3000</span>);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, diff); <span class="comment">// 6000</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 可以绕过类型限制，调用原有数据类型的方法</span></span><br><span class="line">    <span class="title function_ invoke__">Meters</span>(<span class="number">2</span>).<span class="number">0</span>.<span class="title function_ invoke__">pow</span>(<span class="number">2</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 使用TypeAlias创建新的类型名称，与原有类型相等</span></span><br><span class="line">    <span class="keyword">type</span> <span class="title class_">MetersType</span> = <span class="type">u32</span>;</span><br><span class="line">    <span class="keyword">type</span> <span class="title class_">MillimetersType</span> = <span class="type">u32</span>;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">diff1</span>: MetersType = <span class="number">3</span>;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">diff2</span>: MillimetersType = <span class="number">3000</span>;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, diff1 * <span class="number">1000</span> + diff2);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 类型别名提升可读性和减少冗长的类型模板代码</span></span><br><span class="line">    <span class="comment">// 类型模板代码 std::result::Result&lt;T, std::io::Error&gt;</span></span><br><span class="line">    <span class="keyword">type</span> <span class="title class_">IOError</span> = std::io::Error;</span><br><span class="line">    <span class="keyword">type</span> <span class="title class_">FmtError</span> = std::fmt::Error;</span><br><span class="line">    <span class="keyword">type</span> <span class="title class_">IOResult</span>&lt;T&gt; = std::result::<span class="type">Result</span>&lt;T, IOError&gt;;</span><br><span class="line">    <span class="keyword">type</span> <span class="title class_">FmtResult</span>&lt;T&gt; = std::result::<span class="type">Result</span>&lt;T, FmtError&gt;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 永不返回的类型 !</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">i</span> = <span class="number">2</span>;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">x</span> = <span class="number">1</span>..<span class="number">2</span>;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">x</span> = <span class="number">1</span>..=<span class="number">2</span>;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">v</span> = <span class="keyword">match</span> i &#123;</span><br><span class="line">        <span class="number">0</span>..=<span class="number">2</span> =&gt; i,</span><br><span class="line">        _ =&gt; <span class="built_in">panic!</span>(<span class="string">&quot;不符合规定的值 &#123;i&#125;&quot;</span>),</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Az</span>
+                    </p>
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/newtype%E4%B8%8E%E7%B1%BB%E5%9E%8B%E5%88%AB%E5%90%8D/"># newtype与类型别名</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2024/04/rust-%E4%B8%8D%E5%AE%9A%E9%95%BF%E7%B1%BB%E5%9E%8B-DST-%E5%92%8C%E5%AE%9A%E9%95%BF%E7%B1%BB%E5%9E%8B-Sized/">rust: 不定长类型 DST 和定长类型 Sized</a>
+            
+            
+            <a class="next" rel="next" href="/2024/04/%E6%97%A5%E5%B8%B8%EF%BC%9A%E5%88%A0%E9%99%A4%E6%96%B0%E7%89%88QQ%E6%97%A0%E5%BA%95%E7%BA%BF%E7%9A%84%E6%B8%B8%E6%88%8F%E5%BC%B9%E7%AA%97/">日常：删除新版QQ无底线的游戏弹窗</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+  <div class="copyright">
+    <span>© Az | Powered by Hexo & Chic</span>
+  </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

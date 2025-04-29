@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Az">
+
+
+    <meta name="subtitle" content="Welcome!">
+
+
+
+    <meta name="keywords" content="blog luckydog Withx">
+
+
+<title>三. 浏览器内部工作原理-解析方向（一） | Az&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+<link rel="stylesheet" href="/fonts/custom/iconfont.css">
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">I&#39;m Az</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">I&#39;m Az</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">三. 浏览器内部工作原理-解析方向（一）</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Az</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">2023.08.04&nbsp;&nbsp;10:23:07</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E6%B5%8F%E8%A7%88%E5%99%A8/">浏览器</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h1 id="三-浏览器内部工作原理-解析方向（一）"><a href="#三-浏览器内部工作原理-解析方向（一）" class="headerlink" title="三. 浏览器内部工作原理-解析方向（一）"></a>三. 浏览器内部工作原理-解析方向（一）</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>为方便读者阅读，贴出以下参考链接，在此感谢前辈笔记。</p>
+<p>浏览器解析过程分析：<a target="_blank" rel="noopener" href="https://kb.cnblogs.com/page/129756/">前端必读：浏览器内部工作原理_知识库_博客园 (cnblogs.com)</a></p>
+<p>浏览器工作过程分析：<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/96986818">万字详文：深入理解浏览器原理 - 知乎 (zhihu.com)</a></p>
+<h2 id="树的构建流程"><a href="#树的构建流程" class="headerlink" title="树的构建流程"></a>树的构建流程</h2><p><img src="/assets/image-20220902091918-3jgz0jo.png" alt="image.png"></p>
+<p>HTML 和 CSS 的页面解析是从上之下的，<strong>线程的</strong>。文档流从上往下，若先碰到了 CSS，那么开始解析，接着<strong>不被阻塞的</strong>继续向下解析 HTML，这样既符合并行解析，又符合文档流自上往下解析规则。浏览器先下载 HTML 文件开始解析，遇到 CSS 标签就开始下载 CSS 并解析，这个过程不会阻塞 DOM 的构建。最后 DOM 树和 CSS 规则树生成渲染树，HTML 解析完成。</p>
+<p>注意几点：</p>
+<ol>
+<li>CSS 加载不会阻塞 DOM 树的<strong>解析</strong></li>
+<li>CSS 加载会阻塞 DOM 树的<strong>渲染</strong>（不阻塞解析），即合并成渲染树的过程，因为样式可能会导致重排重绘</li>
+<li>CSS 加载会阻塞后面 JS 语句的执行</li>
+</ol>
+<p>解析、渲染这个过程是逐步完成的，为了更好的用户体验，渲染引擎将会尽可能早的将内容呈现到屏幕上，并不会等到所有的 html 都解析完成之后再去构建和布局 render 树。它是解析完一部分内容就显示一部分内容，同时还可能通过网络下载其余内容。</p>
+<h3 id="1-1-HTML-Parser"><a href="#1-1-HTML-Parser" class="headerlink" title="1.1 HTML Parser"></a>1.1 HTML Parser</h3><h4 id="1-1-1-解析"><a href="#1-1-1-解析" class="headerlink" title="1.1.1 解析"></a>1.1.1 解析</h4><p>解析的目的是：将文档转换为具有一定意义的结构，编码时可以理解和使用的东西。解析的结果通常是表达文档结构的节点树，称为解析树或语法树。</p>
+<blockquote>
+<p>解析的目的在于让目标更接近于需要使用的形式，或更具体的描述一些信息。如高级语言先转换为汇编等低级语言，最后再转换成机器码，又或者是家具的运输与组装，零件形式更接近于运输模式，成品形式更接近于使用模式，由成品拆分成零件就是使其更接近于运输模式，同样的道理将文档解析成另外一个格式会更适合某一个场景的使用。</p>
+</blockquote>
+<p>如解析“2＋3－1”这个表达式，可能返回这样一棵树。</p>
+<p><img src="/assets/image-20220902121038-5xudoir.png" alt="image.png"></p>
+<p>解析过程与翻译过程类似，需要具备两个条件，字典和语法规则。</p>
+<p><strong>文法（Grammars）</strong>：解析基于文档依据的语法规则——文档的语言或格式。每种可被解析的格式必须具有由词汇及语法规则组成的特定的文法，称为上下文无关文法。简单来说就是由词汇表、语法规则组成的对某一个格式的限制，与当前文件内容无关。</p>
+<blockquote>
+<p>文法不等于语法规则，文法是词汇表和语法规则的结合，如语法规则定义为“<strong>的</strong>字后面跟着表示事物的名词，<strong>地</strong>字跟在动词后面，<strong>得</strong>字后面跟着形容词”，词汇表则有“谁，得，的，地，花，走，快”，文法规则就是词汇表和语法规则的结合，包含任何一个可能选择，如“谁的花，走得快，的，得，地”等。</p>
+</blockquote>
+<p>解析可以分成两个子过程：</p>
+<ul>
+<li>词法分析</li>
+<li>语法分析</li>
+</ul>
+<p><strong>词法分析</strong>是将文档中的字词按照一定地规则（词汇表）分成符号，符号对应的便是词汇表（基本有效单元的集合）中的某一项。对于人类语言来说，它相当于我们字典中出现的所有单词。</p>
+<p><strong>语法分析</strong>是根据语法规则匹配词法分析后的符号，生成特定状态的过程。</p>
+<p>词法分析器（有时也叫分词器）负责将输入分解为合法的符号，语法分析器则根据语言的语法规则分析文档结构，从而构建解析树，词法分析器知道怎么跳过空白和换行之类的无关字符。</p>
+<p><img src="/assets/image-20220902133652-u2je5s2.png" alt="image.png"></p>
+<p>解析过程是<strong>迭代的</strong>，语法分析器从词法分析器处取到一个新的符号，并试着用这个符号匹配一条语法规则，如果匹配了一条规则，这个符号对应的节点将被添加到解析树上，然后语法分析器分析下一个符号。如果没有匹配到规则，语法分析器将在内部保存该符号，并从词法分析器取下一个符号，直到所有内部保存的符号能够匹配一项语法规则。如果最终没有找到匹配的规则，解析器将抛出一个异常，这意味着文档无效或是包含语法错误。</p>
+<blockquote>
+<p>词法分析器和语法分析器的工作是同步的，正如组装家具时，找到一个一个零件，根据说明书进行组装，如果没有找齐零件，是无法组装某一个个体的。</p>
+</blockquote>
+<h4 id="1-1-2-转换"><a href="#1-1-2-转换" class="headerlink" title="1.1.2 转换"></a>1.1.2 转换</h4><p>转换对工作人员来说是一个隐式的过程，正如在浏览器开发者控制台运行一些代码、打印日志信息一样，开发者可能感受不到转换到机器码的过程。但是编写的源代码并不是最终的目标，底层机器码才是机器识别、运行的格式。</p>
+<p>很多时候，解析树并不是最终结果。解析一般在转换中使用——将输入文档转换为另一种格式。编译就是个例子，编译器在将一段源码编译为机器码的时候，先将源码解析为解析树，然后将该树转换为一个机器码文档。</p>
+<p>简单来说<strong>转换</strong>过程在编译运行时就存在，将源代码转换为机器码，转换时是无感的。</p>
+<p><img src="/assets/image-20220902140802-boi3thw.png" alt="image.png"></p>
+<p>详细的例子可以看看：<a target="_blank" rel="noopener" href="https://kb.cnblogs.com/page/129756/">前端必读：浏览器内部工作原理_知识库_博客园 (cnblogs.com)</a>，如不熟悉抽象语法树的概念，可以看看：<a target="_blank" rel="noopener" href="https://juejin.cn/post/6844904035271573511">手把手带你入门 AST 抽象语法树 - 掘金 (juejin.cn)</a>。</p>
+<h4 id="1-1-3-深入"><a href="#1-1-3-深入" class="headerlink" title="1.1.3 深入"></a>1.1.3 深入</h4><p><strong>HTML解析器（HTML Parser）：</strong>HTML解析器的工作是将html标识解析为解析树。</p>
+<p><strong>HTML文法定义（The HTML grammar definition）：</strong>W3C组织制定规范定义了HTML的词汇表和语法。</p>
+<p><strong>非上下文无关文法（Not a context free grammar）：</strong>正如在解析简介中提到的，上下文无关文法的语法可以用类似BNF的格式来定义。</p>
+<blockquote>
+<p>HTML 有一个正式的格式定义—— DTD（Document Type Definition文档类型定义），但它并不是上下文无关文法，HTML 更接近于 XML，现在有很多可用的xml 解析器，html 有个 xml 的变体——xhtml，不同在于 html 更宽容，它允许忽略一些特定标签，有时可以省略开始或结束标签。总的来说，它是一种 soft 语法，不像 xml 呆板、固执。</p>
+<p>显然，这个看起来很小的差异却带来了很大的不同。一方面，这是 html 流行的原因——它的宽容使 web 开发人员的工作更加轻松，但另一方面，这也使很难去写一个格式化的文法。所以，html 的解析并不简单，它既不能用传统的解析器解析，也不能用 xml 解析器解析。</p>
+</blockquote>
+<p><strong>HTML DTD</strong></p>
+<p>html 适用 DTD 格式进行定义，这一格式是用于定义 SGML 家族的语言，包括了对所有允许元素及它们的属性和层次关系的定义。正如前面提到的，html DTD 并没有生成一种上下文无关文法。DTD 有一些变种，标准模式只遵守规范，而其他模式则包含了对浏览器过去所使用标签的支持，这么做是为了兼容以前内容。最新的标准 DTD 在<a target="_blank" rel="noopener" href="http://www.w3.org/TR/html4/strict.dtd">http://www.w3.org/TR/html4/strict.dtd</a>。</p>
+<p><strong>DOM</strong></p>
+<p>解析输出的树也就是解析树，是由 DOM 元素及属性节点组成的。DOM 是文档对象模型的缩写，它是 html 文档的对象表示，作为 html 元素的外部接口供 JS 等调用。DOM 和标签基本是一一对应的关系。</p>
+<p><strong>解析器类型（Types of parsers）</strong></p>
+<p>有两种基本的解析器——自顶向下解析及自底向上解析。比较直观的解释是，自顶向下解析，查看语法的最高层结构并试着匹配其中一个；自底向上解析则从输入开始，逐步将其转换为语法规则，从底层规则开始直到匹配高层规则。</p>
+<p>来看一下这两种解析器如何解析 “2+3-1” 的例子：<strong>自顶向下</strong>解析器从最高层规则开始——它先识别出“2+3”，将其视为一个表达式，然后识别出 “2+3-1” 为一个表达式（识别表达式的过程中匹配了其他规则，但出发点是最高层规则）。<strong>自底向上</strong>解析会扫描输入直到匹配了一条规则，然后用该规则取代匹配的输入，直到解析完所有输入。部分匹配的表达式被放置在解析堆栈中。</p>
+<p>自顶向下与递归过程类似，从整体开始逐步检查子问题，而自底向上与递推过程类似，从子问题开始推向整体。</p>
+<p><strong>自动化解析（Generating parsers automatically）</strong></p>
+<p>解析器生成器这个工具可以自动生成解析器，只需要指定语言的文法——词汇表及语法规则，它就可以生成一个解析器。创建一个解析器需要对解析有深入的理解，而且手动的创建一个由较好性能的解析器并不容易，所以解析生成器很有用。Webkit使用两个知名的解析生成器——<strong>用于创建语法分析器的Flex</strong>及<strong>创建解析器的Bison</strong>（你可能接触过Lex和Yacc）。Flex的输入是一个包含了符号定义的正则表达式，Bison的输入是用BNF格式表示的语法规则。</p>
+<p>稍微总结：HTML 解析器按照 HTML DTD 文法定义进行 HTML 解析，可以认为解析生成的 DOM 树与解析树一一映射，DOM 树就是解析树。</p>
+<h4 id="1-1-4-解析算法"><a href="#1-1-4-解析算法" class="headerlink" title="1.1.4 解析算法"></a>1.1.4 解析算法</h4><p>HTML 不能被一般的自顶向下或自底向上的解析器所解析，不能使用正则解析技术，浏览器为 HTML 定制了专属的解析器，原因是：</p>
+<ol>
+<li><p>这门语言本身的宽容特性</p>
+</li>
+<li><p>浏览器对一些常见的非法html有容错机制</p>
+</li>
+<li><p>解析过程是往复的，通常源码不会在解析过程中发生改变，但在 HTML 中，脚本标签包含的 “document.write” 可能添加标签，这说明在解析过程中实际上修改了输入，所以不能使用正则解析技术</p>
+</li>
+</ol>
+<p>HTML5 规范中描述了这个解析算法，算法包括两个阶段——符号化及构建树。</p>
+<p>符号化是<strong>词法分析</strong>的过程，将输入解析为符号，HTML 的符号包括开始标签、结束标签、属性名及属性值。符号识别器识别出符号后，将其传递给树构建器，并读取下一个字符，以识别下一个符号，直到处理完所有输入。</p>
+<p><strong>符号识别算法（The tokenization algorithm）</strong></p>
+<p>算法输出 HTML 符号，该算法用状态机表示。每次读取输入流中的一个或多个字符，并根据这些字符转移到下一个状态，当前的符号状态及构建树状态共同影响结果，这意味着，读取同样的字符，可能因为当前状态的不同，得到不同的结果以进入下一个正确的状态。</p>
+<p>这个算法很复杂，这里用一个简单的例子来解释这个原理。</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;html&gt;</span><br><span class="line">  <span class="language-xml"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">    Hello world</span></span><br><span class="line"><span class="language-xml">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span></span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+
+<p>初始状态为“Data State”，当遇到“&lt;”字符，状态变为“Tag open state”，读取一个a－z的字符将产生一个开始标签符号，状态相应变为“Tag name state”，一直保持这个状态直到读取到“&gt;”，每个字符都附加到这个符号名上，例子中创建的是一个html符号。</p>
+<p>当读取到“&gt;”，当前的符号就完成了，此时状态回到“Data state”，“<body>”重复这一处理过程。到这里，html和body标签都识别出来了。现在，回到“Data state”，读取“Hello world”中的字符“H”将创建并识别出一个字符符号，这里会<strong>为“Hello world”中的每个字符生成一个字符符号</strong>。</p>
+<p>这样直到遇到“</body>”中的“&lt;”。现在，又回到了“Tag open state”，读取下一个字符“&#x2F;”将创建一个闭合标签符号，并且状态转移到“Tag name state”，还是保持这一状态，直到遇到“&gt;”。然后，产生一个新的标签符号并回到“Data state”。后面的“</html>”将和“</body>”一样处理。</p>
+<p><img src="/assets/image-20220903152441-lnzo21q.png" alt="image.png"></p>
+<p><strong>简单总结：</strong>因为 HTML 符号包括开始标签、结束标签、属性名及属性值，所以解析每一个符号都需要三个状态来决定。状态机+符号化+树构建器。<strong>符号并不仅仅只是一个字符</strong>，可以是标签符号包括标签名、属性等，除标签符号外，为每一个内容字符创建一个字符符号（Data State）。</p>
+<p><strong>树的构建算法（Tree construction algorithm）</strong></p>
+<p>在树的构建阶段，将<strong>修改</strong>以Document为根的DOM树，将元素附加到树上。每个由符号识别器识别生成的节点将会被树构造器进行处理，规范中定义了每个符号相对应的Dom元素，<strong>对应的Dom元素将会被创建</strong>。这些元素除了会被添加到Dom树上，还将被添加到开放元素堆栈中。这个堆栈用来纠正嵌套的未匹配和未闭合标签，这个算法也是用状态机来描述，所有的状态采用插入模式。</p>
+<p>首先是“initial mode”，接收到html符号后将转换为“before html”模式，在这个模式中对这个符号进行再处理。此时，创建了一个HTMLHtmlElement元素，并将其附加到根Document对象上。</p>
+<p>状态此时变为“before head”，接收到body符号时，即使这里没有head符号，也将自动创建一个HTMLHeadElement元素并附加到树上。</p>
+<p>现在，转到“in head”模式，然后是“after head”。到这里，body符号会被再次处理，将创建一个HTMLBodyElement并插入到树中，同时，转移到“in body”模式。</p>
+<p>然后，接收到字符串“Hello world”的字符符号，第一个字符将导致创建并插入一个text节点，其他字符将附加到该节点。</p>
+<p>接收到body结束符号时，转移到“after body”模式，接着接收到html结束符号，这个符号意味着转移到了“after after body”模式，当接收到文件结束符时，整个解析过程结束。</p>
+<p><img src="/assets/image-20220903152422-pm7uawo.png" alt="image.png"></p>
+<p><strong>简单总结：</strong>树构建器根据符号创建对应的DOM元素，附加到以Document为根的DOM树上，并对一些常见的 HTML 错误进行处理。</p>
+<h4 id="1-1-5-解析结束时的处理（Action-when-the-parsing-is-finished）"><a href="#1-1-5-解析结束时的处理（Action-when-the-parsing-is-finished）" class="headerlink" title="1.1.5 解析结束时的处理（Action when the parsing is finished）"></a>1.1.5 解析结束时的处理（Action when the parsing is finished）</h4><p>在这个阶段，浏览器将文档标记为可交互的，并开始解析处于延时模式中的脚本——这些脚本在文档解析后执行。文档状态将被设置为完成，同时触发一个 <strong>load</strong> 事件。</p>
+<p>HTML5 规范中有符号化及构建树的完整算法：<a target="_blank" rel="noopener" href="http://www.w3.org/TR/html5/syntax.html#html-parser">链接</a>。</p>
+<h4 id="1-1-6-浏览器容错（Browsers-error-tolerance）"><a href="#1-1-6-浏览器容错（Browsers-error-tolerance）" class="headerlink" title="1.1.6 浏览器容错（Browsers error tolerance）"></a>1.1.6 浏览器容错（Browsers error tolerance）</h4><p>详细可查看原文：<a target="_blank" rel="noopener" href="https://kb.cnblogs.com/page/129756/">前端必读：浏览器内部工作原理_知识库_博客园 (cnblogs.com)</a></p>
+<h3 id="1-2-CSS-Parser"><a href="#1-2-CSS-Parser" class="headerlink" title="1.2 CSS Parser"></a>1.2 CSS Parser</h3><p>CSS 的加载并不会阻塞 DOM 的解析，但是会阻塞 DOM 的渲染。因为加载 CSS 时，可能会修改当前解析位置以后的 DOM 节点的样式，如果 CSS 加载不阻塞 DOM 树渲染，那么当 CSS 加载完之后，DOM 树可能又得重新重排 layout（回流reflow）或者重绘了，这就造成了一些没有必要的损耗。</p>
+<p>不同于HTML，CSS属于上下文无关文法，可以用前面所描述的解析器来解析。CSS规范定义了CSS的词法及语法文法。可以参考词汇表和语法规则：<a target="_blank" rel="noopener" href="https://kb.cnblogs.com/page/129756/">前端必读：浏览器内部工作原理_知识库_博客园 (cnblogs.com)</a>。</p>
+<p>每个符号都由正则表达式定义了词法文法（词汇表）：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">comment<span class="comment">///*[^*]*/*+([^/*][^*]*/*+)*//</span></span><br><span class="line">num[<span class="number">0</span>-<span class="number">9</span>]+|[<span class="number">0</span>-<span class="number">9</span>]*<span class="string">&quot;.&quot;</span>[<span class="number">0</span>-<span class="number">9</span>]+</span><br><span class="line">nonascii[<span class="regexp">/200-/</span><span class="number">377</span>]</span><br><span class="line">nmstart[_a-z]|&#123;nonascii&#125;|&#123;<span class="built_in">escape</span>&#125;</span><br><span class="line">nmchar[_a-z0-<span class="number">9</span>-]|&#123;nonascii&#125;|&#123;<span class="built_in">escape</span>&#125;</span><br><span class="line">name&#123;nmchar&#125;+</span><br><span class="line">ident&#123;nmstart&#125;&#123;nmchar&#125;*</span><br></pre></td></tr></table></figure>
+
+<p>“ident”是识别器的缩写，相当于一个class名，“name”是一个元素id（用“＃”引用）。</p>
+<p>语法用BNF进行描述：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">ruleset</span><br><span class="line">: selector [ <span class="string">&#x27;,&#x27;</span> S* selector ]*</span><br><span class="line"><span class="string">&#x27;&#123;&#x27;</span> S* declaration [ <span class="string">&#x27;;&#x27;</span> S* declaration ]* <span class="string">&#x27;&#125;&#x27;</span> S*</span><br><span class="line">;</span><br><span class="line">selector</span><br><span class="line">: simple_selector [ combinator selector | S+ [ combinator selector ] ]</span><br><span class="line">;</span><br><span class="line"><span class="keyword">class</span></span><br><span class="line">: <span class="string">&#x27;.&#x27;</span> <span class="variable constant_">IDENT</span></span><br><span class="line">;</span><br><span class="line">element_name</span><br><span class="line">: <span class="variable constant_">IDENT</span> | <span class="string">&#x27;*&#x27;</span></span><br><span class="line">;</span><br></pre></td></tr></table></figure>
+
+<p>一个规则集合具有一个或是可选个数的多个选择器，这些选择器以逗号和空格（S表示空格）进行分隔。每个规则集合包含大括号及大括号中的一条或多条以分号隔开的声明。声明和选择器在后面进行定义。</p>
+<h4 id="1-2-1-Webkit-CSS解析器（Webkit-CSS-parser）"><a href="#1-2-1-Webkit-CSS解析器（Webkit-CSS-parser）" class="headerlink" title="1.2.1 Webkit CSS解析器（Webkit CSS parser）"></a>1.2.1 Webkit CSS解析器（Webkit CSS parser）</h4><p>Webkit使用Flex和Bison解析生成器从CSS语法文件中自动生成解析器。回忆一下解析器的介绍，Bison创建一个自底向上的解析器，Firefox使用自顶向下解析器。它们都是将每个css文件解析为样式表对象，每个对象包含css规则，css规则对象包含选择器和声明对象，以及其他一些符合css语法的对象。</p>
+<blockquote>
+<p>用于创建语法分析器的Flex及创建解析器的Bison。Flex的输入是一个包含了符号定义的正则表达式，Bison的输入是用BNF格式表示的语法规则。</p>
+</blockquote>
+<p><img src="/assets/image-20220903160338-wjh6j4x.png" alt="image.png"></p>
+<p>注意：WebKit使用的是自底向上的解析器</p>
+<blockquote>
+<p>处理脚本及样式表的顺序（The order of processing scripts and style sheets）</p>
+<p>脚本：web的模式是同步的，开发者希望解析到一个script标签时立即解析执行脚本，并阻塞文档的解析直到脚本执行完。如果脚本是外引的，则网络必须先请求到这个资源——这个过程也是同步的，会阻塞文档的解析直到资源被请求到。这个模式保持了很多年，并且在html4及html5中都特别指定了。开发者可以将脚本标识为defer，以使其不阻塞文档解析，并在文档解析结束后执行。HTML5增加了标记脚本为异步的选项，以使脚本的解析执行使用另一个线程。</p>
+<p>async是在外部JS加载完成后，浏览器空闲时，Load事件触发前执行；而Defer是在JS加载完成后，整个文档解析完成后执行。 Defer更像是将&lt;script&gt;标签放在&lt;&#x2F;body&gt;之后的效果，但是它由于是异步加载JS文件，所以可以节省时间。简单来说就是async和defer都是开启新线程（http线程）请求JS文件，和解析DOM并行不冲突，async在请求完成后就开始执行JS文件，而defer则是在整个DOM解析完成后再执行JS文件。</p>
+<p>预解析（Speculative parsing）</p>
+<p>Webkit和Firefox都做了这个优化，当执行脚本时，另一个线程解析剩下的文档，并加载后面需要通过网络加载的资源。这种方式可以使资源并行加载从而使整体速度更快。需要注意的是，预解析并不改变Dom树，它将这个工作留给主解析过程，自己只解析外部资源的引用，比如外部脚本、样式表及图片。</p>
+</blockquote>
+<p>StyleSheets样式表采用另一种模式。理论上，既然样式表不改变Dom树，也就没有必要停下文档的解析等待它们，然而存在一个问题，脚本可能在文档的解析过程中请求样式信息，如果样式还没有加载和解析，脚本将得到错误的值，显然这将会导致很多问题，这看起来是个边缘情况，但确实很常见。Firefox在存在样式表还在加载和解析时阻塞所有的脚本，而Chrome只在当脚本试图访问某些可能被未加载的样式表所影响的特定的样式属性时才阻塞这些脚本。</p>
+<p><strong>简单总结：</strong>WebKit用Flex生成CSS语法规则，Bison生成CSS解析器。样式表不阻塞DOM解析，但是阻塞DOM渲染，FireFox在样式文件未加载完成前阻塞JS脚本，目的是防止样式文件未加载完成而JS脚本需要获取样式文件信息的错误，Chrome只阻塞那些访问未加载完成的样式文件的JS脚本，样式加载完成即不堵塞。</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Az</span>
+                    </p>
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/"># 浏览器</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2023/08/%E4%B8%89.%20%E6%B5%8F%E8%A7%88%E5%99%A8%E5%86%85%E9%83%A8%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86-%E8%A7%A3%E6%9E%90%E6%96%B9%E5%90%91%EF%BC%88%E4%BA%8C%EF%BC%89/">三. 浏览器内部工作原理-解析方向（二）、</a>
+            
+            
+            <a class="next" rel="next" href="/2023/08/%E4%BA%8C.%20Web%E6%80%A7%E8%83%BD%E4%B8%8E%E5%AE%89%E5%85%A8/">二. Web性能与安全</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+  <div class="copyright">
+    <span>© Az | Powered by Hexo & Chic</span>
+  </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

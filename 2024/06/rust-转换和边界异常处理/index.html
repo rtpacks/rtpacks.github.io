@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Az">
+
+
+    <meta name="subtitle" content="Welcome!">
+
+
+
+    <meta name="keywords" content="blog luckydog Withx">
+
+
+<title>rust: 转换和边界异常处理 | Az&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+<link rel="stylesheet" href="/fonts/custom/iconfont.css">
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">I&#39;m Az</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">I&#39;m Az</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">rust: 转换和边界异常处理</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Az</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">2024.06.30&nbsp;&nbsp;11:43:07</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/Rust/">Rust</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="转换和边界异常处理"><a href="#转换和边界异常处理" class="headerlink" title="转换和边界异常处理"></a>转换和边界异常处理</h2><p>Result 和 Option 在业务程序中很常见，并且通常还需要自定义错误类型以便快速定位问题。</p>
+<h3 id="组合器"><a href="#组合器" class="headerlink" title="组合器"></a>组合器</h3><p>因为 Result 和 Option 类型很常见，但使用真实值时需要取出再判断，或者 Result 和 Option 互相转换，这些操作都显得比较琐碎，所以 rust 提供了一些组合器简化这些操作。<br>这些操作的功能与 JavaScript 的与或非 <code>|, ||, &amp;, &amp;&amp;, !</code> 的功能类似，可以返回某个值。</p>
+<p>组合器不同于组合模式，组合器更多的是用于对返回结果的类型进行变换：例如使用 ok_or 将一个 Option 类型转换成 Result 类型。</p>
+<blockquote>
+<p>组合模式：将对象组合成树形结构以表示“部分整体”的层次结构。组合模式使得用户对单个对象和组合对象的使用具有一致性。–GoF &lt;&lt;设计模式&gt;&gt;</p>
+</blockquote>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">id</span>: <span class="type">Option</span>&lt;<span class="type">i32</span>&gt; = <span class="title function_ invoke__">Some</span>(<span class="number">1</span>);</span><br><span class="line"><span class="keyword">let</span> <span class="variable">id</span>: <span class="type">Result</span>&lt;<span class="type">i32</span>, &amp;<span class="type">str</span>&gt; = id.<span class="title function_ invoke__">ok_or</span>(<span class="string">&quot;没有数据的错误信息&quot;</span>);</span><br><span class="line"><span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, id.<span class="title function_ invoke__">unwrap</span>());</span><br></pre></td></tr></table></figure>
+
+<h4 id="or-和-and"><a href="#or-和-and" class="headerlink" title="or 和 and"></a>or 和 and</h4><p>这两个方法会对两个 Option 表达式或两个 Result 表达式做逻辑组合，最终返回 Option 或 Result。</p>
+<ul>
+<li>or()，表达式按照顺序求值，若任何一个表达式的结果是 Some 或 Ok，则该值会立刻返回</li>
+<li>and()，若两个表达式的结果都是 Some 或 Ok，则第二个表达式中的值被返回。若任何一个的结果是 None 或 Err ，则立刻返回。</li>
+</ul>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// or 和 and</span></span><br><span class="line"><span class="keyword">let</span> <span class="variable">id1</span>: <span class="type">Option</span>&lt;<span class="type">i32</span>&gt; = <span class="title function_ invoke__">Some</span>(<span class="number">1</span>);</span><br><span class="line"><span class="keyword">let</span> <span class="variable">id2</span>: <span class="type">Option</span>&lt;<span class="type">i32</span>&gt; = <span class="literal">None</span>;</span><br><span class="line"><span class="built_in">println!</span>(</span><br><span class="line">    <span class="string">&quot;id1 or id2 = &#123;:?&#125;, id1 and id2 = &#123;:?&#125;, id2 or id1 = &#123;:?&#125;, id2 and id1 = &#123;:?&#125;&quot;</span>,</span><br><span class="line">    id1.<span class="title function_ invoke__">or</span>(id2),</span><br><span class="line">    id1.<span class="title function_ invoke__">and</span>(id2),</span><br><span class="line">    id2.<span class="title function_ invoke__">or</span>(id1),</span><br><span class="line">    id2.<span class="title function_ invoke__">and</span>(id1)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>除了 or 和 and 之外，Rust 还提供了异或 xor ，但是它只能应用在 Option 上，不能应用在 Result 上，因为不能对一个值和错误进行异或操。</p>
+<h4 id="or-else-和-and-then"><a href="#or-else-和-and-then" class="headerlink" title="or_else() 和 and_then()"></a>or_else() 和 and_then()</h4><p>它们跟 or() 和 and() 类似，唯一的区别在于，它们的第二个表达式是一个返回 Option 或 Result 的闭包。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// or_else 或 and_then</span></span><br><span class="line"><span class="keyword">let</span> <span class="variable">id1</span>: <span class="type">Option</span>&lt;<span class="type">i32</span>&gt; = <span class="title function_ invoke__">Some</span>(<span class="number">1</span>);</span><br><span class="line"><span class="keyword">let</span> <span class="variable">id2</span> = || <span class="literal">None</span>;</span><br><span class="line"><span class="keyword">let</span> <span class="variable">id3</span> = |_| <span class="title function_ invoke__">Some</span>(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 注意 impl 不能作为直接作为普通变量的类型</span></span><br><span class="line"><span class="comment">// let id3: impl Fn() -&gt; Option&lt;i32&gt; = || None; error `impl Trait` is only allowed in arguments and return types</span></span><br><span class="line"><span class="built_in">println!</span>(</span><br><span class="line">    <span class="string">&quot;id1.or_else(id2) = &#123;:?&#125;, id1.and_then(id3) = &#123;:?&#125;&quot;</span>,</span><br><span class="line">    id1.<span class="title function_ invoke__">or_else</span>(id2),</span><br><span class="line">    id1.<span class="title function_ invoke__">and_then</span>(id3)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<h4 id="filter"><a href="#filter" class="headerlink" title="filter"></a>filter</h4><p>filter 用于对 Option 进行条件过滤：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// filter 用于对 Option 进行条件过滤</span></span><br><span class="line"><span class="keyword">let</span> <span class="variable">id1</span> = <span class="title function_ invoke__">Some</span>(<span class="number">1</span>);</span><br><span class="line"><span class="keyword">let</span> <span class="variable">is_even</span> = |x: &amp;<span class="type">i32</span>| x % <span class="number">2</span> == <span class="number">0</span>;</span><br><span class="line"><span class="built_in">println!</span>(<span class="string">&quot;id1.filter(is_event) = &#123;:?&#125;&quot;</span>, id1.<span class="title function_ invoke__">filter</span>(is_even));</span><br></pre></td></tr></table></figure>
+
+<h4 id="map-map-err-map-or-map-or-else"><a href="#map-map-err-map-or-map-or-else" class="headerlink" title="map, map_err, map_or, map_or_else"></a>map, map_err, map_or, map_or_else</h4><p>map 可以将 Some 中的值映射为另一个 Some，Ok 类似：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">id1</span> = <span class="title function_ invoke__">Some</span>(<span class="number">1</span>);</span><br><span class="line"><span class="keyword">let</span> <span class="variable">mapFn</span> = |x: <span class="type">i32</span>| <span class="punctuation">-&gt;</span> <span class="type">i32</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> x &gt; <span class="number">2</span> &#123;</span><br><span class="line">        <span class="number">2</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="number">1</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="built_in">println!</span>(<span class="string">&quot;id1.map(mapFn) = &#123;:?&#125;&quot;</span>, id1.<span class="title function_ invoke__">map</span>(mapFn))</span><br></pre></td></tr></table></figure>
+
+<p>如果需要对 Result 的 Err 的信息进行修改，就需要使用 map_err。</p>
+<p>map_or 和 map_or_else 在 map 的基础上添加了一个默认值，区别是 map_or 给定指定类型的默认值，map_or_else 通过闭包提供默认值。</p>
+<h4 id="ok-or-ok-or-else"><a href="#ok-or-ok-or-else" class="headerlink" title="ok_or ok_or_else"></a>ok_or ok_or_else</h4><p>ok_or 和 ok_or_else 都是将 Option 转换为 Result 的组合器，两者都接受一个 Err 默认参数，ok_or 直接给定类型参数，ok_or_else 通过闭包给定默认参数。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">id</span>: <span class="type">Option</span>&lt;<span class="type">i32</span>&gt; = <span class="title function_ invoke__">Some</span>(<span class="number">1</span>);</span><br><span class="line"><span class="keyword">let</span> <span class="variable">id</span>: <span class="type">Result</span>&lt;<span class="type">i32</span>, &amp;<span class="type">str</span>&gt; = id.<span class="title function_ invoke__">ok_or</span>(<span class="string">&quot;没有数据的错误信息&quot;</span>);</span><br><span class="line"><span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, id.<span class="title function_ invoke__">unwrap</span>());</span><br></pre></td></tr></table></figure>
+
+<h3 id="自定义错误类型"><a href="#自定义错误类型" class="headerlink" title="自定义错误类型"></a>自定义错误类型</h3><p>虽然标准库定义了大量的错误类型，但光使用这些错误类型往往是不够的。在业务场景中，往往会自定义相应的错误(异常)类型。<br>比如返回示例中常见的 JSON：<code>&#123; &quot;code&quot;: 50020, &quot;msg&quot;: &quot;fail&quot; &#125;</code>。</p>
+<p>为了更好的定义错误类型，标准库中定义了一些可复用的特征，比如 <code>std::error::Error</code> 特征：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> std::fmt::&#123;<span class="built_in">Debug</span>, Display&#125;;</span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">trait</span> <span class="title class_">Error</span>: <span class="built_in">Debug</span> + Display &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">source</span>(&amp;<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> <span class="type">Option</span>&lt;&amp;(Error + <span class="symbol">&#x27;static</span>)&gt; &#123; ... &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当自定义类型实现该特征后，该类型就可以作为 Err 来使用。<br>实际上，rust 自定义错误类型非常简单，可以不实现 <code>std::error::Error</code>，只需要实现 Debug 和 Display 特征即可，这也就是说 source 方法是可选的。<br>同时 Debug 特征往往无需手动实现，可以通过 derive 来派生，即可以选择自定义 Debug，也可以选择 derive Debug 特征。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 自定义错误</span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">AppError</span> &#123;</span><br><span class="line">    code: <span class="type">i32</span>,</span><br><span class="line">    msg: <span class="type">String</span>,</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 为自定义错误实现 Display 特征</span></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">fmt</span>::Display <span class="keyword">for</span> <span class="title class_">AppError</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">fmt</span>(&amp;<span class="keyword">self</span>, f: &amp;<span class="keyword">mut</span> fmt::Formatter&lt;<span class="symbol">&#x27;_</span>&gt;) <span class="punctuation">-&gt;</span> fmt::<span class="type">Result</span> &#123;</span><br><span class="line">        <span class="built_in">write!</span>(</span><br><span class="line">            f,</span><br><span class="line">            <span class="string">&quot;Display: AppError &#123;&#123; code: &#123;&#125;, message: &#123;&#125; &#125;&#125;, try again!&quot;</span>,</span><br><span class="line">            <span class="keyword">self</span>.code, <span class="keyword">self</span>.msg</span><br><span class="line">        )</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 为自定义错误实现 Debug 特征，也可以通过派生 Debug 实现</span></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">fmt</span>::<span class="built_in">Debug</span> <span class="keyword">for</span> <span class="title class_">AppError</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">fmt</span>(&amp;<span class="keyword">self</span>, f: &amp;<span class="keyword">mut</span> fmt::Formatter&lt;<span class="symbol">&#x27;_</span>&gt;) <span class="punctuation">-&gt;</span> fmt::<span class="type">Result</span> &#123;</span><br><span class="line">        <span class="built_in">write!</span>(</span><br><span class="line">            f,</span><br><span class="line">            <span class="string">&quot;Debug: AppError &#123;&#123; code: &#123;&#125;, message: &#123;&#125; &#125;&#125;&quot;</span>,</span><br><span class="line">            <span class="keyword">self</span>.code, <span class="keyword">self</span>.msg</span><br><span class="line">        )</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">produce_error</span>() <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;(), AppError&gt; &#123;</span><br><span class="line">    <span class="title function_ invoke__">Err</span>(AppError &#123;</span><br><span class="line">        code: <span class="number">404</span>,</span><br><span class="line">        msg: <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;Page not found&quot;</span>),</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">match</span> <span class="title function_ invoke__">produce_error</span>() &#123;</span><br><span class="line">    <span class="title function_ invoke__">Err</span>(err) =&gt; eprintln!(<span class="string">&quot;&#123;&#125;&quot;</span>, err),</span><br><span class="line">    _ =&gt; <span class="built_in">println!</span>(<span class="string">&quot;No error&quot;</span>),</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>事实上，实现 Debug 和 Display 特征并不是作为 Err 使用的必要条件，把这两个特征实现和相应使用去除也不会报错。为自定义类型实现这两个特征的原因有二:</p>
+<ul>
+<li>错误打印输出后，才能有实际用处，而打印输出就需要实现这两个特征</li>
+<li>可以将自定义错误转换成 Box<dyn std::error:Error> 特征对象，用来做归一化不同错误类型</li>
+</ul>
+<h3 id="From-特征，错误转换"><a href="#From-特征，错误转换" class="headerlink" title="From 特征，错误转换"></a>From 特征，错误转换</h3><p>在一个函数运行中可能会产生不同的错误，如何将这些错误转换成自定义类型的错误呢？rust 提供 <code>std::convert::From</code> 特征解决转换问题。<br>在生成 String 时经常使用到的 String::from 就是 <code>std::convert::From</code> 提供的功能。</p>
+<blockquote>
+<p><code>std::convert::From</code> 已在 std::prelude 中，无需手动导入。</p>
+</blockquote>
+<p>在错误的转换中，还有一点特别重要，<code>?</code> 可以自动将错误进行隐式的强制转换.</p>
+<p>为自定义错误实现 From 特征，将多种错误类型转换成自定义错误类型：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 为自定义错误实现 From 特征，将 io::Error 转换成自定义错误</span></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">From</span>&lt;io::Error&gt; <span class="keyword">for</span> <span class="title class_">AppError</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">from</span>(error: io::Error) <span class="punctuation">-&gt;</span> <span class="keyword">Self</span> &#123;</span><br><span class="line">        AppError &#123;</span><br><span class="line">            kind: <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;io&quot;</span>),</span><br><span class="line">            msg: <span class="type">String</span>::<span class="title function_ invoke__">from</span>(error.<span class="title function_ invoke__">to_string</span>()),</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 为自定义错误实现 From 特征，将 num::ParseIntError 转换成自定义错误</span></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">From</span>&lt;num::ParseIntError&gt; <span class="keyword">for</span> <span class="title class_">AppError</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">from</span>(error: num::ParseIntError) <span class="punctuation">-&gt;</span> <span class="keyword">Self</span> &#123;</span><br><span class="line">        AppError &#123;</span><br><span class="line">            kind: <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;parse&quot;</span>),</span><br><span class="line">            msg: <span class="type">String</span>::<span class="title function_ invoke__">from</span>(error.<span class="title function_ invoke__">to_string</span>()),</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">gen_error</span>() <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;(), AppError&gt; &#123;</span><br><span class="line">    <span class="comment">// 函数标注返回AppError，有一点特别重要，? 可以将错误进行隐式的强制转换，将ParseIntError转换成 AppError</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">num</span>: <span class="type">i32</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;&quot;</span>).<span class="title function_ invoke__">parse</span>()?;</span><br><span class="line">    <span class="title function_ invoke__">Ok</span>(())</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">match</span> <span class="title function_ invoke__">gen_error</span>() &#123;</span><br><span class="line">    <span class="title function_ invoke__">Err</span>(e) =&gt; eprintln!(<span class="string">&quot;&#123;&#125;&quot;</span>, e),</span><br><span class="line">    _ =&gt; <span class="built_in">println!</span>(<span class="string">&quot;No error&quot;</span>),</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="归一化不同的错误类型"><a href="#归一化不同的错误类型" class="headerlink" title="归一化不同的错误类型"></a>归一化不同的错误类型</h3><p>系统运行时产生的错误不止一种，为了区分，往往会对这些不同的错误定义不同的错误类型。<br>这带来一个问题，函数运行时可能产生不同的错误类型，但函数的返回值类型只有一个，怎么统一不同的错误类型？</p>
+<p>大概有三种方式：</p>
+<ul>
+<li>From 特征转换</li>
+<li>Box&lt;dyn std::error::Error&gt;</li>
+<li>第三方库</li>
+</ul>
+<h4 id="From-归一化"><a href="#From-归一化" class="headerlink" title="From 归一化"></a>From 归一化</h4><p>在 <code>std::convert::From</code> 特征转换错误中，介绍了将其他错误转换成自定义错误的过程，<code>std::convert::From</code> 就是一种归一化的方式。</p>
+<p>From 特征转换的缺点是非常的繁琐，需要为自定义错误类型实现不同的 <code>From&lt;T&gt;</code> 特征后，才能转换成相应的特征对象。</p>
+<h4 id="Box-lt-dyn-std-error-Error-gt"><a href="#Box-lt-dyn-std-error-Error-gt" class="headerlink" title="Box&lt;dyn std::error::Error&gt;"></a>Box&lt;dyn std::error::Error&gt;</h4><p>在标准库中，<code>std::error::Error</code> 是最基础的错误类型，大部分错误类型都能自动转换成 <code>std::error::Error</code>，自定义类型实现 Debug + Display 特征的主要原因也是为了能转换成 Error 的特征对象。</p>
+<p>但是 <code>Box&lt;dyn Error&gt;</code> 会有一个问题，因为 <code>Result&lt;T, E&gt;</code> 中的 <code>E</code> 不限制类型，即 E 错误类型不要求一定要实现 <code>std::error::Error</code> 特征。<br>这样就无法用 <code>Box&lt;dyn Error&gt;</code> 代表所有的错误类型，因为自定义错误类型不一定是实现了 <code>std:error::Error</code> 的类型。</p>
+<p>当然能用 <code>Box&lt;dyn Error&gt;</code> 特征对象的时候，还是尽量使用特征对象，因为 <code>Box&lt;dyn Error&gt;</code> 代码可读性还是比较高的。</p>
+<h3 id="简化错误处理"><a href="#简化错误处理" class="headerlink" title="简化错误处理"></a>简化错误处理</h3><p>无论是自定义错误转换还是使用 <code>Box&lt;dyn Error&gt;</code> 都有一些小问题，通常情况下 <code>Box&lt;dyn Error&gt;</code> 可以满足需求，如果需要自定义转换错误，就可以使用第三方库。</p>
+<h4 id="thiserror"><a href="#thiserror" class="headerlink" title="thiserror"></a>thiserror</h4><p>thiserror 可以简化自定义错误转换的过程，主要用到两点：</p>
+<ul>
+<li><code>#[error(错误的描述)]</code></li>
+<li><code>#[from] Error</code> 指定自定义错误可以由某个错误转换</li>
+</ul>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 使用 thiserror 简化自定义转换的逻辑</span></span><br><span class="line"><span class="meta">#[derive(thiserror::Error, Debug)]</span></span><br><span class="line"><span class="keyword">enum</span> <span class="title class_">ThisError</span> &#123;</span><br><span class="line">    <span class="meta">#[error(<span class="string">&quot;I/O error occurred&quot;</span>)]</span> <span class="comment">// #[error(错误的描述)]</span></span><br><span class="line">    IOError,</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[error(<span class="string">&quot;ParseIntError occurred&quot;</span>)]</span></span><br><span class="line">    <span class="title function_ invoke__">ParseIntError</span>(<span class="meta">#[from]</span> num::ParseIntError), <span class="comment">// #[from] Error 指定自定义错误可以由某个错误转换</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">gen_thiserror</span>() <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;(), ThisError&gt; &#123;</span><br><span class="line">    <span class="comment">// turbo fish,</span></span><br><span class="line">    <span class="comment">// ::&lt;T&gt; 用于显式指定泛型类型参数</span></span><br><span class="line">    <span class="comment">// ::&lt;T&gt;::() 是显式指定数据结构类型的泛型类型参数并调用改数据结构类型内部的函数或方法的组合语法</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">num</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;&quot;</span>).parse::&lt;<span class="type">i32</span>&gt;()?;</span><br><span class="line">    <span class="title function_ invoke__">Ok</span>(())</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">match</span> <span class="title function_ invoke__">gen_thiserror</span>() &#123;</span><br><span class="line">    <span class="title function_ invoke__">Err</span>(e) =&gt; eprintln!(<span class="string">&quot;&#123;&#125;&quot;</span>, e),</span><br><span class="line">    _ =&gt; <span class="built_in">println!</span>(<span class="string">&quot;No Errror&quot;</span>),</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>更多操作可阅读：<a target="_blank" rel="noopener" href="https://juejin.cn/post/7272005801081126968">https://juejin.cn/post/7272005801081126968</a></p>
+<h4 id="anyhow"><a href="#anyhow" class="headerlink" title="anyhow"></a>anyhow</h4><blockquote>
+<p>anyhow 和 thiserror 是同一个作者开发的，这里是作者关于 anyhow 和 thiserror 的原话：<br>如果想要设计自己的错误类型，同时给调用者提供具体的信息时，就使用 thiserror，例如在开发一个三方库代码时。<br>如果只想要简单，就使用 anyhow，它会接收所有的类型，例如在自己的应用服务中。</p>
+</blockquote>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 使用 anyhow 接收所有的错误类型</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">gen_anyhowerror</span>() <span class="punctuation">-&gt;</span> anyhow::<span class="type">Result</span>&lt;()&gt; &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">num</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;&quot;</span>).parse::&lt;<span class="type">i32</span>&gt;()?;</span><br><span class="line">    <span class="title function_ invoke__">Ok</span>(())</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">match</span> <span class="title function_ invoke__">gen_anyhowerror</span>() &#123;</span><br><span class="line">    <span class="title function_ invoke__">Err</span>(e) =&gt; eprintln!(<span class="string">&quot;&#123;&#125;&quot;</span>, e),</span><br><span class="line">    _ =&gt; <span class="built_in">println!</span>(<span class="string">&quot;No Errror&quot;</span>),</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="error-chain"><a href="#error-chain" class="headerlink" title="error-chain"></a>error-chain</h4><p>使用 error-chain 的宏可以获得：Error 结构体，错误类型 ErrorKind 枚举 以及一个自定义的 Result 类型。<br>注意，默认情况下它会在当前作用域中生成这三个数据结构，可能会污染当前作用域。</p>
+<h3 id="Code"><a href="#Code" class="headerlink" title="Code"></a>Code</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="comment">//  Option 转换成 Result</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">id</span>: <span class="type">Option</span>&lt;<span class="type">i32</span>&gt; = <span class="title function_ invoke__">Some</span>(<span class="number">1</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">id</span>: <span class="type">Result</span>&lt;<span class="type">i32</span>, &amp;<span class="type">str</span>&gt; = id.<span class="title function_ invoke__">ok_or</span>(<span class="string">&quot;没有数据的错误信息&quot;</span>);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, id.<span class="title function_ invoke__">unwrap</span>());</span><br><span class="line"></span><br><span class="line">    <span class="comment">// or 和 and</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">id1</span>: <span class="type">Option</span>&lt;<span class="type">i32</span>&gt; = <span class="title function_ invoke__">Some</span>(<span class="number">1</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">id2</span>: <span class="type">Option</span>&lt;<span class="type">i32</span>&gt; = <span class="literal">None</span>;</span><br><span class="line">    <span class="built_in">println!</span>(</span><br><span class="line">        <span class="string">&quot;id1.or(id2) = &#123;:?&#125;, id1.and(id2) = &#123;:?&#125;, id2.or(id1) = &#123;:?&#125;, id2.and(id1) = &#123;:?&#125;&quot;</span>,</span><br><span class="line">        id1.<span class="title function_ invoke__">or</span>(id2),</span><br><span class="line">        id1.<span class="title function_ invoke__">and</span>(id2),</span><br><span class="line">        id2.<span class="title function_ invoke__">or</span>(id1),</span><br><span class="line">        id2.<span class="title function_ invoke__">and</span>(id1)</span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">    <span class="comment">// or_else 或 and_then</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">id1</span>: <span class="type">Option</span>&lt;<span class="type">i32</span>&gt; = <span class="title function_ invoke__">Some</span>(<span class="number">1</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">id2</span> = || <span class="literal">None</span>;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">id3</span> = |_| <span class="title function_ invoke__">Some</span>(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 注意 impl 不能作为直接作为普通变量的类型</span></span><br><span class="line">    <span class="comment">// let id3: impl Fn() -&gt; Option&lt;i32&gt; = || None; error `impl Trait` is only allowed in arguments and return types</span></span><br><span class="line">    <span class="built_in">println!</span>(</span><br><span class="line">        <span class="string">&quot;id1.or_else(id2) = &#123;:?&#125;, id1.and_then(id3) = &#123;:?&#125;&quot;</span>,</span><br><span class="line">        id1.<span class="title function_ invoke__">or_else</span>(id2),</span><br><span class="line">        id1.<span class="title function_ invoke__">and_then</span>(id3)</span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">    <span class="comment">// filter 用于对 Option 进行条件过滤</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">id1</span> = <span class="title function_ invoke__">Some</span>(<span class="number">1</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">is_even</span> = |x: &amp;<span class="type">i32</span>| x % <span class="number">2</span> == <span class="number">0</span>;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;id1.filter(is_event) = &#123;:?&#125;&quot;</span>, id1.<span class="title function_ invoke__">filter</span>(is_even));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// map 可以将 Some 中的值映射为另一个 Some，Ok 类似</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">id1</span> = <span class="title function_ invoke__">Some</span>(<span class="number">1</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">mapFn</span> = |x: <span class="type">i32</span>| <span class="punctuation">-&gt;</span> <span class="type">i32</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> x &gt; <span class="number">2</span> &#123;</span><br><span class="line">            <span class="number">2</span></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="number">1</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;id1.map(mapFn) = &#123;:?&#125;&quot;</span>, id1.<span class="title function_ invoke__">map</span>(mapFn));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 自定义错误</span></span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">AppError</span> &#123;</span><br><span class="line">        kind: <span class="type">String</span>,</span><br><span class="line">        msg: <span class="type">String</span>,</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">impl</span> <span class="title class_">fmt</span>::Display <span class="keyword">for</span> <span class="title class_">AppError</span> &#123;</span><br><span class="line">        <span class="keyword">fn</span> <span class="title function_">fmt</span>(&amp;<span class="keyword">self</span>, f: &amp;<span class="keyword">mut</span> fmt::Formatter&lt;<span class="symbol">&#x27;_</span>&gt;) <span class="punctuation">-&gt;</span> fmt::<span class="type">Result</span> &#123;</span><br><span class="line">            <span class="built_in">write!</span>(</span><br><span class="line">                f,</span><br><span class="line">                <span class="string">&quot;Display: AppError &#123;&#123; kind: &#123;&#125;, message: &#123;&#125; &#125;&#125;, try again!&quot;</span>,</span><br><span class="line">                <span class="keyword">self</span>.kind, <span class="keyword">self</span>.msg</span><br><span class="line">            )</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">impl</span> <span class="title class_">fmt</span>::<span class="built_in">Debug</span> <span class="keyword">for</span> <span class="title class_">AppError</span> &#123;</span><br><span class="line">        <span class="keyword">fn</span> <span class="title function_">fmt</span>(&amp;<span class="keyword">self</span>, f: &amp;<span class="keyword">mut</span> fmt::Formatter&lt;<span class="symbol">&#x27;_</span>&gt;) <span class="punctuation">-&gt;</span> fmt::<span class="type">Result</span> &#123;</span><br><span class="line">            <span class="built_in">write!</span>(</span><br><span class="line">                f,</span><br><span class="line">                <span class="string">&quot;Debug: AppError &#123;&#123; kind: &#123;&#125;, message: &#123;&#125; &#125;&#125;&quot;</span>,</span><br><span class="line">                <span class="keyword">self</span>.kind, <span class="keyword">self</span>.msg</span><br><span class="line">            )</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">produce_error</span>() <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;(), AppError&gt; &#123;</span><br><span class="line">        <span class="title function_ invoke__">Err</span>(AppError &#123;</span><br><span class="line">            kind: <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;&quot;</span>),</span><br><span class="line">            msg: <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;Page not found&quot;</span>),</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">match</span> <span class="title function_ invoke__">produce_error</span>() &#123;</span><br><span class="line">        <span class="title function_ invoke__">Err</span>(err) =&gt; eprintln!(<span class="string">&quot;&#123;&#125;&quot;</span>, err),</span><br><span class="line">        _ =&gt; <span class="built_in">println!</span>(<span class="string">&quot;No error&quot;</span>),</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 为自定义错误实现 From 特征，将 io::Error 转换成自定义错误</span></span><br><span class="line">    <span class="keyword">impl</span> <span class="title class_">From</span>&lt;io::Error&gt; <span class="keyword">for</span> <span class="title class_">AppError</span> &#123;</span><br><span class="line">        <span class="keyword">fn</span> <span class="title function_">from</span>(error: io::Error) <span class="punctuation">-&gt;</span> <span class="keyword">Self</span> &#123;</span><br><span class="line">            AppError &#123;</span><br><span class="line">                kind: <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;io&quot;</span>),</span><br><span class="line">                msg: <span class="type">String</span>::<span class="title function_ invoke__">from</span>(error.<span class="title function_ invoke__">to_string</span>()),</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 为自定义错误实现 From 特征，将 num::ParseIntError 转换成自定义错误</span></span><br><span class="line">    <span class="keyword">impl</span> <span class="title class_">From</span>&lt;num::ParseIntError&gt; <span class="keyword">for</span> <span class="title class_">AppError</span> &#123;</span><br><span class="line">        <span class="keyword">fn</span> <span class="title function_">from</span>(error: num::ParseIntError) <span class="punctuation">-&gt;</span> <span class="keyword">Self</span> &#123;</span><br><span class="line">            AppError &#123;</span><br><span class="line">                kind: <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;parse&quot;</span>),</span><br><span class="line">                msg: <span class="type">String</span>::<span class="title function_ invoke__">from</span>(error.<span class="title function_ invoke__">to_string</span>()),</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">gen_error</span>() <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;(), AppError&gt; &#123;</span><br><span class="line">        <span class="comment">// 函数标注返回AppError，有一点特别重要，? 可以将错误进行隐式的强制转换，将ParseIntError转换成 AppError</span></span><br><span class="line">        <span class="keyword">let</span> <span class="variable">num</span>: <span class="type">i32</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;&quot;</span>).<span class="title function_ invoke__">parse</span>()?;</span><br><span class="line">        <span class="title function_ invoke__">Ok</span>(())</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">match</span> <span class="title function_ invoke__">gen_error</span>() &#123;</span><br><span class="line">        <span class="title function_ invoke__">Err</span>(e) =&gt; eprintln!(<span class="string">&quot;&#123;&#125;&quot;</span>, e),</span><br><span class="line">        _ =&gt; <span class="built_in">println!</span>(<span class="string">&quot;No error&quot;</span>),</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 使用 thiserror 简化自定义转换的逻辑</span></span><br><span class="line">    <span class="meta">#[derive(thiserror::Error, Debug)]</span></span><br><span class="line">    <span class="keyword">enum</span> <span class="title class_">ThisError</span> &#123;</span><br><span class="line">        <span class="meta">#[error(<span class="string">&quot;I/O error occurred&quot;</span>)]</span> <span class="comment">// #[error(错误的描述)]</span></span><br><span class="line">        IOError,</span><br><span class="line"></span><br><span class="line">        <span class="meta">#[error(<span class="string">&quot;ParseIntError occurred&quot;</span>)]</span></span><br><span class="line">        <span class="title function_ invoke__">ParseIntError</span>(<span class="meta">#[from]</span> num::ParseIntError), <span class="comment">// #[from] 指定自定义错误可以由某个错误转换</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">gen_thiserror</span>() <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;(), ThisError&gt; &#123;</span><br><span class="line">        <span class="comment">// turbo fish,</span></span><br><span class="line">        <span class="comment">// ::&lt;T&gt; 用于显式指定泛型类型参数</span></span><br><span class="line">        <span class="comment">// ::&lt;T&gt;::() 是显式指定数据结构类型的泛型类型参数并调用改数据结构类型内部的函数或方法的组合语法</span></span><br><span class="line">        <span class="keyword">let</span> <span class="variable">num</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;&quot;</span>).parse::&lt;<span class="type">i32</span>&gt;()?;</span><br><span class="line">        <span class="title function_ invoke__">Ok</span>(())</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">match</span> <span class="title function_ invoke__">gen_thiserror</span>() &#123;</span><br><span class="line">        <span class="title function_ invoke__">Err</span>(e) =&gt; eprintln!(<span class="string">&quot;&#123;&#125;&quot;</span>, e),</span><br><span class="line">        _ =&gt; <span class="built_in">println!</span>(<span class="string">&quot;No Errror&quot;</span>),</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 使用 anyhow 接收所有的错误类型</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">gen_anyhowerror</span>() <span class="punctuation">-&gt;</span> anyhow::<span class="type">Result</span>&lt;()&gt; &#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">num</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;&quot;</span>).parse::&lt;<span class="type">i32</span>&gt;()?;</span><br><span class="line">        <span class="title function_ invoke__">Ok</span>(())</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">match</span> <span class="title function_ invoke__">gen_anyhowerror</span>() &#123;</span><br><span class="line">        <span class="title function_ invoke__">Err</span>(e) =&gt; eprintln!(<span class="string">&quot;&#123;&#125;&quot;</span>, e),</span><br><span class="line">        _ =&gt; <span class="built_in">println!</span>(<span class="string">&quot;No Errror&quot;</span>),</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Az</span>
+                    </p>
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Rust/"># Rust</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2024/07/rust-unsafe%EF%BC%9Aunsafe-%E7%9A%84%E4%BD%9C%E7%94%A8/">rust: unsafe：unsafe 的作用</a>
+            
+            
+            <a class="next" rel="next" href="/2024/06/rust-%E5%85%A8%E5%B1%80%E5%8F%98%E9%87%8F/">rust: 全局变量</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+  <div class="copyright">
+    <span>© Az | Powered by Hexo & Chic</span>
+  </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

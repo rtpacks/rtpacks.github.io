@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Az">
+
+
+    <meta name="subtitle" content="Welcome!">
+
+
+
+    <meta name="keywords" content="blog luckydog Withx">
+
+
+<title>rust: Weak 与循环引用 | Az&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+<link rel="stylesheet" href="/fonts/custom/iconfont.css">
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">I&#39;m Az</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">I&#39;m Az</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">rust: Weak 与循环引用</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Az</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">2024.05.31&nbsp;&nbsp;21:40:26</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/rust/">rust</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="Weak-与循环引用"><a href="#Weak-与循环引用" class="headerlink" title="Weak 与循环引用"></a>Weak 与循环引用</h2><p>链表在 Rust 中之所以这么难，完全是因为循环引用和自引用的问题引起的，这两个问题可以说综合了 Rust 的很多难点。<br>rust 的安全措施可以避免大部分的内存问题，但是不代表它不会出现问题。一个典型的例子就是同时使用 <code>Rc</code> 和 <code>RefCell</code> 出现的循环引用，导致引用计数无法归零，最终出现内存问题。</p>
+<p>在 Rc&#x2F;Arc 介绍的章节中，使用 Rc&#x2F;Arc 解决图数据结构引用复杂的问题，但因为 Rc&#x2F;Arc 是不可变引用，所以不能通过 Rc&#x2F;Arc 修改节点的数据。</p>
+<p>同时在上一章提过 Rc 与 RefCell 的不同组合（<code>Rc&lt;RefCell&lt;T&gt;&gt;</code> 和 <code>RefCell&lt;Rc&lt;T&gt;&gt;</code>）的特点。</p>
+<ul>
+<li><p><code>Rc&lt;RefCell&lt;T&gt;&gt;</code> 类型是一个通过 Rc 可供多个变量引用，通过 RefCell 可提供不可变&#x2F;可变借用的高级类型，也就是每个该类型的变量都可单独读写真实数据。</p>
+</li>
+<li><p><code>RefCell&lt;Rc&lt;T&gt;&gt;</code> 类型也是一个内部可变性的高级类型，不仅可以提供不可变&#x2F;可变借用和无需手动管理复杂的生命周期，<br><strong><code>RefCell&lt;Rc&lt;T&gt;&gt;</code> 还能通过 <code>Rc</code> 智能指针可以指向 T 类型的不同实例</strong>，<code>RefCell&lt;T&gt;</code> 只能指向 T 类型的一个实例，因为这是内部可变性，而不是整体可变。</p>
+</li>
+<li><p><code>Rc&lt;RefCell&lt;T&gt;&gt;</code> 是常用的一种组合，它给变量提供了自动管理引用释放转换不可变&#x2F;可变借用的功能</p>
+</li>
+<li><p><code>RefCell&lt;Rc&lt;T&gt;&gt;</code> 是解决内部可变性整体不可变的限制，它为变量提供不可变&#x2F;可变引用和存储数据指针的空间</p>
+</li>
+</ul>
+<p>现在利用 RefCell 与 Rc 的组合 <code>RefCell&lt;Rc&lt;T&gt;&gt;</code> 就可以实现一个简单的链表。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">[<span class="title function_ invoke__">derive</span>(<span class="built_in">Debug</span>)]</span><br><span class="line"><span class="keyword">enum</span> <span class="title class_">List</span> &#123;</span><br><span class="line">    <span class="title function_ invoke__">Cons</span>(<span class="type">i32</span>, RefCell&lt;Rc&lt;List&gt;&gt;),</span><br><span class="line">    Nil,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="variable">node</span> = List::<span class="title function_ invoke__">Cons</span>(<span class="number">12</span>, RefCell::<span class="title function_ invoke__">new</span>(Rc::<span class="title function_ invoke__">new</span>(List::Nil)));</span><br><span class="line"><span class="built_in">println!</span>(<span class="string">&quot;&#123;:#?&#125;&quot;</span>, node);</span><br><span class="line"></span><br><span class="line"><span class="keyword">match</span> &amp;node &#123;</span><br><span class="line">    List::<span class="title function_ invoke__">Cons</span>(v, next) =&gt; &#123;</span><br><span class="line">        <span class="comment">// next 原有的指针信息是指向 List::Nil 的，现在指向 List::Cons(20, RefCell::new(Rc::new(List::Nil)))</span></span><br><span class="line">        <span class="comment">// 此时是存储的指针信息发生改变，而不是存储空间发生改变</span></span><br><span class="line">        *next.<span class="title function_ invoke__">borrow_mut</span>() = Rc::<span class="title function_ invoke__">new</span>(List::<span class="title function_ invoke__">Cons</span>(<span class="number">20</span>, RefCell::<span class="title function_ invoke__">new</span>(Rc::<span class="title function_ invoke__">new</span>(List::Nil))))</span><br><span class="line">    &#125;</span><br><span class="line">    List::Nil =&gt; &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">println!</span>(<span class="string">&quot;&#123;:#?&#125;&quot;</span>, node);</span><br></pre></td></tr></table></figure>
+
+<p>上面注意 <code>RefCell&lt;Rc&lt;T&gt;&gt;</code> 更改存储的指针就能达到更改指向的节点的功能，这与更改节点数据使节点看起来是另外一个节点是两回事。<br><code>RefCell&lt;Rc&lt;T&gt;&gt;</code> 关注的是指向其他节点，而 <code>Rc&lt;RefCell&lt;T&gt;&gt;</code> 只是更改节点内容信息。</p>
+<p>以上链表的实现非常简单，没有考虑循环引用以及自引用的情况，看一段循环引用的实现：</p>
+<ul>
+<li>创建 a，创建 b，利用 <code>Rc::clone(&amp;a)</code> 让 b 的 next 指向 a，即 b 引用了 a</li>
+<li>利用 <code>Rc::clone(&amp;b)</code> 让 a 的 next 指向 b，即 a 引用了 b</li>
+</ul>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定义取出节点的下一节点的方法，不拿走下一节点的所有权，即只拿引用，又因为下一节点是RefCell类型，所以可以只拿不可变引用就能得到可变引用</span></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">List</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">tail</span>(&amp;<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> <span class="type">Option</span>&lt;&amp;RefCell&lt;Rc&lt;List&gt;&gt;&gt; &#123;</span><br><span class="line">        <span class="keyword">match</span> <span class="keyword">self</span> &#123;</span><br><span class="line">            List::<span class="title function_ invoke__">Cons</span>(_, next) =&gt; <span class="title function_ invoke__">Some</span>(next),</span><br><span class="line">            List::Nil =&gt; <span class="literal">None</span>,</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// - 创建 a，创建 b，利用 `Rc::clone(&amp;b)` 让 a 的 next 指向 b，即 a 引用了 b</span></span><br><span class="line"><span class="comment">// - 利用 `Rc::clone(&amp;a)` 让 b 的 next 指向 a，即 b 引用了 a</span></span><br><span class="line"><span class="keyword">let</span> <span class="variable">a</span> = Rc::<span class="title function_ invoke__">new</span>(List::<span class="title function_ invoke__">Cons</span>(<span class="number">1</span>, RefCell::<span class="title function_ invoke__">new</span>(Rc::<span class="title function_ invoke__">new</span>(List::Nil))));</span><br><span class="line"><span class="keyword">let</span> <span class="variable">b</span> = Rc::<span class="title function_ invoke__">new</span>(List::<span class="title function_ invoke__">Cons</span>(<span class="number">2</span>, RefCell::<span class="title function_ invoke__">new</span>(Rc::<span class="title function_ invoke__">new</span>(List::Nil))));</span><br><span class="line"><span class="built_in">println!</span>(</span><br><span class="line">    <span class="string">&quot;Initial: a.strone_count = &#123;&#125;, b.strone_count = &#123;&#125;&quot;</span>,</span><br><span class="line">    Rc::<span class="title function_ invoke__">strong_count</span>(&amp;a),</span><br><span class="line">    Rc::<span class="title function_ invoke__">strong_count</span>(&amp;b)</span><br><span class="line">);</span><br><span class="line"><span class="keyword">if</span> <span class="keyword">let</span> <span class="variable">Some</span>(next) = a.<span class="title function_ invoke__">tail</span>() &#123;</span><br><span class="line">    *next.<span class="title function_ invoke__">borrow_mut</span>() = Rc::<span class="title function_ invoke__">clone</span>(&amp;b); <span class="comment">// a 的 next 指向 b，即 a 引用了 b</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">println!</span>(</span><br><span class="line">    <span class="string">&quot;a.next: a.strone_count = &#123;&#125;, b.strone_count = &#123;&#125;&quot;</span>,</span><br><span class="line">    Rc::<span class="title function_ invoke__">strong_count</span>(&amp;a),</span><br><span class="line">    Rc::<span class="title function_ invoke__">strong_count</span>(&amp;b)</span><br><span class="line">);</span><br><span class="line"><span class="keyword">if</span> <span class="keyword">let</span> <span class="variable">Some</span>(next) = b.<span class="title function_ invoke__">tail</span>() &#123;</span><br><span class="line">    *next.<span class="title function_ invoke__">borrow_mut</span>() = Rc::<span class="title function_ invoke__">clone</span>(&amp;a); <span class="comment">// b 的 next 指向 a，即 b 引用了 a</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">println!</span>(</span><br><span class="line">    <span class="string">&quot;b.next: a.strone_count = &#123;&#125;, b.strone_count = &#123;&#125;&quot;</span>,</span><br><span class="line">    Rc::<span class="title function_ invoke__">strong_count</span>(&amp;a),</span><br><span class="line">    Rc::<span class="title function_ invoke__">strong_count</span>(&amp;b)</span><br><span class="line">);</span><br><span class="line"><span class="comment">// 成功创建了循环引用a-&gt; b -&gt; a -&gt; b ····</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 循环引用，造成8MB的主线程栈溢出</span></span><br><span class="line"><span class="comment">// println!(&quot;&#123;:?&#125;&quot;, a.tail());</span></span><br></pre></td></tr></table></figure>
+
+<p>在 main 函数结束前，a 和 b 的引用计数均是 2，随后变量 a 触发 Drop，此时值的 Rc 引用计数变为 1，由于 b.next 的引用，Rc 引用计数并不会归 0，因此变量 a 所指向内存（值）不会被释放，同理 b 指向的内存（值）也不会被释放，最终发生了内存泄漏。</p>
+<p>只需要访问 a 或 b 的下一节点，就会触发循环引用：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 循环引用，造成8MB的主线程栈溢出</span></span><br><span class="line"><span class="comment">// println!(&quot;&#123;:?&#125;&quot;, a.tail());</span></span><br></pre></td></tr></table></figure>
+
+<p><code>a.tail</code> 调用返回 <code>a.next</code> 引用即 <code>b</code> 智能指针，打印 <code>b</code> 智能指针时会打印 <code>b.next</code> 智能指针（打印一个完整的链表数据）。<br><code>b.next</code> 即 <code>a</code>，打印 <code>a</code> 时同样因为要打印完整的数据，会打印 <code>a.next</code> 即 <code>b</code>，最后出现循环引用不断解析引用指向的数据。<br>Rust 试图打印出 <code>a -&gt; b -&gt; a ···</code> 的所有内容，最终 main 线程终于不堪重负，发生了栈溢出。</p>
+<p>创建循环引用并不简单，但是也并不是完全遇不到，当使用 <code>RefCell&lt;Rc&lt;T&gt;&gt;</code> 或者<strong>具备内部可变性和引用计数的嵌套组合类型</strong>时，就要打起万分精神，避免出现循环引用。<br><strong>循环引用的存在不一定会引起问题</strong>，只有使用到循环引用时才会触发 OOM。</p>
+<h3 id="Weak"><a href="#Weak" class="headerlink" title="Weak"></a>Weak</h3><p>在上面的循环引用案例中，main 函数结束前释放变量，由于值被其他变量引用所以不能被释放。这种引用属于强引用，只要存在强引用，值就不会被释放，换句话说强引用会阻止值的释放。</p>
+<p>相比较强引用，<strong>弱引用不持有值所有权，不保证引用关系一直有效，它仅仅保存一份指向数据的弱引用</strong>。<br>所以所引用它无法阻止所引用的内存值被释放，即<strong>弱引用本身不对值的存在性做任何担保</strong>，引用的值还存在就返回 Some，不存在就返回 None。</p>
+<p><code>Weak</code> 就是一个弱引用，它与 Rc 非常相似，但是与 Rc 持有所有权不同，Weak 不持有所有权，它仅仅保存一份指向数据的弱引用。<br><code>Weak</code> 虽然与 Rc 智能指针不同，但是有效 <code>Weak</code> 的生成总是需要 Rc 指针，通过值的 Rc 指针形式 <code>Rc::downgrade</code> 生成有效的 Weak 指针。</p>
+<p>如果想要访问数据，需要通过 Weak 指针的 <code>upgrade</code> 方法实现，该方法返回一个类型为 <code>Option&lt;Rc&lt;T&gt;&gt;</code> 的值。</p>
+<p><strong>对比 Weak 和 Rc</strong></p>
+<table>
+<thead>
+<tr>
+<th>Weak 弱引用，不计数</th>
+<th>Rc 强引用，引用计数</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>不拥有所有权</td>
+<td>拥有访问值的能力（不可变引用访问）</td>
+</tr>
+<tr>
+<td>不阻止值被释放(drop)</td>
+<td>所有权计数归零，才能 drop</td>
+</tr>
+<tr>
+<td>引用的值存在返回 Some，不存在返回 None</td>
+<td>引用的值必定存在</td>
+</tr>
+<tr>
+<td>通过 upgrade 取到 <code>Option&lt;Rc&lt;T&gt;&gt;</code>，然后再取值</td>
+<td>通过 Deref 自动解引用，取值无需任何操作</td>
+</tr>
+</tbody></table>
+<p>Weak 的功能非常弱，而这种弱恰恰适合以下的场景：</p>
+<ul>
+<li>阻止 Rc 导致的循环强引用，因为 Rc 智能指针的引用计数机制，可能会导致一个值对应的多个 Rc 计数无法归零</li>
+<li>希望持有一个 Rc 类型的对象的临时引用，并希望这个引用不影响任何值的释放</li>
+</ul>
+<p>在上面的 List 结构中，可以使用这种方式来解决循环强引用问题：让前一个节点通过 Rc 来引用后一个节点，然后让后一个节点通过 Weak 来引用前一个节点。<br>Rc 强引用意味着数据不会被释放，Weak 需要使用 <code>upgrade</code> 后才能访问数据，意味着无法直接访问弱引用指向的数据，能避开循环强引用的陷阱。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 由于多出一种 Weak 类型，当前的List不满足使用，需要拓展字段。同时有可能需要修改前一个节点的值，所以用 `RefCell` 包裹</span></span><br><span class="line"><span class="comment">// 利用枚举创建一个空值类型，避免结构体没有空值的问题</span></span><br><span class="line"><span class="meta">#[derive(Debug)]</span></span><br><span class="line"><span class="keyword">enum</span> <span class="title class_">Node</span> &#123;</span><br><span class="line">    <span class="comment">// value, prev, next</span></span><br><span class="line">    <span class="title function_ invoke__">Cons</span>(<span class="type">i32</span>, RefCell&lt;Weak&lt;Node&gt;&gt;, RefCell&lt;Rc&lt;Node&gt;&gt;),</span><br><span class="line">    Nil,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">Node</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">next</span>(&amp;<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> <span class="type">Option</span>&lt;&amp;RefCell&lt;Rc&lt;Node&gt;&gt;&gt; &#123;</span><br><span class="line">        <span class="keyword">match</span> <span class="keyword">self</span> &#123;</span><br><span class="line">            Node::<span class="title function_ invoke__">Cons</span>(_, _, next) =&gt; <span class="title function_ invoke__">Some</span>(next),</span><br><span class="line">            Node::Nil =&gt; <span class="literal">None</span>,</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">prev</span>(&amp;<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> <span class="type">Option</span>&lt;&amp;RefCell&lt;Weak&lt;Node&gt;&gt;&gt; &#123;</span><br><span class="line">        <span class="keyword">match</span> <span class="keyword">self</span> &#123;</span><br><span class="line">            Node::<span class="title function_ invoke__">Cons</span>(_, prev, _) =&gt; <span class="title function_ invoke__">Some</span>(prev),</span><br><span class="line">            Node::Nil =&gt; <span class="literal">None</span>,</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//  使用 Rc 指向下一个节点，使用 Weak 指向上一个节点，避免循环强引用陷阱</span></span><br><span class="line"><span class="comment">// - 创建 a，创建 b，利用 `Rc::clone(&amp;b)` 让 a 的 next 指向 b，即 a 引用了 b</span></span><br><span class="line"><span class="comment">// - 利用 `Rc::downgrade(&amp;a)` 让 b 的 prev 指向 a，即 b 弱引用了 a</span></span><br><span class="line"><span class="keyword">let</span> <span class="variable">a</span> = Rc::<span class="title function_ invoke__">new</span>(Node::<span class="title function_ invoke__">Cons</span>(</span><br><span class="line">    <span class="number">1</span>,</span><br><span class="line">    RefCell::<span class="title function_ invoke__">new</span>(Weak::<span class="title function_ invoke__">new</span>()),</span><br><span class="line">    RefCell::<span class="title function_ invoke__">new</span>(Rc::<span class="title function_ invoke__">new</span>(Node::Nil)),</span><br><span class="line">));</span><br><span class="line"><span class="keyword">let</span> <span class="variable">b</span> = Rc::<span class="title function_ invoke__">new</span>(Node::<span class="title function_ invoke__">Cons</span>(</span><br><span class="line">    <span class="number">2</span>,</span><br><span class="line">    RefCell::<span class="title function_ invoke__">new</span>(Weak::<span class="title function_ invoke__">new</span>()),</span><br><span class="line">    RefCell::<span class="title function_ invoke__">new</span>(Rc::<span class="title function_ invoke__">new</span>(Node::Nil)),</span><br><span class="line">));</span><br><span class="line"><span class="built_in">println!</span>(</span><br><span class="line">    <span class="string">&quot;Initial: a.strong_count = &#123;&#125;, a.weak_count = &#123;&#125;, b.strone_count = &#123;&#125;, b.weak_count = &#123;&#125;&quot;</span>,</span><br><span class="line">    Rc::<span class="title function_ invoke__">strong_count</span>(&amp;a),</span><br><span class="line">    Rc::<span class="title function_ invoke__">weak_count</span>(&amp;a),</span><br><span class="line">    Rc::<span class="title function_ invoke__">strong_count</span>(&amp;b),</span><br><span class="line">    Rc::<span class="title function_ invoke__">weak_count</span>(&amp;b)</span><br><span class="line">);</span><br><span class="line"><span class="keyword">if</span> <span class="keyword">let</span> <span class="variable">Some</span>(next) = a.<span class="title function_ invoke__">next</span>() &#123;</span><br><span class="line">    *next.<span class="title function_ invoke__">borrow_mut</span>() = Rc::<span class="title function_ invoke__">clone</span>(&amp;b); <span class="comment">// a 的 next 指向 b，即 a 引用了 b</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">println!</span>(</span><br><span class="line">    <span class="string">&quot;a.next: a.strong_count = &#123;&#125;, a.weak_count = &#123;&#125;, b.strone_count = &#123;&#125;, b.weak_count = &#123;&#125;&quot;</span>,</span><br><span class="line">    Rc::<span class="title function_ invoke__">strong_count</span>(&amp;a),</span><br><span class="line">    Rc::<span class="title function_ invoke__">weak_count</span>(&amp;a),</span><br><span class="line">    Rc::<span class="title function_ invoke__">strong_count</span>(&amp;b),</span><br><span class="line">    Rc::<span class="title function_ invoke__">weak_count</span>(&amp;b)</span><br><span class="line">);</span><br><span class="line"><span class="keyword">if</span> <span class="keyword">let</span> <span class="variable">Some</span>(prev) = b.<span class="title function_ invoke__">prev</span>() &#123;</span><br><span class="line">    *prev.<span class="title function_ invoke__">borrow_mut</span>() = Rc::<span class="title function_ invoke__">downgrade</span>(&amp;a); <span class="comment">// Weak 有值的引用只有通过 Rc::downgrade 生成，Weak::new 是无值的弱引用</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">println!</span>(</span><br><span class="line">    <span class="string">&quot;b.prev: a.strong_count = &#123;&#125;, a.weak_count = &#123;&#125;, b.strone_count = &#123;&#125;, b.weak_count = &#123;&#125;&quot;</span>,</span><br><span class="line">    Rc::<span class="title function_ invoke__">strong_count</span>(&amp;a),</span><br><span class="line">    Rc::<span class="title function_ invoke__">weak_count</span>(&amp;a),</span><br><span class="line">    Rc::<span class="title function_ invoke__">strong_count</span>(&amp;b),</span><br><span class="line">    Rc::<span class="title function_ invoke__">weak_count</span>(&amp;b)</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>, a); <span class="comment">// Weak 需要使用 upgrade 方法后才能访问真实数据，因此 Weak 会阻断循环强引用的生成</span></span><br></pre></td></tr></table></figure>
+
+<p>Weak 需要使用 <code>upgrade</code> 方法后才能访问真实数据，因此 Weak 会阻断循环强引用的生成。</p>
+<p>除了树类型数据结构，还有所属关系的数据结构容易引起循环引用，比如杯子与所属人的关系，一个人可以有多个杯子，一个杯子属于一个人。<br>在这种设计下，可以将人属性中的杯子属性设置为 Weak 或者把杯子中的所有人属性设置为 Weak。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#[derive(Debug)]</span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">Owner</span> &#123;</span><br><span class="line">    id: <span class="type">i32</span>,</span><br><span class="line">    <span class="comment">// RefCell&lt;Vec&lt;Weak&lt;Cup&gt;&gt;&gt; 比 Vec&lt;RefCell&lt;Weak&lt;Cup&gt;&gt;&gt; 更好的在于可以直接借用一整个vec，就可以修改vec内的元素。不需要单独借用再修改</span></span><br><span class="line">    cups: RefCell&lt;<span class="type">Vec</span>&lt;Weak&lt;Cup&gt;&gt;&gt;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[derive(Debug)]</span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">Cup</span> &#123;</span><br><span class="line">    id: <span class="type">i32</span>,</span><br><span class="line">    owner: RefCell&lt;Rc&lt;Owner&gt;&gt;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Rc::clone(&amp;owner)</span></span><br><span class="line"><span class="keyword">let</span> <span class="variable">owner</span> = Rc::<span class="title function_ invoke__">new</span>(Owner &#123;</span><br><span class="line">    id: <span class="number">0</span>,</span><br><span class="line">    cups: RefCell::<span class="title function_ invoke__">new</span>(<span class="built_in">vec!</span>[]),</span><br><span class="line">&#125;);</span><br><span class="line"><span class="keyword">let</span> <span class="variable">cup1</span> = Rc::<span class="title function_ invoke__">new</span>(Cup &#123;</span><br><span class="line">    id: <span class="number">1</span>,</span><br><span class="line">    owner: RefCell::<span class="title function_ invoke__">new</span>(Rc::<span class="title function_ invoke__">clone</span>(&amp;owner)),</span><br><span class="line">&#125;);</span><br><span class="line"><span class="keyword">let</span> <span class="variable">cup2</span> = Rc::<span class="title function_ invoke__">new</span>(Cup &#123;</span><br><span class="line">    id: <span class="number">2</span>,</span><br><span class="line">    owner: RefCell::<span class="title function_ invoke__">new</span>(Rc::<span class="title function_ invoke__">clone</span>(&amp;owner)),</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="built_in">println!</span>(</span><br><span class="line">    <span class="string">&quot;Initial: owner.strong_count = &#123;&#125;, owner.weak_count = &#123;&#125;, \ncup1.strong_count = &#123;&#125;, cup1.weak_count = &#123;&#125;, \ncup2.strong_count = &#123;&#125;, cup2.weak_count = &#123;&#125;&quot;</span>,</span><br><span class="line">    Rc::<span class="title function_ invoke__">strong_count</span>(&amp;owner),</span><br><span class="line">    Rc::<span class="title function_ invoke__">weak_count</span>(&amp;owner),</span><br><span class="line">    Rc::<span class="title function_ invoke__">strong_count</span>(&amp;cup1),</span><br><span class="line">    Rc::<span class="title function_ invoke__">weak_count</span>(&amp;cup1),</span><br><span class="line">    Rc::<span class="title function_ invoke__">strong_count</span>(&amp;cup2),</span><br><span class="line">    Rc::<span class="title function_ invoke__">weak_count</span>(&amp;cup2),</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">*owner.cups.<span class="title function_ invoke__">borrow_mut</span>() = <span class="built_in">vec!</span>[Rc::<span class="title function_ invoke__">downgrade</span>(&amp;cup1), Rc::<span class="title function_ invoke__">downgrade</span>(&amp;cup2)];</span><br><span class="line"></span><br><span class="line"><span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>, owner);</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> <span class="variable">cup</span> <span class="keyword">in</span> owner.cups.<span class="title function_ invoke__">borrow</span>().<span class="title function_ invoke__">iter</span>() &#123;</span><br><span class="line">    <span class="keyword">match</span> cup.<span class="title function_ invoke__">upgrade</span>() &#123;</span><br><span class="line">        <span class="title function_ invoke__">Some</span>(x) =&gt; &#123;</span><br><span class="line">            <span class="built_in">println!</span>(<span class="string">&quot;&#123;x:?&#125;&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="literal">None</span> =&gt; &#123;</span><br><span class="line">            <span class="built_in">println!</span>(<span class="string">&quot;当前引用失效&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="unsafe-解决循环引用"><a href="#unsafe-解决循环引用" class="headerlink" title="unsafe 解决循环引用"></a>unsafe 解决循环引用</h3><p>除了 Weak，还可以使用 unsafe 操作来解决循环引用问题。<br>虽然 unsafe 不安全，但是在各种库的代码中依然很常见用它来实现自引用结构，主要优点如下:</p>
+<ul>
+<li>性能高，毕竟直接用裸指针操作</li>
+<li>代码更简单更符合直觉: 对比下 <code>Option&lt;Rc&lt;RefCell&lt;Node&gt;&gt;&gt;</code></li>
+</ul>
+<p>阅读：<a target="_blank" rel="noopener" href="https://course.rs/advance/circle-self-ref/circle-reference.html#unsafe-%E8%A7%A3%E5%86%B3%E5%BE%AA%E7%8E%AF%E5%BC%95%E7%94%A8">https://course.rs/advance/circle-self-ref/circle-reference.html#unsafe-%E8%A7%A3%E5%86%B3%E5%BE%AA%E7%8E%AF%E5%BC%95%E7%94%A8</a></p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ul>
+<li>Rc 与 RefCell 组合的新类型非常好用，但是这种类型容易引起循环强引用，进而引发 OOM，这属于运行时的 panic。</li>
+<li><strong>循环引用的存在不一定会引起问题</strong>，只有使用到循环引用时才会触发 OOM。</li>
+<li>有效的 Weak 是通过 <code>Rc::downgrade</code> 生成的，因为访问 Weak 指向的数据需要通过 <code>Rc::upgrade</code>，所以在循环引用中，可以用 Weak 来阻断循环强引用的生成。</li>
+</ul>
+<h3 id="Code"><a href="#Code" class="headerlink" title="Code"></a>Code</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="meta">#[derive(Debug)]</span></span><br><span class="line">    <span class="keyword">enum</span> <span class="title class_">List</span> &#123;</span><br><span class="line">        <span class="title function_ invoke__">Cons</span>(<span class="type">i32</span>, RefCell&lt;Rc&lt;List&gt;&gt;),</span><br><span class="line">        Nil,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">node</span> = List::<span class="title function_ invoke__">Cons</span>(<span class="number">12</span>, RefCell::<span class="title function_ invoke__">new</span>(Rc::<span class="title function_ invoke__">new</span>(List::Nil)));</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:#?&#125;&quot;</span>, node);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">match</span> &amp;node &#123;</span><br><span class="line">        List::<span class="title function_ invoke__">Cons</span>(v, next) =&gt; &#123;</span><br><span class="line">            <span class="comment">// next 原有的指针信息是指向 List::Nil 的，现在指向 List::Cons(20, RefCell::new(Rc::new(List::Nil)));</span></span><br><span class="line">            <span class="comment">// 此时是存储的指针信息发生改变，而不是存储空间发生改变</span></span><br><span class="line">            *next.<span class="title function_ invoke__">borrow_mut</span>() = Rc::<span class="title function_ invoke__">new</span>(List::<span class="title function_ invoke__">Cons</span>(<span class="number">20</span>, RefCell::<span class="title function_ invoke__">new</span>(Rc::<span class="title function_ invoke__">new</span>(List::Nil))))</span><br><span class="line">        &#125;</span><br><span class="line">        List::Nil =&gt; &#123;&#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:#?&#125;&quot;</span>, node);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 定义取出节点的下一节点的方法，不拿走下一节点的所有权，即只拿引用，又因为下一节点是RefCell类型，所以可以只拿不可变引用就能得到可变引用</span></span><br><span class="line">    <span class="keyword">impl</span> <span class="title class_">List</span> &#123;</span><br><span class="line">        <span class="keyword">fn</span> <span class="title function_">tail</span>(&amp;<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> <span class="type">Option</span>&lt;&amp;RefCell&lt;Rc&lt;List&gt;&gt;&gt; &#123;</span><br><span class="line">            <span class="keyword">match</span> <span class="keyword">self</span> &#123;</span><br><span class="line">                List::<span class="title function_ invoke__">Cons</span>(_, next) =&gt; <span class="title function_ invoke__">Some</span>(next),</span><br><span class="line">                List::Nil =&gt; <span class="literal">None</span>,</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// - 创建 a，创建 b，利用 `Rc::clone(&amp;b)` 让 a 的 next 指向 b，即 a 引用了 b</span></span><br><span class="line">    <span class="comment">// - 利用 `Rc::clone(&amp;a)` 让 b 的 next 指向 a，即 b 引用了 a</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">a</span> = Rc::<span class="title function_ invoke__">new</span>(List::<span class="title function_ invoke__">Cons</span>(<span class="number">1</span>, RefCell::<span class="title function_ invoke__">new</span>(Rc::<span class="title function_ invoke__">new</span>(List::Nil))));</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">b</span> = Rc::<span class="title function_ invoke__">new</span>(List::<span class="title function_ invoke__">Cons</span>(<span class="number">2</span>, RefCell::<span class="title function_ invoke__">new</span>(Rc::<span class="title function_ invoke__">new</span>(List::Nil))));</span><br><span class="line">    <span class="built_in">println!</span>(</span><br><span class="line">        <span class="string">&quot;Initial: a.strone_count = &#123;&#125;, b.strone_count = &#123;&#125;&quot;</span>,</span><br><span class="line">        Rc::<span class="title function_ invoke__">strong_count</span>(&amp;a),</span><br><span class="line">        Rc::<span class="title function_ invoke__">strong_count</span>(&amp;b)</span><br><span class="line">    );</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">let</span> <span class="variable">Some</span>(next) = a.<span class="title function_ invoke__">tail</span>() &#123;</span><br><span class="line">        *next.<span class="title function_ invoke__">borrow_mut</span>() = Rc::<span class="title function_ invoke__">clone</span>(&amp;b); <span class="comment">// a 的 next 指向 b，即 a 引用了 b</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">println!</span>(</span><br><span class="line">        <span class="string">&quot;a.next: a.strone_count = &#123;&#125;, b.strone_count = &#123;&#125;&quot;</span>,</span><br><span class="line">        Rc::<span class="title function_ invoke__">strong_count</span>(&amp;a),</span><br><span class="line">        Rc::<span class="title function_ invoke__">strong_count</span>(&amp;b)</span><br><span class="line">    );</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">let</span> <span class="variable">Some</span>(next) = b.<span class="title function_ invoke__">tail</span>() &#123;</span><br><span class="line">        *next.<span class="title function_ invoke__">borrow_mut</span>() = Rc::<span class="title function_ invoke__">clone</span>(&amp;a); <span class="comment">// b 的 next 指向 a，即 b 引用了 a</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">println!</span>(</span><br><span class="line">        <span class="string">&quot;b.next: a.strone_count = &#123;&#125;, b.strone_count = &#123;&#125;&quot;</span>,</span><br><span class="line">        Rc::<span class="title function_ invoke__">strong_count</span>(&amp;a),</span><br><span class="line">        Rc::<span class="title function_ invoke__">strong_count</span>(&amp;b)</span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 成功创建了循环引用a-&gt; b -&gt; a -&gt; b ····</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 循环引用，造成8MB的主线程栈溢出</span></span><br><span class="line">    <span class="comment">// println!(&quot;&#123;:?&#125;&quot;, a.tail());</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 由于多出一种 Weak 类型，当前的List不满足使用，需要拓展字段。同时有可能需要修改前一个节点的值，所以用 `RefCell` 包裹</span></span><br><span class="line">    <span class="comment">// 利用枚举创建一个空值类型，避免结构体没有空值的问题</span></span><br><span class="line">    <span class="meta">#[derive(Debug)]</span></span><br><span class="line">    <span class="keyword">enum</span> <span class="title class_">Node</span> &#123;</span><br><span class="line">        <span class="comment">// value, prev, next</span></span><br><span class="line">        <span class="title function_ invoke__">Cons</span>(<span class="type">i32</span>, RefCell&lt;Weak&lt;Node&gt;&gt;, RefCell&lt;Rc&lt;Node&gt;&gt;),</span><br><span class="line">        Nil,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">impl</span> <span class="title class_">Node</span> &#123;</span><br><span class="line">        <span class="keyword">fn</span> <span class="title function_">next</span>(&amp;<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> <span class="type">Option</span>&lt;&amp;RefCell&lt;Rc&lt;Node&gt;&gt;&gt; &#123;</span><br><span class="line">            <span class="keyword">match</span> <span class="keyword">self</span> &#123;</span><br><span class="line">                Node::<span class="title function_ invoke__">Cons</span>(_, _, next) =&gt; <span class="title function_ invoke__">Some</span>(next),</span><br><span class="line">                Node::Nil =&gt; <span class="literal">None</span>,</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">fn</span> <span class="title function_">prev</span>(&amp;<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> <span class="type">Option</span>&lt;&amp;RefCell&lt;Weak&lt;Node&gt;&gt;&gt; &#123;</span><br><span class="line">            <span class="keyword">match</span> <span class="keyword">self</span> &#123;</span><br><span class="line">                Node::<span class="title function_ invoke__">Cons</span>(_, prev, _) =&gt; <span class="title function_ invoke__">Some</span>(prev),</span><br><span class="line">                Node::Nil =&gt; <span class="literal">None</span>,</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//  使用 Rc 指向下一个节点，使用 Weak 指向上一个节点，避免循环强引用陷阱</span></span><br><span class="line">    <span class="comment">// - 创建 a，创建 b，利用 `Rc::clone(&amp;b)` 让 a 的 next 指向 b，即 a 引用了 b</span></span><br><span class="line">    <span class="comment">// - 利用 `Rc::downgrade(&amp;a)` 让 b 的 prev 指向 a，即 b 弱引用了 a</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">a</span> = Rc::<span class="title function_ invoke__">new</span>(Node::<span class="title function_ invoke__">Cons</span>(</span><br><span class="line">        <span class="number">1</span>,</span><br><span class="line">        RefCell::<span class="title function_ invoke__">new</span>(Weak::<span class="title function_ invoke__">new</span>()),</span><br><span class="line">        RefCell::<span class="title function_ invoke__">new</span>(Rc::<span class="title function_ invoke__">new</span>(Node::Nil)),</span><br><span class="line">    ));</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">b</span> = Rc::<span class="title function_ invoke__">new</span>(Node::<span class="title function_ invoke__">Cons</span>(</span><br><span class="line">        <span class="number">2</span>,</span><br><span class="line">        RefCell::<span class="title function_ invoke__">new</span>(Weak::<span class="title function_ invoke__">new</span>()),</span><br><span class="line">        RefCell::<span class="title function_ invoke__">new</span>(Rc::<span class="title function_ invoke__">new</span>(Node::Nil)),</span><br><span class="line">    ));</span><br><span class="line">    <span class="built_in">println!</span>(</span><br><span class="line">        <span class="string">&quot;Initial: a.strong_count = &#123;&#125;, a.weak_count = &#123;&#125;, b.strone_count = &#123;&#125;, b.weak_count = &#123;&#125;&quot;</span>,</span><br><span class="line">        Rc::<span class="title function_ invoke__">strong_count</span>(&amp;a),</span><br><span class="line">        Rc::<span class="title function_ invoke__">weak_count</span>(&amp;a),</span><br><span class="line">        Rc::<span class="title function_ invoke__">strong_count</span>(&amp;b),</span><br><span class="line">        Rc::<span class="title function_ invoke__">weak_count</span>(&amp;b)</span><br><span class="line">    );</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">let</span> <span class="variable">Some</span>(next) = a.<span class="title function_ invoke__">next</span>() &#123;</span><br><span class="line">        *next.<span class="title function_ invoke__">borrow_mut</span>() = Rc::<span class="title function_ invoke__">clone</span>(&amp;b); <span class="comment">// a 的 next 指向 b，即 a 引用了 b</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">println!</span>(</span><br><span class="line">        <span class="string">&quot;a.next: a.strong_count = &#123;&#125;, a.weak_count = &#123;&#125;, b.strone_count = &#123;&#125;, b.weak_count = &#123;&#125;&quot;</span>,</span><br><span class="line">        Rc::<span class="title function_ invoke__">strong_count</span>(&amp;a),</span><br><span class="line">        Rc::<span class="title function_ invoke__">weak_count</span>(&amp;a),</span><br><span class="line">        Rc::<span class="title function_ invoke__">strong_count</span>(&amp;b),</span><br><span class="line">        Rc::<span class="title function_ invoke__">weak_count</span>(&amp;b)</span><br><span class="line">    );</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">let</span> <span class="variable">Some</span>(prev) = b.<span class="title function_ invoke__">prev</span>() &#123;</span><br><span class="line">        *prev.<span class="title function_ invoke__">borrow_mut</span>() = Rc::<span class="title function_ invoke__">downgrade</span>(&amp;a); <span class="comment">// Weak 有值的引用只有通过 Rc::downgrade 生成，Weak::new 是无值的弱引用</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">println!</span>(</span><br><span class="line">        <span class="string">&quot;b.prev: a.strong_count = &#123;&#125;, a.weak_count = &#123;&#125;, b.strone_count = &#123;&#125;, b.weak_count = &#123;&#125;&quot;</span>,</span><br><span class="line">        Rc::<span class="title function_ invoke__">strong_count</span>(&amp;a),</span><br><span class="line">        Rc::<span class="title function_ invoke__">weak_count</span>(&amp;a),</span><br><span class="line">        Rc::<span class="title function_ invoke__">strong_count</span>(&amp;b),</span><br><span class="line">        Rc::<span class="title function_ invoke__">weak_count</span>(&amp;b)</span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>, a); <span class="comment">// Weak 需要使用 upgrade 方法后才能访问真实数据，因此 Weak 会阻断循环强引用的生成</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">#[derive(Debug)]</span></span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">Owner</span> &#123;</span><br><span class="line">        id: <span class="type">i32</span>,</span><br><span class="line">        <span class="comment">// RefCell&lt;Vec&lt;Weak&lt;Cup&gt;&gt;&gt; 比 Vec&lt;RefCell&lt;Weak&lt;Cup&gt;&gt;&gt; 更好的在于可以直接借用一整个vec，就可以修改vec内的元素。不需要单独借用再修改</span></span><br><span class="line">        cups: RefCell&lt;<span class="type">Vec</span>&lt;Weak&lt;Cup&gt;&gt;&gt;,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[derive(Debug)]</span></span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">Cup</span> &#123;</span><br><span class="line">        id: <span class="type">i32</span>,</span><br><span class="line">        owner: RefCell&lt;Rc&lt;Owner&gt;&gt;,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Rc::clone(&amp;owner)</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">owner</span> = Rc::<span class="title function_ invoke__">new</span>(Owner &#123;</span><br><span class="line">        id: <span class="number">0</span>,</span><br><span class="line">        cups: RefCell::<span class="title function_ invoke__">new</span>(<span class="built_in">vec!</span>[]),</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">cup1</span> = Rc::<span class="title function_ invoke__">new</span>(Cup &#123;</span><br><span class="line">        id: <span class="number">1</span>,</span><br><span class="line">        owner: RefCell::<span class="title function_ invoke__">new</span>(Rc::<span class="title function_ invoke__">clone</span>(&amp;owner)),</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">cup2</span> = Rc::<span class="title function_ invoke__">new</span>(Cup &#123;</span><br><span class="line">        id: <span class="number">2</span>,</span><br><span class="line">        owner: RefCell::<span class="title function_ invoke__">new</span>(Rc::<span class="title function_ invoke__">clone</span>(&amp;owner)),</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">println!</span>(</span><br><span class="line">        <span class="string">&quot;Initial: owner.strong_count = &#123;&#125;, owner.weak_count = &#123;&#125;, \ncup1.strong_count = &#123;&#125;, cup1.weak_count = &#123;&#125;, \ncup2.strong_count = &#123;&#125;, cup2.weak_count = &#123;&#125;&quot;</span>,</span><br><span class="line">        Rc::<span class="title function_ invoke__">strong_count</span>(&amp;owner),</span><br><span class="line">        Rc::<span class="title function_ invoke__">weak_count</span>(&amp;owner),</span><br><span class="line">        Rc::<span class="title function_ invoke__">strong_count</span>(&amp;cup1),</span><br><span class="line">        Rc::<span class="title function_ invoke__">weak_count</span>(&amp;cup1),</span><br><span class="line">        Rc::<span class="title function_ invoke__">strong_count</span>(&amp;cup2),</span><br><span class="line">        Rc::<span class="title function_ invoke__">weak_count</span>(&amp;cup2),</span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">    *owner.cups.<span class="title function_ invoke__">borrow_mut</span>() = <span class="built_in">vec!</span>[Rc::<span class="title function_ invoke__">downgrade</span>(&amp;cup1), Rc::<span class="title function_ invoke__">downgrade</span>(&amp;cup2)];</span><br><span class="line"></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>, owner);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> <span class="variable">cup</span> <span class="keyword">in</span> owner.cups.<span class="title function_ invoke__">borrow</span>().<span class="title function_ invoke__">iter</span>() &#123;</span><br><span class="line">        <span class="keyword">match</span> cup.<span class="title function_ invoke__">upgrade</span>() &#123;</span><br><span class="line">            <span class="title function_ invoke__">Some</span>(x) =&gt; &#123;</span><br><span class="line">                <span class="built_in">println!</span>(<span class="string">&quot;&#123;x:?&#125;&quot;</span>)</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="literal">None</span> =&gt; &#123;</span><br><span class="line">                <span class="built_in">println!</span>(<span class="string">&quot;当前引用失效&quot;</span>)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Az</span>
+                    </p>
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/rust/"># rust</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2024/06/rust-%E7%BB%93%E6%9E%84%E4%BD%93%E7%9A%84%E8%87%AA%E5%BC%95%E7%94%A8/">rust: 结构体的自引用</a>
+            
+            
+            <a class="next" rel="next" href="/2024/05/rust-%E5%86%85%E9%83%A8%E5%8F%AF%E5%8F%98%E6%80%A7%E7%9A%84-Cell-%E4%B8%8E-RefCell/">rust: 内部可变性的 Cell 与 RefCell</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+  <div class="copyright">
+    <span>© Az | Powered by Hexo & Chic</span>
+  </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

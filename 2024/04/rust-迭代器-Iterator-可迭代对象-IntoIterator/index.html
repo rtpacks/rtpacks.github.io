@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Az">
+
+
+    <meta name="subtitle" content="Welcome!">
+
+
+
+    <meta name="keywords" content="blog luckydog Withx">
+
+
+<title>rust: 迭代器(Iterator)&amp;可迭代对象(IntoIterator) | Az&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+<link rel="stylesheet" href="/fonts/custom/iconfont.css">
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">I&#39;m Az</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">I&#39;m Az</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">rust: 迭代器(Iterator)&amp;可迭代对象(IntoIterator)</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Az</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">2024.04.13&nbsp;&nbsp;21:24:15</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/rust/">rust</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="迭代器"><a href="#迭代器" class="headerlink" title="迭代器"></a>迭代器</h2><p>从用途来看，迭代器跟 for 循环颇为相似，都是去遍历一个集合，但是实际上它们存在不小的差别，其中最主要的差别就是：是否通过索引来访问集合。</p>
+<p>在 JavaScript 中，<code>for</code> 和 <code>for..of</code> 就是 for 循环和迭代器的代表：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> arr = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">// for 循环</span></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; arr.<span class="property">length</span>; i++) &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">`index = <span class="subst">$&#123;i&#125;</span>, value = <span class="subst">$&#123;arr[i]&#125;</span>`</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 迭代器</span></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">const</span> value <span class="keyword">of</span> arr) &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">`value = <span class="subst">$&#123;value&#125;</span>`</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 迭代器，调用特殊的方法，它的key是Symbol.iterator，可以理解成 arr.into_iter() 形式，它将返回一个迭代器</span></span><br><span class="line">arr[<span class="title class_">Symbol</span>.<span class="property">iterator</span>]();</span><br></pre></td></tr></table></figure>
+
+<p>JavaScript 生成迭代器和可迭代对象非常容易：</p>
+<ul>
+<li>迭代器是指实现迭代器协议的对象(iterator protocol)，其具有特殊属性 <code>next</code> 函数的对象，next 函数返回一个 <code>&#123;value: any, done: boolean&#125;</code> 形式的对象。</li>
+<li>可迭代对象是指实现可迭代协议(iterable protocol)的对象，它具有特殊的属性 <code>Symbol.iterator</code> 函数，这个函数返回迭代器，一个对象能否使用迭代器就看是否实现 <code>Symbol.iterator</code>。<br>迭代协议：<a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Iteration_protocols">https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Iteration_protocols</a></li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> index = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">const</span> iter = &#123;</span><br><span class="line">  <span class="title function_">next</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (index &lt;= <span class="number">1</span>) <span class="keyword">return</span> &#123; <span class="attr">value</span>: index, <span class="attr">done</span>: <span class="literal">false</span> &#125;;</span><br><span class="line">    <span class="keyword">return</span> &#123; <span class="attr">value</span>: <span class="literal">null</span>, <span class="attr">done</span>: <span class="literal">true</span> &#125;;</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">iter.<span class="title function_">next</span>(); <span class="comment">// &#123;value: 0, done: false&#125;</span></span><br><span class="line">iter.<span class="title function_">next</span>(); <span class="comment">// &#123;value: 1, done: false&#125;</span></span><br><span class="line">iter.<span class="title function_">next</span>(); <span class="comment">// &#123;value: null, done: true&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>迭代器 next 函数返回值是 {value: any, done: boolean} 形式，所以只需要实现一个函数，循环调用一个对象（迭代器） next 函数取出值，当 next 函数给出终止信号 done &#x3D; true 时，停止函数流程，就能伪实现可迭代。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">into_iter</span>(<span class="params">arr: number[]</span>) &#123;</span><br><span class="line">  <span class="keyword">let</span> index = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">return</span> &#123;</span><br><span class="line">    <span class="attr">next</span>: <span class="function">() =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (index &lt; arr.<span class="property">length</span>) <span class="keyword">return</span> &#123; <span class="attr">value</span>: arr[index], <span class="attr">done</span>: <span class="literal">false</span> &#125;;</span><br><span class="line">      <span class="keyword">return</span> &#123; <span class="attr">value</span>: <span class="literal">null</span>, <span class="attr">done</span>: <span class="literal">true</span> &#125;;</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> arr = [<span class="number">1</span>, <span class="number">2</span>];</span><br><span class="line"><span class="keyword">const</span> iterator = <span class="title function_">into_iter</span>(arr);</span><br><span class="line">iterator.<span class="title function_">next</span>(); <span class="comment">// &#123;value: 0, done: false&#125;;</span></span><br><span class="line">iterator.<span class="title function_">next</span>(); <span class="comment">// &#123;value: 1, done: false&#125;;</span></span><br><span class="line">iterator.<span class="title function_">next</span>(); <span class="comment">// &#123;value: null, done: true&#125;;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>流程再分析</strong></p>
+<p>持续迭代终止时需要一个终止信号，它首先需要一个询问的对象，再者需要固定方式来获取终止信息的流程如循环调用 next 函数，现在询问对象是迭代器，循环调用 next 函数的流程就是迭代，也就是迭代迭代器以获取终止信号。</p>
+<p>至此，补上迭代迭代器的流程，整体的可迭代就完成了。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">forOf</span>(<span class="params">arr: number[]</span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> iterator = <span class="title function_">into_iter</span>(arr);</span><br><span class="line">  <span class="keyword">while</span> (iterator.<span class="title function_">next</span>().<span class="property">done</span> === <span class="literal">true</span>) <span class="keyword">break</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在上面的模拟流程中，可以将迭代器视为单元算子，将可迭代过程视为整体流程，启动迭代后当单元算子给出终止信号时停止流程。</p>
+<h3 id="For-循环与迭代器"><a href="#For-循环与迭代器" class="headerlink" title="For 循环与迭代器"></a>For 循环与迭代器</h3><p>rust 的迭代器协议和可迭代协议也是不同的概念，可以先记住名词。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">arr</span> = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line"><span class="keyword">for</span> <span class="variable">v</span> <span class="keyword">in</span> arr &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>,v);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Rust 的 <code>for..in</code> 没有使用索引，它把 arr 数组当成一个迭代器，直接去遍历其中的元素，从哪里开始，从哪里结束，都无需操心。因此严格来说，Rust 中的 <strong>for 循环是编译器提供的语法糖</strong>，最终还是对迭代器中的元素进行遍历。</p>
+<p>同时值得关注数组不是迭代器，但数组实现了 IntoIterator （可迭代）特征，Rust 通过 for 语法糖，自动把实现了该特征的数组类型转换为迭代器，以方便 <code>for..in</code> 进行迭代。<br>类似的快捷操作有 <code>for i in 1..10</code> 直接对数值序列进行迭代。</p>
+<p>IntoIterator 特征拥有一个 <code>into_iter</code> 方法，因此我们还可以显式的把数组转换成迭代器 <code>for v in arr.into_iter() &#123;&#125;</code>，迭代器是函数语言的核心特性，它赋予了 Rust 远超于循环的强大表达能力。</p>
+<h3 id="惰性初始化"><a href="#惰性初始化" class="headerlink" title="惰性初始化"></a>惰性初始化</h3><p>在 Rust 中，迭代器是惰性的，意味着如果你不使用它，那么它将不会发生任何事,</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">v1</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line"><span class="keyword">let</span> <span class="variable">v1_iter</span> = v1.<span class="title function_ invoke__">iter</span>(); <span class="comment">// 迭代器惰性初始化，不会立即加载，而是使用到时才会开始加载</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> <span class="variable">val</span> <span class="keyword">in</span> v1_iter &#123; <span class="comment">// 迭代器开始加载</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, val);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在迭代过程之前，只是简单的创建了一个迭代器 v1_iter，此时不会发生任何迭代行为，只有在 for 循环开始后，迭代器才会开始迭代其中的元素。<br>这种惰性初始化的方式确保了创建迭代器不会有任何额外的性能损耗，其中的元素也不会被消耗，只有使用到该迭代器的时候，一切才开始。</p>
+<h3 id="next-函数"><a href="#next-函数" class="headerlink" title="next 函数"></a>next 函数</h3><p>rust 中 for 循环通过调用迭代器的 <code>next</code> 函数取出迭代器内的元素，迭代器之所以成为迭代器，就是因为实现了 <code>Iterator</code> 特征，要实现该特征，最主要的就是实现其中的 next 方法，该方法控制如何从集合中取值，最终返回值的类型是关联类型 Item。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">trait</span> <span class="title class_">Iterator</span> &#123;</span><br><span class="line">    <span class="keyword">type</span> <span class="title class_">Item</span>;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">next</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>) <span class="punctuation">-&gt;</span> <span class="type">Option</span>&lt;<span class="keyword">Self</span>::Item&gt;;</span><br><span class="line">    <span class="comment">// 省略其余有默认实现的方法</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>与 JavaScript 手动创建迭代器对象非常相似，两者都有 <code>next</code> 函数， for 循环通过不停调用迭代器上的 next 方法，来获取迭代器中的元素。</p>
+<p>当然也可以手动执行 <code>next</code> 函数来获取迭代器中的元素，因为涉及到 rust 的所有权模型，所以 rust 的 next 调用需要牢记几点：</p>
+<ul>
+<li><code>next(&amp;mut self)</code> 是可变引用，调用者必须要可变（mut）。即手动迭代必须将迭代器声明为 mut，因为调用 next 会改变迭代器其中的状态数据（当前遍历的位置等），而 for 循环迭代自动标注 mut 可变。</li>
+<li>rust 中有 Option 没有 undefined&#x2F;null，next 的返回是一个 Option 类型，即有值为 Some，无值时为 None</li>
+<li>next 方法对迭代器的遍历是<strong>消耗性</strong>的，每次消耗它一个元素，最终迭代器中将没有任何元素，只能返回 None。</li>
+<li>遍历是按照迭代器中元素的排列顺序依次进行的</li>
+</ul>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">v</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">iter</span> = v.<span class="title function_ invoke__">into_iter</span>();</span><br><span class="line">iter.<span class="title function_ invoke__">next</span>(); <span class="comment">// Some(1)</span></span><br><span class="line">iter.<span class="title function_ invoke__">next</span>(); <span class="comment">// Some(2)</span></span><br><span class="line">iter.<span class="title function_ invoke__">next</span>(); <span class="comment">// None</span></span><br></pre></td></tr></table></figure>
+
+<p>JavaScript 代码实例</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> arr = [<span class="number">1</span>, <span class="number">2</span>];</span><br><span class="line"><span class="keyword">let</span> iter = arr.<span class="title function_">values</span>();</span><br><span class="line">iter.<span class="title function_">next</span>(); <span class="comment">// &#123;value: 1, done: false&#125;</span></span><br><span class="line">iter.<span class="title function_">next</span>(); <span class="comment">// &#123;value: 1, done: false&#125;</span></span><br><span class="line">iter.<span class="title function_">next</span>(); <span class="comment">// &#123;value: undefined, done: true&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>对比 JavaScript 代码可以猜测到，rust 迭代也是通过循环调用迭代器的 next 函数来实现的。</p>
+<h4 id="实现-for-伪迭代"><a href="#实现-for-伪迭代" class="headerlink" title="实现 for 伪迭代"></a>实现 for 伪迭代</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">v</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">iter</span> = v.<span class="title function_ invoke__">into_iter</span>();</span><br><span class="line"><span class="keyword">loop</span> &#123;</span><br><span class="line">     <span class="keyword">match</span> iter.<span class="title function_ invoke__">next</span>() &#123;</span><br><span class="line">         <span class="title function_ invoke__">Some</span>(x) =&gt; <span class="built_in">println!</span>(<span class="string">&quot;&#123;x&#125;&quot;</span>);</span><br><span class="line">         <span class="literal">None</span> =&gt; <span class="keyword">break</span>;</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>和 JavaScript 将可迭代对象转换成迭代器一样，使生成的对象拥有 next 函数，然后循环调用，最终完成迭代。将其改造成 <code>forFn</code>：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">forFn</span>&lt;T&gt;(iter: T)</span><br><span class="line"><span class="keyword">where</span></span><br><span class="line">     T: <span class="built_in">Iterator</span>,</span><br><span class="line">     T::Item: std::fmt::<span class="built_in">Debug</span>,</span><br><span class="line">&#123;</span><br><span class="line">     <span class="keyword">loop</span> &#123;</span><br><span class="line">         <span class="keyword">match</span> iter.<span class="title function_ invoke__">next</span>() &#123;</span><br><span class="line">             <span class="title function_ invoke__">Some</span>(x) =&gt; <span class="built_in">println!</span>(<span class="string">&quot;&#123;#?&#125;&quot;</span>, x);</span><br><span class="line">             <span class="literal">None</span> =&gt; <span class="keyword">break</span>;</span><br><span class="line">         &#125;</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="variable">v</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line"><span class="title function_ invoke__">forFn</span>(v.<span class="title function_ invoke__">into_iter</span>()); <span class="comment">// 调用forFn进行迭代</span></span><br></pre></td></tr></table></figure>
+
+<p>rust 的所有权决定了 into_iter 函数不好实现，因此可以先参考 JavaScript 实现方式来理解整个流程。</p>
+<p>此外，可迭代对象除了通过 <code>into_iter</code> 函数转换成迭代器，还可以通过完全限定的方式即 <code>IntoIterator::into_iter(values)</code> 生成迭代器，这种调用方式跟 <code>values.into_iter()</code> 是等价的：</p>
+<blockquote>
+<p>完全限定：<a target="_blank" rel="noopener" href="https://course.rs/basic/trait/advance-trait.html#%E5%AE%8C%E5%85%A8%E9%99%90%E5%AE%9A%E8%AF%AD%E6%B3%95">https://course.rs/basic/trait/advance-trait.html#%E5%AE%8C%E5%85%A8%E9%99%90%E5%AE%9A%E8%AF%AD%E6%B3%95</a></p>
+</blockquote>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">values</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">result</span> = <span class="keyword">match</span> <span class="built_in">IntoIterator</span>::<span class="title function_ invoke__">into_iter</span>(values) &#123;</span><br><span class="line">        <span class="keyword">mut</span> iter =&gt; <span class="keyword">loop</span> &#123;</span><br><span class="line">            <span class="keyword">match</span> iter.<span class="title function_ invoke__">next</span>() &#123;</span><br><span class="line">                <span class="title function_ invoke__">Some</span>(x) =&gt; &#123; <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, x); &#125;,</span><br><span class="line">                <span class="literal">None</span> =&gt; <span class="keyword">break</span>,</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;;</span><br><span class="line">    result</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="IntoIterator-特征"><a href="#IntoIterator-特征" class="headerlink" title="IntoIterator 特征"></a>IntoIterator 特征</h3><p>由于 Vec 动态数组实现了 IntoIterator 特征，因此可以通过 into_iter 将其转换为迭代器，那如果本身就是一个迭代器，该怎么办？实际上，迭代器自身也实现了 IntoIterator 特征：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">impl</span>&lt;I: <span class="built_in">Iterator</span>&gt; <span class="built_in">IntoIterator</span> <span class="keyword">for</span> <span class="title class_">I</span> &#123;</span><br><span class="line">    <span class="keyword">type</span> <span class="title class_">Item</span> = I::Item;</span><br><span class="line">    <span class="keyword">type</span> <span class="title class_">IntoIter</span> = I;</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[inline]</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">into_iter</span>(<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> I &#123;</span><br><span class="line">        <span class="keyword">self</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>也就是说，迭代器可以使用 <code>into_iter</code> 方法，能形成以下代码，<strong>迭代器能够调用 into_iter 方法，返回的还是迭代器</strong>：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">v</span> = <span class="built_in">vec!</span>[<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>];</span><br><span class="line"><span class="keyword">for</span> <span class="variable">v</span> <span class="keyword">in</span> values.<span class="title function_ invoke__">into_iter</span>().<span class="title function_ invoke__">into_iter</span>().<span class="title function_ invoke__">into_iter</span>() &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>,v)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="into-iter-iter-iter-mut"><a href="#into-iter-iter-iter-mut" class="headerlink" title="into_iter, iter, iter_mut"></a>into_iter, iter, iter_mut</h4><p>在之前的代码中，只使用了 into_iter 的方式将数组转化为迭代器，除此之外，还有 iter 和 iter_mut 两种变体：</p>
+<ul>
+<li>into_iter 会夺走所有权，next 函数返回的是 Option<T>，即 Some<T>和 None</li>
+<li>iter 是不可变借用，next 函数返回的是 Option&lt;&amp;T&gt;，即 Some&lt;&amp;T&gt;和 None</li>
+<li>iter_mut 是可变借用，next 函数返回的是 Option&lt;&amp;mut T&gt;，即 Some&lt;&amp;mut T&gt;和 None</li>
+</ul>
+<p>rust 方法的命名一般都遵守这个规则：<strong>into_ 之类的都是拿走所有权，_mut 之类的都是可变借用，剩下的就是不可变借用</strong></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">v</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">iter</span> = v.<span class="title function_ invoke__">into_iter</span>(); <span class="comment">// 移除v所有权</span></span><br><span class="line"><span class="comment">// println!(&quot;&#123;:#?&#125;&quot;, v); v被移除所有权，无法再次使用</span></span><br><span class="line">iter.<span class="title function_ invoke__">next</span>(); <span class="comment">// Option&lt;i32&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">v</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">iter</span> = v.<span class="title function_ invoke__">iter_mut</span>(); <span class="comment">// 对 values 中的元素进行可变借用，注意可变引用需要来自可变变量，因此要求v mut可变</span></span><br><span class="line">iter.<span class="title function_ invoke__">next</span>(); <span class="comment">// Option&lt;&amp;mut i32&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="variable">values</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">iter</span> = values.<span class="title function_ invoke__">iter</span>(); <span class="comment">// 对 values 进行不可变借用（只读）</span></span><br><span class="line">iter.<span class="title function_ invoke__">next</span>(); <span class="comment">// Option&lt;&amp;i32&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="Iterator-和-IntoIterator-的区别"><a href="#Iterator-和-IntoIterator-的区别" class="headerlink" title="Iterator 和 IntoIterator 的区别"></a>Iterator 和 IntoIterator 的区别</h4><p>Iterator 和 IntoIterator 两者与 JavaScript 迭代器中的迭代器协议和可迭代协议是类似的。</p>
+<p>Iterator 是迭代器特征，只有实现了它才能称为迭代器，才能调用 next 方法。而 IntoIterator 可以称为可迭代对象特征，强调的是某一个类型如果实现了该特征，它可以通过 into_iter，iter_mut，iter 等方法变成一个迭代器。</p>
+<h3 id="Code"><a href="#Code" class="headerlink" title="Code"></a>Code</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">v</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">iter</span> = v.<span class="title function_ invoke__">into_iter</span>();</span><br><span class="line">    iter.<span class="title function_ invoke__">next</span>();</span><br><span class="line">    iter.<span class="title function_ invoke__">next</span>();</span><br><span class="line">    iter.<span class="title function_ invoke__">next</span>();</span><br><span class="line">    iter.<span class="title function_ invoke__">next</span>();</span><br><span class="line"></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, iter.<span class="title function_ invoke__">next</span>().<span class="title function_ invoke__">unwrap_or_default</span>());</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, iter.<span class="title function_ invoke__">next</span>().<span class="title function_ invoke__">unwrap_or_default</span>());</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, iter.<span class="title function_ invoke__">next</span>().<span class="title function_ invoke__">unwrap_or_default</span>());</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, iter.<span class="title function_ invoke__">next</span>().<span class="title function_ invoke__">unwrap_or_default</span>());</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 实现for循环迭代功能</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">v</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">iter</span> = v.<span class="title function_ invoke__">into_iter</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">forFn</span>&lt;T&gt;(<span class="keyword">mut</span> iter: T)</span><br><span class="line">    <span class="keyword">where</span></span><br><span class="line">        T: <span class="built_in">Iterator</span>,</span><br><span class="line">        T::Item: std::fmt::<span class="built_in">Debug</span>,</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">loop</span> &#123;</span><br><span class="line">            <span class="keyword">match</span> iter.<span class="title function_ invoke__">next</span>() &#123;</span><br><span class="line">                <span class="title function_ invoke__">Some</span>(x) =&gt; &#123;</span><br><span class="line">                    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>, x);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="literal">None</span> =&gt; <span class="keyword">break</span>,</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="title function_ invoke__">forFn</span>(iter);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">v</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line">    <span class="title function_ invoke__">forFn</span>(v.<span class="title function_ invoke__">into_iter</span>());</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">v</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line">    <span class="comment">// println!(&quot;&#123;:#?&#125;&quot;, v);</span></span><br><span class="line">    v.<span class="title function_ invoke__">into_iter</span>(); <span class="comment">// 移除v所有权</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// into_mut 移动所有权</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">v</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">iter</span> = v.<span class="title function_ invoke__">into_iter</span>();</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">x</span> = iter.<span class="title function_ invoke__">next</span>(); <span class="comment">// 需要移动所有权，即需要iter可变</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// iter_mut 可变借用</span></span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">v</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">iter</span> = v.<span class="title function_ invoke__">iter_mut</span>();</span><br><span class="line">    <span class="comment">// 取出第一个元素，并修改为0</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">let</span> <span class="variable">Some</span>(v) = iter.<span class="title function_ invoke__">next</span>() &#123;</span><br><span class="line">        *v = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:#?&#125;&quot;</span>, v);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// iter 不可变借用</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">v</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">iter</span> = v.<span class="title function_ invoke__">iter</span>();</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">x</span> = iter.<span class="title function_ invoke__">next</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Az</span>
+                    </p>
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/%E8%BF%AD%E4%BB%A3%E5%99%A8/"># 迭代器</a>
+                    
+                        <a href="/tags/%E5%8F%AF%E8%BF%AD%E4%BB%A3%E5%AF%B9%E8%B1%A1/"># 可迭代对象</a>
+                    
+                        <a href="/tags/Iterator/"># Iterator</a>
+                    
+                        <a href="/tags/IntoIterator/"># IntoIterator</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2024/04/rust-%E8%BF%AD%E4%BB%A3%E5%99%A8%E7%9A%84%E4%B8%A4%E7%A7%8D%E9%80%82%E9%85%8D%E5%99%A8-%E6%B6%88%E8%B4%B9%E8%80%85%E9%80%82%E9%85%8D%E5%99%A8%E5%92%8C%E8%BF%AD%E4%BB%A3%E5%99%A8%E9%80%82%E9%85%8D%E5%99%A8/">rust: 迭代器的两种适配器-消费者适配器和迭代器适配器</a>
+            
+            
+            <a class="next" rel="next" href="/2024/04/vue-%E8%AE%B0%E5%BD%95%E7%BA%AF%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%E7%BB%84%E4%BB%B6%EF%BC%8Cjsx%E4%B8%8D%E7%94%9F%E6%95%88%E7%9A%84%E8%BF%87%E7%A8%8B/">vue: 记录纯函数调用组件，jsx不生效的过程</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+  <div class="copyright">
+    <span>© Az | Powered by Hexo & Chic</span>
+  </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
