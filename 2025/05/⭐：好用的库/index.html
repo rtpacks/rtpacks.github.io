@@ -17,7 +17,7 @@
     <meta name="keywords" content="blog luckydog Withx">
 
 
-<title>MCP: 关于 mcp.tool 装饰器下函数参数默认值问题的记录 | Az&#39;s Blog</title>
+<title>⭐：好用的库 | Az&#39;s Blog</title>
 
 
 
@@ -134,11 +134,76 @@
                 <div class="container">
     
     
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
 
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title">MCP: 关于 mcp.tool 装饰器下函数参数默认值问题的记录</h1>
+            <h1 class="post-title">⭐：好用的库</h1>
             
                 <div class="post-meta">
                     
@@ -147,7 +212,7 @@
 
                     
                         <span class="post-time">
-                        Date: <a href="#">2025.04.29&nbsp;&nbsp;11:32:21</a>
+                        Date: <a href="#">2025.05.28&nbsp;&nbsp;16:21:36</a>
                         </span>
                     
                     
@@ -156,11 +221,30 @@
         </header>
 
         <div class="post-content">
-            <p>今天使用 mcp.tool 装饰器进行开发时，遇到了一个比较棘手的问题。主要涉及到被 @mcp.tool() 装饰的 login 函数及其参数默认值设定的相关情况。（如下所示）：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@mcp.tool()</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">login</span>(<span class="params">username: <span class="built_in">str</span> = <span class="literal">None</span>, password: <span class="built_in">str</span> = <span class="string">&quot;&quot;</span></span>):</span><br><span class="line"><span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@mcp.tool()</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">login</span>(<span class="params">username: <span class="built_in">str</span> | <span class="literal">None</span> = <span class="literal">None</span>, password: <span class="built_in">str</span> = <span class="string">&quot;&quot;</span></span>):</span><br><span class="line"><span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@mcp.tool()</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">login</span>(<span class="params">username: <span class="built_in">str</span> = <span class="string">&quot;&quot;</span>, password: <span class="built_in">str</span> = <span class="string">&quot;&quot;</span></span>):</span><br><span class="line"><span class="string">&quot;&quot;&quot;登录陆吾服务器&quot;&quot;&quot;</span></span><br><span class="line"><span class="keyword">pass</span></span><br></pre></td></tr></table></figure>
-
-<p>在使用 mcp dev 运行程序时，发现前两种写法存在明显问题。<br>第一种写法中，程序似乎对参数类型判断有误，甚至要求必须传入一个字符串，而不是按照预期可以接受默认值。第二种写法同样存在问题，参数无法正常传入。只有第三种写法，在参数传递上表现相对正常。</p>
-<p>初步推测，这个问题可能出在 mcp 工具生成的 schema 上。可能是在处理函数参数默认值与类型注解时，schema 的生成逻辑出现了偏差，导致在开发模式下参数传递出现异常。</p>
+            <h3 id="拖拽"><a href="#拖拽" class="headerlink" title="拖拽"></a>拖拽</h3><table>
+<thead>
+<tr>
+<th>名称</th>
+<th>简介</th>
+<th>链接</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>moveable</td>
+<td>Moveable! Draggable! Resizable! Scalable! Rotatable! Warpable! Pinchable! Groupable! Snappable!</td>
+<td><a target="_blank" rel="noopener" href="https://github.com/daybrush/moveable">https://github.com/daybrush/moveable</a></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
 
         </div>
 
@@ -193,10 +277,8 @@
         </section>
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="/2025/05/%E2%AD%90%EF%BC%9A%E5%A5%BD%E7%94%A8%E7%9A%84%E5%BA%93/">⭐：好用的库</a>
             
-            
-            <a class="next" rel="next" href="/2025/04/2025/04/TS-TypeScript-%E7%B1%BB%E5%9E%8B%E9%99%90%E5%AE%9A%E4%B8%8E%E6%93%8D%E4%BD%9C/">TS: TypeScript 类型限定与操作</a>
+            <a class="next" rel="next" href="/2025/04/MCP-%E5%85%B3%E4%BA%8E-mcp-tool-%E8%A3%85%E9%A5%B0%E5%99%A8%E4%B8%8B%E5%87%BD%E6%95%B0%E5%8F%82%E6%95%B0%E9%BB%98%E8%AE%A4%E5%80%BC%E9%97%AE%E9%A2%98%E7%9A%84%E8%AE%B0%E5%BD%95/">MCP: 关于 mcp.tool 装饰器下函数参数默认值问题的记录</a>
             
         </section>
 
