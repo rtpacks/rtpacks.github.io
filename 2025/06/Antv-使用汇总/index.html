@@ -174,8 +174,8 @@
 <tr>
 <td>antv 的 chart 实例尽量不用响应式变量存储，g6和g2</td>
 <td><a target="_blank" rel="noopener" href="https://github.com/antvis/G6/issues/6791%EF%BC%9Bhttps://g6.antv.antgroup.com/manual/getting-started/integration/vue">https://github.com/antvis/G6/issues/6791；https://g6.antv.antgroup.com/manual/getting-started/integration/vue</a></td>
-<td>不要使用响应式对象！如果外部需要使用 graph 实例，可以使用这种定义方式 <code>const graphRef = &#123; value: null as null | G6.Graph &#125;;</code></td>
-<td></td>
+<td>不要使用响应式对象！如果外部需要使用 graph 实例，可以使用这种定义方式 <code>const graphRef = &#123; value: null as null | G6.Graph &#125;;</code>。这样还可以解决元素难以点击的问题</td>
+<td>It is illegal to free an event not managed by this EventBoundary</td>
 </tr>
 <tr>
 <td></td>
