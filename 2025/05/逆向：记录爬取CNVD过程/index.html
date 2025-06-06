@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Az">
+
+
+    <meta name="subtitle" content="Welcome!">
+
+
+
+    <meta name="keywords" content="blog luckydog Withx">
+
+
+<title>逆向：记录爬取CNVD过程 | Az&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+<link rel="stylesheet" href="/fonts/custom/iconfont.css">
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">I&#39;m Az</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">I&#39;m Az</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">逆向：记录爬取CNVD过程</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Az</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">2025.05.30&nbsp;&nbsp;16:02:04</a>
+                        </span>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>CNVD 网站具有很强大的反爬机制，它的检测流程如下：</p>
+<ol>
+<li>发起请求，第一次返回 script 将设置 cookie，并重定向 pathname 和 search</li>
+</ol>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">    <span class="variable language_">document</span>.<span class="property">cookie</span> = (<span class="string">&#x27;_&#x27;</span>) + (<span class="string">&#x27;_&#x27;</span>) + (<span class="string">&#x27;j&#x27;</span>) + (<span class="string">&#x27;s&#x27;</span>) + (<span class="string">&#x27;l&#x27;</span>) + (<span class="string">&#x27;_&#x27;</span>) + (<span class="string">&#x27;c&#x27;</span>) + (<span class="string">&#x27;l&#x27;</span>) + (<span class="string">&#x27;e&#x27;</span>) + (<span class="string">&#x27;a&#x27;</span>) + (<span class="string">&#x27;r&#x27;</span>) + (<span class="string">&#x27;a&#x27;</span>) + (<span class="string">&#x27;n&#x27;</span>) + (<span class="string">&#x27;c&#x27;</span>) + (<span class="string">&#x27;e&#x27;</span>) + (<span class="string">&#x27;_&#x27;</span>) + (<span class="string">&#x27;s&#x27;</span>) + (<span class="string">&#x27;=&#x27;</span>) + (-~<span class="literal">false</span> + <span class="string">&#x27;&#x27;</span>) + (<span class="number">9</span> - <span class="number">1</span> * <span class="number">2</span> + <span class="string">&#x27;&#x27;</span>) + ((<span class="number">2</span>) * [<span class="number">2</span>] + <span class="string">&#x27;&#x27;</span>) + (-~[<span class="number">7</span>] + <span class="string">&#x27;&#x27;</span>) + (([<span class="number">2</span>] + <span class="number">0</span> &gt;&gt; <span class="number">2</span>) + <span class="string">&#x27;&#x27;</span>) + (<span class="number">9</span> + <span class="string">&#x27;&#x27;</span>) + ((<span class="number">1</span> &lt;&lt; <span class="number">1</span>) + <span class="string">&#x27;&#x27;</span>) + (<span class="number">2</span> + <span class="string">&#x27;&#x27;</span>) + (<span class="number">1</span> + <span class="number">2</span> + <span class="string">&#x27;&#x27;</span>) + (-~[<span class="number">5</span>] + <span class="string">&#x27;&#x27;</span>) + (<span class="string">&#x27;.&#x27;</span>) + (+!+[] * <span class="number">2</span> + <span class="string">&#x27;&#x27;</span>) + ((<span class="number">1</span> + [<span class="number">2</span>] &gt;&gt; <span class="number">2</span>) + <span class="string">&#x27;&#x27;</span>) + ((<span class="number">1</span> | <span class="number">2</span>) + <span class="string">&#x27;&#x27;</span>) + (<span class="string">&#x27;|&#x27;</span>) + (<span class="string">&#x27;-&#x27;</span>) + (-~<span class="literal">false</span> + <span class="string">&#x27;&#x27;</span>) + (<span class="string">&#x27;|&#x27;</span>) + (<span class="string">&#x27;k&#x27;</span>) + (<span class="string">&#x27;n&#x27;</span>) + (<span class="string">&#x27;I&#x27;</span>) + (<span class="string">&#x27;E&#x27;</span>) + (<span class="string">&#x27;A&#x27;</span>) + (<span class="string">&#x27;v&#x27;</span>) + (<span class="string">&#x27;t&#x27;</span>) + (<span class="string">&#x27;Y&#x27;</span>) + (<span class="string">&#x27;W&#x27;</span>) + (<span class="string">&#x27;g&#x27;</span>) + (<span class="string">&#x27;W&#x27;</span>) + (<span class="string">&#x27;B&#x27;</span>) + (<span class="string">&#x27;b&#x27;</span>) + (<span class="string">&#x27;t&#x27;</span>) + (<span class="string">&#x27;R&#x27;</span>) + (<span class="string">&#x27;t&#x27;</span>) + (<span class="string">&#x27;l&#x27;</span>) + (<span class="string">&#x27;N&#x27;</span>) + (<span class="string">&#x27;c&#x27;</span>) + (<span class="string">&#x27;y&#x27;</span>) + (<span class="string">&#x27;Q&#x27;</span>) + (<span class="string">&#x27;P&#x27;</span>) + ([<span class="number">2</span>] * (<span class="number">3</span>) + <span class="string">&#x27;&#x27;</span>) + (<span class="string">&#x27;n&#x27;</span>) + (<span class="string">&#x27;X&#x27;</span>) + ((<span class="number">1</span> | <span class="number">2</span>) + <span class="string">&#x27;&#x27;</span>) + ((<span class="number">2</span>) * [<span class="number">2</span>] + <span class="string">&#x27;&#x27;</span>) + (<span class="string">&#x27;%&#x27;</span>) + ((<span class="number">2</span> ^ <span class="number">1</span>) + <span class="string">&#x27;&#x27;</span>) + (<span class="string">&#x27;D&#x27;</span>) + (<span class="string">&#x27;;&#x27;</span>) + (<span class="string">&#x27; &#x27;</span>) + (<span class="string">&#x27;M&#x27;</span>) + (<span class="string">&#x27;a&#x27;</span>) + (<span class="string">&#x27;x&#x27;</span>) + (<span class="string">&#x27;-&#x27;</span>) + (<span class="string">&#x27;a&#x27;</span>) + (<span class="string">&#x27;g&#x27;</span>) + (<span class="string">&#x27;e&#x27;</span>) + (<span class="string">&#x27;=&#x27;</span>) + (-~[<span class="number">2</span>] + <span class="string">&#x27;&#x27;</span>) + ((<span class="number">1</span> + [<span class="number">2</span>]) / [<span class="number">2</span>] + <span class="string">&#x27;&#x27;</span>) + (~~[] + <span class="string">&#x27;&#x27;</span>) + (~~<span class="string">&#x27;&#x27;</span> + <span class="string">&#x27;&#x27;</span>) + (<span class="string">&#x27;;&#x27;</span>) + (<span class="string">&#x27; &#x27;</span>) + (<span class="string">&#x27;P&#x27;</span>) + (<span class="string">&#x27;a&#x27;</span>) + (<span class="string">&#x27;t&#x27;</span>) + (<span class="string">&#x27;h&#x27;</span>) + (<span class="string">&#x27;=&#x27;</span>) + (<span class="string">&#x27;/&#x27;</span>) + (<span class="string">&#x27;;&#x27;</span>) + (<span class="string">&#x27; &#x27;</span>) + (<span class="string">&#x27;S&#x27;</span>) + (<span class="string">&#x27;a&#x27;</span>) + (<span class="string">&#x27;m&#x27;</span>) + (<span class="string">&#x27;e&#x27;</span>) + (<span class="string">&#x27;S&#x27;</span>) + (<span class="string">&#x27;i&#x27;</span>) + (<span class="string">&#x27;t&#x27;</span>) + (<span class="string">&#x27;e&#x27;</span>) + (<span class="string">&#x27;=&#x27;</span>) + (<span class="string">&#x27;N&#x27;</span>) + (<span class="string">&#x27;o&#x27;</span>) + (<span class="string">&#x27;n&#x27;</span>) + (<span class="string">&#x27;e&#x27;</span>) + (<span class="string">&#x27;;&#x27;</span>) + (<span class="string">&#x27; &#x27;</span>) + (<span class="string">&#x27;S&#x27;</span>) + (<span class="string">&#x27;e&#x27;</span>) + (<span class="string">&#x27;c&#x27;</span>) + (<span class="string">&#x27;u&#x27;</span>) + (<span class="string">&#x27;r&#x27;</span>) + (<span class="string">&#x27;e&#x27;</span>);</span></span><br><span class="line"><span class="language-javascript">    location.<span class="property">href</span> = location.<span class="property">pathname</span> + location.<span class="property">search</span></span></span><br><span class="line"><span class="language-javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>利用浏览器的二次请求，携带 cookie 从服务器获取反爬脚本（cookie 加密并选取时间因子生成【动态更新】、<strong>环境监测</strong>），利用脚本生成 cookie，此时的请求才会接入正常的网站服务</li>
+</ol>
+<p>只要脚本足够的像人类行为，脚本就检测不出来。为了绕开检测，使用 playwright 应该设置浏览器启动参数：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">browser = <span class="keyword">await</span> chromium.<span class="title function_">launch</span>(&#123;</span><br><span class="line">  <span class="attr">slowMo</span>: <span class="number">100</span>, <span class="comment">// 添加延迟模拟人类操作,单位毫秒</span></span><br><span class="line">  <span class="attr">args</span>: [<span class="string">&quot;--disable-blink-features=AutomationControlled&quot;</span>],</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> context = <span class="keyword">await</span> browser.<span class="title function_">newContext</span>(&#123;</span><br><span class="line">  <span class="attr">userAgent</span>:</span><br><span class="line">    <span class="string">&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36&quot;</span>,</span><br><span class="line">  <span class="attr">javaScriptEnabled</span>: <span class="literal">true</span>,</span><br><span class="line">&#125;);</span><br><span class="line"><span class="keyword">await</span> context.<span class="title function_">addInitScript</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="title class_">Object</span>.<span class="title function_">defineProperty</span>(navigator, <span class="string">&quot;webdriver&quot;</span>, &#123; <span class="attr">get</span>: <span class="function">() =&gt;</span> <span class="literal">false</span> &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Az</span>
+                    </p>
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2025/06/Antv-%E4%BD%BF%E7%94%A8%E6%B1%87%E6%80%BB/">Antv 使用汇总</a>
+            
+            
+            <a class="next" rel="next" href="/2025/05/%E2%AD%90%EF%BC%9A%E5%A5%BD%E7%94%A8%E7%9A%84%E5%BA%93/">⭐：好用的库</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+  <div class="copyright">
+    <span>© Az | Powered by Hexo & Chic</span>
+  </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
